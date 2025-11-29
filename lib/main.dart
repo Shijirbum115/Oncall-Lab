@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:oncall_lab/core/services/supabase_service.dart';
 import 'package:oncall_lab/core/constants/app_colors.dart';
 import 'package:oncall_lab/stores/auth_store.dart';
@@ -11,6 +10,7 @@ import 'package:oncall_lab/ui/patient/main_page.dart';
 import 'package:oncall_lab/ui/doctor/doctor_main_page.dart';
 import 'package:oncall_lab/ui/shared/splash_screen.dart';
 import 'package:oncall_lab/l10n/app_localizations.dart';
+import 'package:oncall_lab/ui/design_system/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,25 +44,7 @@ class OnCallLabApp extends StatelessWidget {
           Locale('mn'), // Mongolian
         ],
         locale: localeStore.currentLocale,
-        theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: AppColors.primary,
-            primary: AppColors.primary,
-          ),
-          scaffoldBackgroundColor: AppColors.scaffoldBackground,
-          textTheme: GoogleFonts.poppinsTextTheme(),
-          appBarTheme: const AppBarTheme(
-            backgroundColor: AppColors.scaffoldBackground,
-            elevation: 0,
-            iconTheme: IconThemeData(color: AppColors.black),
-            titleTextStyle: TextStyle(
-              color: AppColors.black,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ),
+        theme: AppTheme.light(),
         home: const SplashWrapper(
           child: AuthGate(),
         ),
@@ -156,4 +138,3 @@ class _RolePlaceholderScreen extends StatelessWidget {
     );
   }
 }
-

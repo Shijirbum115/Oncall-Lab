@@ -229,7 +229,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get callTheDoctorHome => 'Эмчийг гэртээ дуудах';
 
   @override
-  String get availableTests => 'Боломжтой шинжилгээнүүд';
+  String get availableTests => 'Шинжилгээ';
 
   @override
   String get welcome => 'Тавтай морил';
@@ -379,7 +379,7 @@ class AppLocalizationsMn extends AppLocalizations {
   }
 
   @override
-  String get availableDoctors => 'Боломжтой эмч нар';
+  String get availableDoctors => 'Эмч, сувилагч';
 
   @override
   String get noDoctorsAvailable => 'Одоогоор эмч байхгүй байна';

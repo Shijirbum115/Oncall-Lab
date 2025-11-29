@@ -6,6 +6,7 @@ import 'package:oncall_lab/ui/auth/patient_registration_screen.dart';
 import 'package:oncall_lab/ui/auth/doctor_registration_screen.dart';
 import 'package:oncall_lab/l10n/app_localizations.dart';
 import 'package:oncall_lab/ui/shared/widgets/language_switcher.dart';
+import 'package:oncall_lab/ui/design_system/widgets/app_text_field.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -100,19 +101,12 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 40),
                 // Phone number field
-                TextFormField(
+                AppTextField(
                   controller: _phoneController,
                   keyboardType: TextInputType.phone,
-                  decoration: InputDecoration(
-                    labelText: l10n.phoneNumber,
-                    hintText: l10n.phoneNumberHint,
-                    prefixIcon: const Icon(Icons.phone),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    filled: true,
-                    fillColor: AppColors.grey.withValues(alpha: 0.1),
-                  ),
+                  label: l10n.phoneNumber,
+                  hint: l10n.phoneNumberHint,
+                  prefixIcon: const Icon(Icons.phone),
                   validator: (value) {
                     final v = value?.trim() ?? '';
                     if (v.isEmpty) return l10n.pleaseEnterPhoneNumber;
@@ -125,29 +119,22 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 20),
                 // Password field
                 Observer(
-                  builder: (_) => TextFormField(
+                  builder: (_) => AppTextField(
                     controller: _passwordController,
+                    label: l10n.password,
+                    prefixIcon: const Icon(Icons.lock),
                     obscureText: _obscurePassword,
-                    decoration: InputDecoration(
-                      labelText: l10n.password,
-                      prefixIcon: const Icon(Icons.lock),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                       ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      filled: true,
-                      fillColor: AppColors.grey.withValues(alpha: 0.1),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {

@@ -5,6 +5,7 @@ import 'package:oncall_lab/core/constants/app_colors.dart';
 import 'package:oncall_lab/stores/service_store.dart';
 import 'package:oncall_lab/ui/patient/booking/direct_service_booking_screen.dart';
 import 'package:oncall_lab/l10n/app_localizations.dart';
+import 'package:oncall_lab/ui/shared/widgets/app_card.dart';
 
 class DirectServicesScreen extends StatefulWidget {
   const DirectServicesScreen({super.key});
@@ -251,129 +252,113 @@ class _ServiceCard extends StatelessWidget {
             ? '${l10n.priceInMNT(minPrice)} - ${l10n.priceInMNT(maxPrice)}'
             : l10n.priceInMNT(minPrice));
 
-    return Container(
+    return AppCard(
       margin: const EdgeInsets.only(bottom: 12),
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => DirectServiceBookingScreen(
-                serviceId: service['service_id'],
-                serviceName: service['service_name'],
-              ),
+      borderRadius: 18,
+      borderColor: categoryColor.withValues(alpha: 0.15),
+      showShadow: false,
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => DirectServiceBookingScreen(
+              serviceId: service['service_id'],
+              serviceName: service['service_name'],
             ),
-          );
-        },
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border:
-                Border.all(color: categoryColor.withValues(alpha: 0.3)),
-            boxShadow: [
-              BoxShadow(
-                color: categoryColor.withValues(alpha: 0.1),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
+          ),
+        );
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  service['service_name'],
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.black,
+                  ),
+                ),
+              ),
+              const Icon(
+                Iconsax.arrow_right_3,
+                size: 20,
+                color: AppColors.grey,
               ),
             ],
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          if (service['service_description'] != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              service['service_description'],
+              style: const TextStyle(
+                fontSize: 14,
+                color: AppColors.grey,
+                height: 1.4,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+          const SizedBox(height: 12),
+          Row(
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      service['service_name'],
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.black,
-                      ),
+              if (priceLabel != null) ...[
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: categoryColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    priceLabel,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: categoryColor,
                     ),
                   ),
-                  const Icon(
-                    Iconsax.arrow_right_3,
-                    size: 20,
-                    color: AppColors.grey,
+                ),
+                const SizedBox(width: 12),
+              ],
+              Row(
+                children: [
+                  Icon(Icons.person, size: 16, color: categoryColor),
+                  const SizedBox(width: 4),
+                  Text(
+                    '$doctorsCount ${doctorsCount == 1 ? l10n.doctor : l10n.doctors}',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: categoryColor,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ],
               ),
-              if (service['service_description'] != null) ...[
-                const SizedBox(height: 8),
-                Text(
-                  service['service_description'],
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.grey,
-                    height: 1.4,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+              if (service['estimated_duration_minutes'] != null) ...[
+                const SizedBox(width: 12),
+                Row(
+                  children: [
+                    const Icon(Icons.access_time,
+                        size: 16, color: AppColors.grey),
+                    const SizedBox(width: 4),
+                    Text(
+                      '~${l10n.durationMinutes(service['estimated_duration_minutes'] as int)}',
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: AppColors.grey,
+                      ),
+                    ),
+                  ],
                 ),
               ],
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  if (priceLabel != null) ...[
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: categoryColor.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        priceLabel,
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                          color: categoryColor,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                  ],
-                  Row(
-                    children: [
-                      Icon(Icons.person, size: 16, color: categoryColor),
-                      const SizedBox(width: 4),
-                      Text(
-                        '$doctorsCount ${doctorsCount == 1 ? l10n.doctor : l10n.doctors}',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: categoryColor,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (service['estimated_duration_minutes'] != null) ...[
-                    const SizedBox(width: 12),
-                    Row(
-                      children: [
-                        const Icon(Icons.access_time,
-                            size: 16, color: AppColors.grey),
-                        const SizedBox(width: 4),
-                        Text(
-                          '~${l10n.durationMinutes(service['estimated_duration_minutes'] as int)}',
-                          style: const TextStyle(
-                            fontSize: 13,
-                            color: AppColors.grey,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ],
-              ),
             ],
           ),
-        ),
+        ],
       ),
     );
   }

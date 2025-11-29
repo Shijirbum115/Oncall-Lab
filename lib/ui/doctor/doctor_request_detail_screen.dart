@@ -545,9 +545,6 @@ class _CancelRequestDialogState extends State<_CancelRequestDialog> {
             maxLines: 3,
             decoration: InputDecoration(
               hintText: 'Enter reason...',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
             ),
           ),
         ],

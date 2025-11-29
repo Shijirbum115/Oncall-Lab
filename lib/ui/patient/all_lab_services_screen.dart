@@ -4,6 +4,8 @@ import 'package:oncall_lab/core/constants/app_colors.dart';
 import 'package:oncall_lab/core/services/supabase_service.dart';
 import 'package:oncall_lab/ui/patient/laboratories_screen.dart';
 import 'package:oncall_lab/l10n/app_localizations.dart';
+import 'package:oncall_lab/ui/shared/widgets/app_card.dart';
+import 'package:oncall_lab/ui/design_system/widgets/app_text_field.dart';
 
 class AllLabServicesScreen extends StatefulWidget {
   const AllLabServicesScreen({super.key});
@@ -109,31 +111,15 @@ class _AllLabServicesScreenState extends State<AllLabServicesScreen> {
           // Search Bar
           Padding(
             padding: const EdgeInsets.all(16),
-            child: TextField(
+            child: AppSearchField(
               controller: _searchController,
-              decoration: InputDecoration(
-                hintText: l10n.searchTests,
-                prefixIcon: const Icon(Iconsax.search_normal, color: AppColors.grey),
-                suffixIcon: _searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear, color: AppColors.grey),
-                        onPressed: () {
-                          _searchController.clear();
-                        },
-                      )
-                    : null,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide:
-                      BorderSide(color: AppColors.grey.withValues(alpha: 0.3)),
-                ),
-                filled: true,
-                fillColor: AppColors.grey.withValues(alpha: 0.1),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
-                ),
-              ),
+              hint: l10n.searchTests,
+              prefixIcon: Iconsax.search_normal,
+              onChanged: (_) => _filterServices(),
+              onClear: () {
+                _searchController.clear();
+                _filterServices();
+              },
             ),
           ),
 
@@ -289,28 +275,13 @@ class _ServiceCard extends StatelessWidget {
     final sampleType = service['sample_type'] as String?;
     final preparationInstructions = service['preparation_instructions'] as String?;
 
-    return Container(
+    return AppCard(
       margin: const EdgeInsets.only(bottom: 12),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: AppColors.grey.withValues(alpha: 0.2),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.grey.withValues(alpha: 0.1),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Column(
+      borderRadius: 18,
+      borderColor: AppColors.grey.withValues(alpha: 0.16),
+      showShadow: false,
+      onTap: onTap,
+      child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
@@ -418,8 +389,6 @@ class _ServiceCard extends StatelessWidget {
               ],
             ],
           ),
-        ),
-      ),
     );
   }
 }

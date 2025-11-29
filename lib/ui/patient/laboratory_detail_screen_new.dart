@@ -5,6 +5,7 @@ import 'package:oncall_lab/data/models/laboratory_service_model.dart';
 import 'package:oncall_lab/stores/service_store.dart';
 import 'package:oncall_lab/ui/patient/booking/lab_service_booking_screen.dart';
 import 'package:oncall_lab/l10n/app_localizations.dart';
+import 'package:oncall_lab/ui/design_system/widgets/app_text_field.dart';
 
 class LaboratoryDetailScreenNew extends StatefulWidget {
   final Map<String, dynamic> laboratory;
@@ -87,22 +88,13 @@ class _LaboratoryDetailScreenNewState
           // Search Bar
           Padding(
             padding: const EdgeInsets.all(16),
-            child: TextField(
+            child: AppSearchField(
+              hint: l10n.searchServices,
+              prefixIcon: Iconsax.search_normal,
               onChanged: (value) {
-                setState(() {
-                  searchQuery = value;
-                });
+                setState(() => searchQuery = value);
               },
-              decoration: InputDecoration(
-                hintText: l10n.searchServices,
-                prefixIcon: const Icon(Iconsax.search_normal),
-                filled: true,
-                fillColor: AppColors.grey.withValues(alpha: 0.1),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
-                ),
-              ),
+              onClear: () => setState(() => searchQuery = ''),
             ),
           ),
 

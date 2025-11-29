@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:oncall_lab/core/constants/app_colors.dart';
+import 'package:oncall_lab/ui/shared/widgets/app_card.dart';
 import 'package:oncall_lab/l10n/app_localizations.dart';
 
 class SavedAddressSelector extends StatelessWidget {
@@ -23,18 +24,15 @@ class SavedAddressSelector extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Container(
-          decoration: BoxDecoration(
-            color: AppColors.primary.withValues(alpha: 0.05),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: selected
-                  ? AppColors.primary
-                  : AppColors.primary.withValues(alpha: 0.2),
-              width: selected ? 2 : 1,
-            ),
-          ),
+        AppCard(
+          showShadow: false,
+          borderRadius: 14,
+          borderColor: selected
+              ? AppColors.primary
+              : AppColors.primary.withValues(alpha: 0.2),
+          backgroundColor: AppColors.primary.withValues(alpha: 0.05),
           child: ListTile(
+            contentPadding: EdgeInsets.zero,
             onTap: onUseAddress,
             title: Text(
               address,

@@ -2,16 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:oncall_lab/core/constants/app_colors.dart';
 import 'package:oncall_lab/core/services/supabase_service.dart';
 import 'package:oncall_lab/stores/auth_store.dart';
-import 'package:oncall_lab/data/models/profile_model.dart';
 import 'package:oncall_lab/ui/patient/widgets/visit_options_section.dart';
 import 'package:oncall_lab/ui/patient/widgets/test_types_section.dart';
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:oncall_lab/ui/patient/widgets/available_doctors_section.dart';
 import 'package:oncall_lab/ui/patient/all_lab_services_screen.dart';
 import 'package:oncall_lab/ui/patient/direct_services_screen.dart';
 import 'package:oncall_lab/ui/shared/widgets/profile_avatar.dart';
 import 'package:oncall_lab/l10n/app_localizations.dart';
+import 'package:oncall_lab/ui/patient/widgets/ad_banner.dart';
 
 class PatientHomeScreen extends StatefulWidget {
   final VoidCallback onNavigateToProfile;
@@ -68,23 +69,78 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
 
   Future<void> _loadData() async {
     try {
-      // Load lab test services (for quick access on home screen)
-      final servicesData = await supabase
-          .from('services')
+      // Load all lab tests offered across laboratories
+      final labServicesRaw = await supabase
+          .from('laboratory_services')
           .select('''
-            *,
-            service_categories(*)
+            service_id,
+            price_mnt,
+            estimated_duration_hours,
+            laboratories ( name ),
+            services (
+              id,
+              name,
+              description,
+              service_categories ( type )
+            )
           ''')
-          .eq('is_active', true)
-          .eq('service_categories.type', 'lab_test')
-          .order('name')
-          .limit(10);
+          .eq('is_available', true)
+          .limit(200);
+
+      final labServicesData =
+          List<Map<String, dynamic>>.from(labServicesRaw);
+
+      final combinedTests = <String, Map<String, dynamic>>{};
+
+      for (final record in labServicesData) {
+        final service = record['services'] as Map<String, dynamic>?;
+        if (service == null) continue;
+
+        final serviceId = service['id']?.toString();
+        if (serviceId == null) continue;
+
+        final labName =
+            (record['laboratories'] as Map<String, dynamic>?)?['name']
+                as String?;
+        final offeredPrice = record['price_mnt'] as int?;
+
+        final entry = combinedTests.putIfAbsent(serviceId, () {
+          return {
+            'id': serviceId,
+            'name': service['name'] ?? '',
+            'price_mnt': offeredPrice ?? 0,
+            'labs': <String>[],
+            'lab_count': 0,
+            'service_categories': service['service_categories'],
+          };
+        });
+
+        if (offeredPrice != null) {
+          final currentPrice = entry['price_mnt'] as int? ?? offeredPrice;
+          entry['price_mnt'] = math.min(currentPrice, offeredPrice);
+        }
+
+        if (labName != null) {
+          final labs = entry['labs'] as List<String>;
+          if (!labs.contains(labName)) {
+            labs.add(labName);
+            entry['lab_count'] = labs.length;
+          }
+        }
+      }
+
+      final aggregatedTests = combinedTests.values.toList()
+        ..sort((a, b) {
+          final bCount = b['lab_count'] as int? ?? 0;
+          final aCount = a['lab_count'] as int? ?? 0;
+          return bCount.compareTo(aCount);
+        });
 
       // Load available doctors
       final doctorsData = await supabase.rpc('get_available_doctors');
 
       setState(() {
-        testTypes = List<Map<String, dynamic>>.from(servicesData);
+        testTypes = aggregatedTests.take(12).toList();
         availableDoctors = List<Map<String, dynamic>>.from(doctorsData);
         isLoading = false;
       });
@@ -188,18 +244,58 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
                       },
                     ),
                     const SizedBox(height: 30),
-                    TestTypesSection(testTypes: testTypes),
+                    const AdBanner(),
+                    const SizedBox(height: 24),
+                    TestTypesSection(
+                      testTypes: testTypes,
+                      onSeeAllTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const AllLabServicesScreen(),
+                          ),
+                        );
+                      },
+                    ),
                     const SizedBox(height: 35),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 15),
-                      child: Text(
-                        l10n.availableDoctors,
-                        style: const TextStyle(
-                          fontSize: 22,
-                          color: AppColors.black,
-                          letterSpacing: -.5,
-                          fontWeight: FontWeight.w600,
-                        ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            l10n.availableDoctors,
+                            style: const TextStyle(
+                              fontSize: 22,
+                              color: AppColors.black,
+                              letterSpacing: -.5,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const DirectServicesScreen(),
+                                ),
+                              );
+                            },
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            child: Text(
+                              l10n.viewAll,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                     const SizedBox(height: 15),

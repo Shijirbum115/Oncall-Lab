@@ -8,9 +8,11 @@ class TestTypesSection extends StatefulWidget {
   const TestTypesSection({
     super.key,
     required this.testTypes,
+    this.onSeeAllTap,
   });
 
   final List<Map<String, dynamic>> testTypes;
+  final VoidCallback? onSeeAllTap;
 
   @override
   State<TestTypesSection> createState() => _TestTypesSectionState();
@@ -86,14 +88,36 @@ class _TestTypesSectionState extends State<TestTypesSection> {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 15),
-          child: Text(
-            l10n.availableTests,
-            style: const TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              letterSpacing: -.5,
-              color: AppColors.black,
-            ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                l10n.availableTests,
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: -.5,
+                  color: AppColors.black,
+                ),
+              ),
+              if (widget.onSeeAllTap != null)
+                TextButton(
+                  onPressed: widget.onSeeAllTap,
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: Text(
+                    l10n.viewAll,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
         const SizedBox(height: 15),

@@ -9,6 +9,7 @@ import 'package:oncall_lab/data/models/profile_model.dart';
 import 'package:oncall_lab/stores/auth_store.dart';
 import 'package:oncall_lab/ui/shared/widgets/profile_avatar.dart';
 import 'package:oncall_lab/l10n/app_localizations.dart';
+import 'package:oncall_lab/ui/design_system/widgets/app_text_field.dart';
 import 'package:oncall_lab/ui/shared/widgets/language_switcher.dart';
 
 class PatientProfileScreen extends StatelessWidget {
@@ -570,11 +571,6 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
       validator: validator,
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        filled: true,
-        fillColor: AppColors.grey.withValues(alpha: 0.05),
       ),
     );
   }
@@ -703,17 +699,10 @@ class _SavedAddressSheetState extends State<SavedAddressSheet> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextFormField(
+                  AppTextField(
                     controller: _editController,
                     maxLines: 3,
-                    decoration: InputDecoration(
-                      labelText: l10n.editAddress,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      filled: true,
-                      fillColor: AppColors.grey.withValues(alpha: 0.05),
-                    ),
+                    label: l10n.editAddress,
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
                         return l10n.pleaseEnterAddress;
@@ -775,17 +764,10 @@ class _SavedAddressSheetState extends State<SavedAddressSheet> {
               key: _addFormKey,
               child: Column(
                 children: [
-                  TextFormField(
+                  AppTextField(
                     controller: _addController,
                     maxLines: 3,
-                    decoration: InputDecoration(
-                      labelText: l10n.newAddress,
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      filled: true,
-                      fillColor: AppColors.grey.withValues(alpha: 0.05),
-                    ),
+                    label: l10n.newAddress,
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
                         return l10n.pleaseEnterAddress;

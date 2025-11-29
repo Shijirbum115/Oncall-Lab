@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:oncall_lab/core/constants/app_colors.dart';
 import 'package:oncall_lab/data/models/laboratory_service_model.dart';
 import 'package:oncall_lab/stores/auth_store.dart';
 import 'package:oncall_lab/stores/test_request_store.dart';
-import 'package:oncall_lab/ui/patient/booking/widgets/saved_address_selector.dart';
+import 'package:oncall_lab/ui/patient/location/location_picker_screen.dart';
+import 'package:oncall_lab/ui/design_system/widgets/app_text_field.dart';
 import 'package:oncall_lab/l10n/app_localizations.dart';
+import 'package:oncall_lab/ui/shared/widgets/app_card.dart';
 
 class LabServiceBookingScreen extends StatefulWidget {
   final Map<String, dynamic> laboratory;
@@ -33,6 +36,9 @@ class _LabServiceBookingScreenState extends State<LabServiceBookingScreen> {
   String? savedAddress;
   bool useSavedAddress = false;
   bool showManualAddressField = false;
+
+  // Location data from picker
+  Map<String, dynamic>? selectedLocation;
 
   final List<String> timeSlots = [
     '09:00-12:00',
@@ -63,8 +69,64 @@ class _LabServiceBookingScreenState extends State<LabServiceBookingScreen> {
     super.dispose();
   }
 
+  Future<void> _openLocationPicker() async {
+    final result = await Navigator.push<Map<String, dynamic>>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => LocationPickerScreen(
+          initialLocation: selectedLocation != null
+              ? LatLng(
+                  selectedLocation!['latitude'],
+                  selectedLocation!['longitude'],
+                )
+              : null,
+          initialAddress: selectedLocation?['address_line'],
+        ),
+      ),
+    );
+
+    if (result != null) {
+      setState(() {
+        selectedLocation = result;
+        useSavedAddress = false;
+        showManualAddressField = false;
+
+        // Build full address string
+        final parts = <String>[result['address_line']];
+        if (result['building_name']?.isNotEmpty == true) {
+          parts.add(result['building_name']);
+        }
+        if (result['entrance']?.isNotEmpty == true) {
+          parts.add('Entrance: ${result['entrance']}');
+        }
+        if (result['floor']?.isNotEmpty == true) {
+          parts.add('Floor: ${result['floor']}');
+        }
+        if (result['apartment_number']?.isNotEmpty == true) {
+          parts.add('Apt: ${result['apartment_number']}');
+        }
+        if (result['door_number']?.isNotEmpty == true) {
+          parts.add('Door: ${result['door_number']}');
+        }
+
+        _addressController.text = parts.join(', ');
+      });
+    }
+  }
+
   Future<void> _submitBooking() async {
     if (!_formKey.currentState!.validate()) return;
+
+    // Validate location is selected
+    if (selectedLocation == null && _addressController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select your location on the map'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
 
     final l10n = AppLocalizations.of(context)!;
     setState(() => isSubmitting = true);
@@ -136,14 +198,11 @@ class _LabServiceBookingScreenState extends State<LabServiceBookingScreen> {
           padding: const EdgeInsets.all(16),
           children: [
             // Service Info Card
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.05),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                    color: AppColors.primary.withValues(alpha: 0.2)),
-              ),
+            AppCard(
+              showShadow: false,
+              borderRadius: 18,
+              borderColor: AppColors.primary.withValues(alpha: 0.15),
+              backgroundColor: AppColors.primary.withValues(alpha: 0.04),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -213,14 +272,11 @@ class _LabServiceBookingScreenState extends State<LabServiceBookingScreen> {
 
             // Preparation Instructions
             if (service.preparationInstructions != null) ...[
-              Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: AppColors.warning.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                      color: AppColors.warning.withValues(alpha: 0.3)),
-                ),
+              AppCard(
+                showShadow: false,
+                borderRadius: 18,
+                borderColor: AppColors.warning.withValues(alpha: 0.2),
+                backgroundColor: AppColors.warning.withValues(alpha: 0.07),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -264,7 +320,10 @@ class _LabServiceBookingScreenState extends State<LabServiceBookingScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            InkWell(
+            AppCard(
+              showShadow: false,
+              borderRadius: 14,
+              borderColor: AppColors.grey.withValues(alpha: 0.25),
               onTap: () async {
                 final date = await showDatePicker(
                   context: context,
@@ -277,27 +336,18 @@ class _LabServiceBookingScreenState extends State<LabServiceBookingScreen> {
                   setState(() => selectedDate = date);
                 }
               },
-              borderRadius: BorderRadius.circular(12),
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  border: Border.all(
-                      color: AppColors.grey.withValues(alpha: 0.3)),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Iconsax.calendar, color: AppColors.primary),
-                    const SizedBox(width: 12),
-                    Text(
-                      '${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}',
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
+              child: Row(
+                children: [
+                  const Icon(Iconsax.calendar, color: AppColors.primary),
+                  const SizedBox(width: 12),
+                  Text(
+                    '${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
 
@@ -360,47 +410,63 @@ class _LabServiceBookingScreenState extends State<LabServiceBookingScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            if (savedAddress != null && savedAddress!.isNotEmpty) ...[
-              SavedAddressSelector(
-                address: savedAddress!,
-                selected: useSavedAddress,
-                onUseAddress: () {
-                  setState(() {
-                    useSavedAddress = true;
-                    showManualAddressField = false;
-                    _addressController.text = savedAddress!;
-                  });
-                },
-                onManualEntry: () {
-                  setState(() {
-                    useSavedAddress = false;
-                    showManualAddressField = true;
-                    _addressController.clear();
-                  });
-                },
-              ),
-              const SizedBox(height: 12),
-            ],
-            if (showManualAddressField)
-              TextFormField(
-                controller: _addressController,
-                maxLines: 3,
-                decoration: InputDecoration(
-                  hintText: l10n.addressHint,
-                  prefixIcon:
-                      const Icon(Iconsax.location, color: AppColors.primary),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+
+            // Location Picker Button
+            AppCard(
+              showShadow: false,
+              borderRadius: 14,
+              borderColor: selectedLocation != null
+                  ? AppColors.primary.withValues(alpha: 0.3)
+                  : AppColors.grey.withValues(alpha: 0.25),
+              backgroundColor: selectedLocation != null
+                  ? AppColors.primary.withValues(alpha: 0.05)
+                  : Colors.white,
+              onTap: _openLocationPicker,
+              child: Row(
+                children: [
+                  Icon(
+                    Iconsax.location,
+                    color: selectedLocation != null
+                        ? AppColors.primary
+                        : AppColors.grey,
                   ),
-                  filled: true,
-                  fillColor: AppColors.grey.withValues(alpha: 0.1),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(
+                      selectedLocation != null
+                          ? _addressController.text
+                          : l10n.addressHint,
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: selectedLocation != null
+                            ? AppColors.black
+                            : AppColors.grey,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  const Icon(
+                    Icons.edit_location_alt,
+                    color: AppColors.primary,
+                    size: 20,
+                  ),
+                ],
+              ),
+            ),
+
+            // Show error if no location selected
+            if (selectedLocation == null && _addressController.text.isEmpty)
+              Padding(
+                padding: const EdgeInsets.only(top: 8, left: 12),
+                child: Text(
+                  'Please select your location on the map',
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppColors.grey.withValues(alpha: 0.8),
+                  ),
                 ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return l10n.pleaseEnterAddress;
-                  }
-                  return null;
-                },
               ),
 
             const SizedBox(height: 24),
@@ -415,17 +481,10 @@ class _LabServiceBookingScreenState extends State<LabServiceBookingScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            TextFormField(
+            AppTextField(
               controller: _notesController,
               maxLines: 3,
-              decoration: InputDecoration(
-                hintText: l10n.specialInstructionsHint,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                filled: true,
-                fillColor: AppColors.grey.withValues(alpha: 0.1),
-              ),
+              hint: l10n.specialInstructionsHint,
             ),
 
             const SizedBox(height: 32),

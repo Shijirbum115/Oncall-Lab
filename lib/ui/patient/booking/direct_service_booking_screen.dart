@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:oncall_lab/core/constants/app_colors.dart';
 import 'package:oncall_lab/core/services/supabase_service.dart';
 import 'package:oncall_lab/core/utils/avatar_helper.dart';
 import 'package:oncall_lab/stores/auth_store.dart';
 import 'package:oncall_lab/stores/service_store.dart';
 import 'package:oncall_lab/stores/test_request_store.dart';
-import 'package:oncall_lab/ui/patient/booking/widgets/saved_address_selector.dart';
+import 'package:oncall_lab/ui/patient/location/location_picker_screen.dart';
+import 'package:oncall_lab/ui/design_system/widgets/app_text_field.dart';
+import 'package:oncall_lab/ui/shared/widgets/app_card.dart';
 
 class DirectServiceBookingScreen extends StatefulWidget {
   final String serviceId;
@@ -43,6 +46,10 @@ class _DirectServiceBookingScreenState
   String? savedAddress;
   bool useSavedAddress = false;
   bool showManualAddressField = false;
+
+  // Location data from picker
+  Map<String, dynamic>? selectedLocation;
+
   String? get _selectedDoctorId =>
       selectedDoctor == null ? null : _extractDoctorId(selectedDoctor!);
 
@@ -80,6 +87,51 @@ class _DirectServiceBookingScreenState
     _addressController.dispose();
     _notesController.dispose();
     super.dispose();
+  }
+
+  Future<void> _openLocationPicker() async {
+    final result = await Navigator.push<Map<String, dynamic>>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => LocationPickerScreen(
+          initialLocation: selectedLocation != null
+              ? LatLng(
+                  selectedLocation!['latitude'],
+                  selectedLocation!['longitude'],
+                )
+              : null,
+          initialAddress: selectedLocation?['address_line'],
+        ),
+      ),
+    );
+
+    if (result != null) {
+      setState(() {
+        selectedLocation = result;
+        useSavedAddress = false;
+        showManualAddressField = false;
+
+        // Build full address string
+        final parts = <String>[result['address_line']];
+        if (result['building_name']?.isNotEmpty == true) {
+          parts.add(result['building_name']);
+        }
+        if (result['entrance']?.isNotEmpty == true) {
+          parts.add('Entrance: ${result['entrance']}');
+        }
+        if (result['floor']?.isNotEmpty == true) {
+          parts.add('Floor: ${result['floor']}');
+        }
+        if (result['apartment_number']?.isNotEmpty == true) {
+          parts.add('Apt: ${result['apartment_number']}');
+        }
+        if (result['door_number']?.isNotEmpty == true) {
+          parts.add('Door: ${result['door_number']}');
+        }
+
+        _addressController.text = parts.join(', ');
+      });
+    }
   }
 
   Future<void> _loadData() async {
@@ -124,6 +176,17 @@ class _DirectServiceBookingScreenState
         const SnackBar(
           content: Text('Please select a doctor or choose "Any Available Doctor"'),
           backgroundColor: AppColors.warning,
+        ),
+      );
+      return;
+    }
+
+    // Validate location is selected
+    if (selectedLocation == null && _addressController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select your location on the map'),
+          backgroundColor: AppColors.error,
         ),
       );
       return;
@@ -611,47 +674,63 @@ class _DirectServiceBookingScreenState
           ),
         ),
         const SizedBox(height: 12),
-        if (savedAddress != null && savedAddress!.isNotEmpty) ...[
-          SavedAddressSelector(
-            address: savedAddress!,
-            selected: useSavedAddress,
-            onUseAddress: () {
-              setState(() {
-                useSavedAddress = true;
-                showManualAddressField = false;
-                _addressController.text = savedAddress!;
-              });
-            },
-            onManualEntry: () {
-              setState(() {
-                useSavedAddress = false;
-                showManualAddressField = true;
-                _addressController.clear();
-              });
-            },
-          ),
-          const SizedBox(height: 12),
-        ],
-        if (showManualAddressField)
-          TextFormField(
-            controller: _addressController,
-            maxLines: 3,
-            decoration: InputDecoration(
-              hintText: 'Enter your address...',
-              prefixIcon:
-                  const Icon(Iconsax.location, color: AppColors.primary),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+
+        // Location Picker Button
+        AppCard(
+          showShadow: false,
+          borderRadius: 14,
+          borderColor: selectedLocation != null
+              ? AppColors.primary.withValues(alpha: 0.3)
+              : AppColors.grey.withValues(alpha: 0.25),
+          backgroundColor: selectedLocation != null
+              ? AppColors.primary.withValues(alpha: 0.05)
+              : Colors.white,
+          onTap: _openLocationPicker,
+          child: Row(
+            children: [
+              Icon(
+                Iconsax.location,
+                color: selectedLocation != null
+                    ? AppColors.primary
+                    : AppColors.grey,
               ),
-              filled: true,
-              fillColor: AppColors.grey.withValues(alpha: 0.1),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  selectedLocation != null
+                      ? _addressController.text
+                      : 'Select your location on the map',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: selectedLocation != null
+                        ? AppColors.black
+                        : AppColors.grey,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(width: 8),
+              const Icon(
+                Icons.edit_location_alt,
+                color: AppColors.primary,
+                size: 20,
+              ),
+            ],
+          ),
+        ),
+
+        // Show hint if no location selected
+        if (selectedLocation == null && _addressController.text.isEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 8, left: 12),
+            child: Text(
+              'Tap to open map and select your address',
+              style: TextStyle(
+                fontSize: 12,
+                color: AppColors.grey.withValues(alpha: 0.8),
+              ),
             ),
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return 'Please enter your address';
-              }
-              return null;
-            },
           ),
       ],
     );
@@ -670,17 +749,10 @@ class _DirectServiceBookingScreenState
           ),
         ),
         const SizedBox(height: 12),
-        TextFormField(
+        AppTextField(
           controller: _notesController,
           maxLines: 3,
-          decoration: InputDecoration(
-            hintText: 'Any special instructions...',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            filled: true,
-            fillColor: AppColors.grey.withValues(alpha: 0.1),
-          ),
+          hint: 'Any special instructions...',
         ),
       ],
     );
@@ -824,8 +896,8 @@ class _DoctorCard extends StatelessWidget {
       backgroundColor: AppColors.primary.withValues(alpha: 0.2),
       backgroundImage: hasAvatar
           ? (isDefaultAvatar
-              ? AssetImage(avatarUrl!) as ImageProvider
-              : NetworkImage(avatarUrl!))
+              ? AssetImage(avatarUrl) as ImageProvider
+              : NetworkImage(avatarUrl))
           : null,
       child: !hasAvatar
           ? Text(

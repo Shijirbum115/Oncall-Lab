@@ -588,11 +588,6 @@ class _PatientRegistrationScreenState extends State<PatientRegistrationScreen> {
       labelText: label,
       hintText: hint,
       prefixIcon: Icon(icon, color: AppColors.primary),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      filled: true,
-      fillColor: AppColors.grey.withValues(alpha: 0.05),
     );
   }
 }
