@@ -37,7 +37,7 @@
 
 - Flutter 3 (Dart)
 - State management: `mobx`, `flutter_mobx`
-- Dependency injection: `get_it`
+- Dependency injection: `get_it` (`lib/core/di/service_locator.dart` register-лэлтээр store, repository-гаа inject хийдэг)
 - Data models: `freezed`, `json_serializable`
 - Navigation: энгийн `Navigator` (template-д AutoRoute заавар байгаа ч одоогоор basic navigation)
 
@@ -45,7 +45,7 @@
 
 - `lib/core` – color, strings, Supabase config, services
 - `lib/data` – models (`ProfileModel`, `DoctorProfileModel`, `LaboratoryModel`, `TestRequestModel` …), repositories
-- `lib/stores` – MobX stores (`AuthStore`, `ServiceStore`, `TestRequestStore`, `DoctorRequestStore`)
+- `lib/stores` – MobX stores (`AuthStore`, `HomeStore`, `ServiceStore`, `TestRequestStore`, `DoctorRequestStore`)
 - `lib/ui/patient` – patient аппийн бүх экраниуд
 - `lib/ui/doctor` – doctor аппийн бүх экраниуд
 - `lib/ui/shared` – splash screen, shared widgets

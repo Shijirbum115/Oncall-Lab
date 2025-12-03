@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/core/services/supabase_service.dart';
 import 'package:oncall_lab/core/utils/avatar_helper.dart';
+import 'package:oncall_lab/data/models/service_model.dart';
 import 'package:oncall_lab/stores/auth_store.dart';
 import 'package:oncall_lab/stores/service_store.dart';
 import 'package:oncall_lab/stores/test_request_store.dart';
@@ -29,7 +29,7 @@ class DirectServiceBookingScreen extends StatefulWidget {
 class _DirectServiceBookingScreenState
     extends State<DirectServiceBookingScreen> {
   List<Map<String, dynamic>> availableDoctors = [];
-  Map<String, dynamic>? serviceDetails;
+  ServiceModel? serviceDetails;
   Map<String, dynamic>? selectedDoctor;
   bool isLoadingDoctors = true;
   bool isLoadingService = true;
@@ -142,16 +142,10 @@ class _DirectServiceBookingScreenState
     });
 
     try {
-      // Load doctors
       final doctors =
           await serviceStore.getDoctorsForService(widget.serviceId);
-
-      // Load service details
-      final service = await supabase
-          .from('services')
-          .select('*, service_categories(*)')
-          .eq('id', widget.serviceId)
-          .single();
+      final service =
+          await serviceStore.fetchServiceById(widget.serviceId);
 
       setState(() {
         availableDoctors = doctors;
@@ -207,17 +201,14 @@ class _DirectServiceBookingScreenState
         if (selectedId == null) {
           throw Exception('Selected doctor id missing');
         }
-        // Get the doctor_service record
-        final doctorService = await supabase
-            .from('doctor_services')
-            .select()
-            .eq('doctor_id', selectedId)
-            .eq('service_id', widget.serviceId)
-            .single();
+        final doctorService = await serviceStore.fetchDoctorService(
+          doctorId: selectedId,
+          serviceId: widget.serviceId,
+        );
 
-        doctorServiceId = doctorService['id'];
+        doctorServiceId = doctorService.id;
         doctorId = selectedId;
-        priceMnt = selectedDoctor!['price_mnt'];
+        priceMnt = doctorService.priceMnt;
       } else {
         // Use the minimum price from available doctors
         priceMnt = availableDoctors.isEmpty
@@ -289,7 +280,7 @@ class _DirectServiceBookingScreenState
                     children: [
                       _buildServiceInfo(),
                       const SizedBox(height: 24),
-                      if (serviceDetails!['preparation_instructions'] != null)
+                      if (serviceDetails!.preparationInstructions != null)
                         _buildPreparationInstructions(),
                       _buildDoctorSelection(),
                       const SizedBox(height: 24),
@@ -352,7 +343,7 @@ class _DirectServiceBookingScreenState
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            serviceDetails!['name'],
+            serviceDetails!.name,
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -360,23 +351,23 @@ class _DirectServiceBookingScreenState
             ),
           ),
           const SizedBox(height: 8),
-          if (serviceDetails!['description'] != null)
+          if (serviceDetails!.description != null)
             Text(
-              serviceDetails!['description'],
+              serviceDetails!.description!,
               style: const TextStyle(
                 fontSize: 14,
                 color: AppColors.grey,
                 height: 1.5,
               ),
             ),
-          if (serviceDetails!['estimated_duration_minutes'] != null) ...[
+          if (serviceDetails!.estimatedDurationMinutes != null) ...[
             const SizedBox(height: 12),
             Row(
               children: [
                 const Icon(Icons.access_time, size: 16, color: AppColors.grey),
                 const SizedBox(width: 4),
                 Text(
-                  '~${serviceDetails!['estimated_duration_minutes']} minutes',
+                  '~${serviceDetails!.estimatedDurationMinutes} minutes',
                   style: const TextStyle(
                     fontSize: 13,
                     color: AppColors.grey,
@@ -420,7 +411,7 @@ class _DirectServiceBookingScreenState
               ),
               const SizedBox(height: 8),
               Text(
-                serviceDetails!['preparation_instructions'],
+                serviceDetails!.preparationInstructions!,
                 style: const TextStyle(
                   fontSize: 14,
                   color: AppColors.black,

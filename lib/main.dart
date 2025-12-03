@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:oncall_lab/core/services/supabase_service.dart';
 import 'package:oncall_lab/core/constants/app_colors.dart';
+import 'package:oncall_lab/core/di/service_locator.dart';
 import 'package:oncall_lab/stores/auth_store.dart';
 import 'package:oncall_lab/stores/locale_store.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
@@ -14,6 +15,8 @@ import 'package:oncall_lab/ui/design_system/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await setupServiceLocator();
 
   // Initialize Supabase
   await SupabaseService.initialize();

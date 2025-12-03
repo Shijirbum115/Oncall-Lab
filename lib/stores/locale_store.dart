@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -45,5 +46,6 @@ abstract class _LocaleStore with Store {
   bool get isMongolian => currentLocale.languageCode == 'mn';
 }
 
-// Global instance
-final LocaleStore localeStore = LocaleStore();
+final GetIt _localeGetIt = GetIt.instance;
+
+LocaleStore get localeStore => _localeGetIt<LocaleStore>();

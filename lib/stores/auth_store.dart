@@ -1,3 +1,4 @@
+import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:oncall_lab/data/repositories/auth_repository.dart';
@@ -11,7 +12,9 @@ part 'auth_store.g.dart';
 class AuthStore = _AuthStore with _$AuthStore;
 
 abstract class _AuthStore with Store {
-  final AuthRepository _repository = AuthRepository();
+  _AuthStore(this._repository);
+
+  final AuthRepository _repository;
 
   @observable
   User? currentUser;
@@ -383,4 +386,6 @@ abstract class _AuthStore with Store {
   }
 }
 
-final AuthStore authStore = AuthStore();
+final GetIt _getIt = GetIt.instance;
+
+AuthStore get authStore => _getIt<AuthStore>();
