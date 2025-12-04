@@ -11,6 +11,7 @@ import 'package:oncall_lab/ui/patient/widgets/available_doctors_section.dart';
 import 'package:oncall_lab/ui/patient/all_lab_services_screen.dart';
 import 'package:oncall_lab/ui/patient/direct_services_screen.dart';
 import 'package:oncall_lab/ui/shared/widgets/profile_avatar.dart';
+import 'package:oncall_lab/ui/shared/widgets/notification_bell.dart';
 import 'package:oncall_lab/l10n/app_localizations.dart';
 import 'package:oncall_lab/ui/patient/widgets/ad_banner.dart';
 
@@ -274,13 +275,19 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
               ],
             ),
           ),
-          GestureDetector(
-            onTap: widget.onNavigateToProfile,
-            child: ProfileAvatar(
-              avatarUrl: profile?.getAvatarUrl(),
-              initials: profile?.initials ?? 'U',
-              radius: 27,
-            ),
+          Row(
+            children: [
+              const NotificationBell(),
+              const SizedBox(width: 8),
+              GestureDetector(
+                onTap: widget.onNavigateToProfile,
+                child: ProfileAvatar(
+                  avatarUrl: profile?.getAvatarUrl(),
+                  initials: profile?.initials ?? 'U',
+                  radius: 27,
+                ),
+              ),
+            ],
           ),
         ],
       ),

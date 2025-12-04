@@ -25,6 +25,11 @@ dependencies:
   # Backend & Database
   supabase_flutter: ^2.5.0
 
+  # Push Notifications
+  firebase_core: ^2.24.2
+  firebase_messaging: ^14.7.10
+  flutter_local_notifications: ^16.3.2
+
   # File picking
   image_picker: ^1.1.2
 

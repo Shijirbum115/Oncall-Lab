@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:oncall_lab/core/services/supabase_service.dart';
+import 'package:oncall_lab/core/services/push_notification_service.dart';
 import 'package:oncall_lab/core/constants/app_colors.dart';
 import 'package:oncall_lab/core/di/service_locator.dart';
 import 'package:oncall_lab/stores/auth_store.dart';
 import 'package:oncall_lab/stores/locale_store.dart';
+import 'package:oncall_lab/stores/notification_store.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:oncall_lab/ui/auth/login_screen.dart';
 import 'package:oncall_lab/ui/patient/main_page.dart';
@@ -16,12 +20,29 @@ import 'package:oncall_lab/ui/design_system/app_theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Initialize Firebase
+  await Firebase.initializeApp();
+
+  // Register background message handler
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
   await setupServiceLocator();
 
   // Initialize Supabase
   await SupabaseService.initialize();
   await authStore.initialize();
   await localeStore.initialize();
+
+  // Initialize push notifications
+  final pushService = locator<PushNotificationService>();
+  await pushService.initialize();
+
+  // Initialize notification store if user is authenticated
+  if (authStore.isAuthenticated && authStore.currentProfile != null) {
+    final notificationStore = locator<NotificationStore>();
+    await notificationStore.initialize(authStore.currentProfile!.id);
+    await notificationStore.updateFcmToken(authStore.currentProfile!.id);
+  }
 
   runApp(const OnCallLabApp());
 }
