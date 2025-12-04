@@ -165,3 +165,37 @@ The app requires Supabase configuration:
 5. Add Supabase URL and anon key to app (typically via environment variables or config file)
 
 Currently, no `.env` file exists - Supabase credentials should be configured before running.
+
+### Push Notification System (Backend Complete ✅)
+
+The push notification system backend is fully implemented:
+
+**Database:**
+- `profiles.fcm_token` - Stores Firebase Cloud Messaging device tokens
+- `notification_preferences` - User notification settings (push enabled, quiet hours, etc.)
+- `notifications` - In-app notifications (already existed, now enhanced)
+
+**Functions:**
+- `update_fcm_token()` - Update user's FCM token
+- `get_unread_notification_count()` - Get badge count
+- `mark_all_notifications_read()` - Bulk mark as read
+- `delete_old_notifications()` - Cleanup old notifications
+
+**Edge Function:**
+- `send-push-notification` - Sends push notifications via Firebase FCM
+- Handles token validation and automatic cleanup
+- Respects user preferences and quiet hours
+
+**Triggers:**
+- Automatic push notifications on request status changes
+- Notifications sent when doctors accept requests
+- Status updates trigger patient notifications
+- System alerts sent to relevant users
+
+**Setup Required:**
+1. Create Firebase project and get FCM credentials
+2. Add FCM_SERVER_KEY and FCM_PROJECT_ID to Supabase Edge Function secrets
+3. Follow setup guide in `docs/NOTIFICATION_SYSTEM_SETUP.md`
+4. Test using SQL script in `supabase/test_notification_system.sql`
+
+**Frontend Implementation:** To be completed in next phase (Flutter Firebase integration)

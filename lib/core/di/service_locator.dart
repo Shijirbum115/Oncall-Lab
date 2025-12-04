@@ -4,12 +4,15 @@ import 'package:oncall_lab/data/repositories/doctor_repository.dart';
 import 'package:oncall_lab/data/repositories/laboratory_repository.dart';
 import 'package:oncall_lab/data/repositories/service_repository.dart';
 import 'package:oncall_lab/data/repositories/test_request_repository.dart';
+import 'package:oncall_lab/data/repositories/notification_repository.dart';
 import 'package:oncall_lab/stores/auth_store.dart';
 import 'package:oncall_lab/stores/doctor_request_store.dart';
 import 'package:oncall_lab/stores/home_store.dart';
 import 'package:oncall_lab/stores/locale_store.dart';
 import 'package:oncall_lab/stores/service_store.dart';
 import 'package:oncall_lab/stores/test_request_store.dart';
+import 'package:oncall_lab/stores/notification_store.dart';
+import 'package:oncall_lab/core/services/push_notification_service.dart';
 
 final GetIt locator = GetIt.instance;
 
@@ -23,6 +26,14 @@ Future<void> setupServiceLocator() async {
   locator.registerLazySingleton<DoctorRepository>(() => DoctorRepository());
   locator.registerLazySingleton<LaboratoryRepository>(
     () => LaboratoryRepository(),
+  );
+  locator.registerLazySingleton<NotificationRepository>(
+    () => NotificationRepository(),
+  );
+
+  // Services
+  locator.registerLazySingleton<PushNotificationService>(
+    () => PushNotificationService(),
   );
 
   // Stores
@@ -44,5 +55,11 @@ Future<void> setupServiceLocator() async {
   );
   locator.registerLazySingleton<DoctorRequestStore>(
     () => DoctorRequestStore(locator<TestRequestRepository>()),
+  );
+  locator.registerLazySingleton<NotificationStore>(
+    () => NotificationStore(
+      locator<NotificationRepository>(),
+      locator<PushNotificationService>(),
+    ),
   );
 }
