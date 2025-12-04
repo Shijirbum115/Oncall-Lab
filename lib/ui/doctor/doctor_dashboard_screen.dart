@@ -6,6 +6,7 @@ import 'package:oncall_lab/stores/auth_store.dart';
 import 'package:oncall_lab/stores/doctor_request_store.dart';
 import 'package:oncall_lab/data/models/test_request_model.dart';
 import 'package:oncall_lab/ui/doctor/doctor_request_detail_screen.dart';
+import 'package:oncall_lab/ui/shared/widgets/notification_bell.dart';
 
 class DoctorDashboardScreen extends StatefulWidget {
   const DoctorDashboardScreen({super.key});
@@ -57,15 +58,21 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Padding(
-                padding: EdgeInsets.all(15),
-                child: Text(
-                  "My Dashboard",
-                  style: TextStyle(
-                    fontSize: 28,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
+              Padding(
+                padding: const EdgeInsets.all(15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      "My Dashboard",
+                      style: TextStyle(
+                        fontSize: 28,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const NotificationBell(),
+                  ],
                 ),
               ),
               Expanded(
