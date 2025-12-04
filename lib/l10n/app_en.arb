@@ -1,0 +1,367 @@
+{
+  "@@locale": "en",
+  "welcomeBack": "Welcome Back",
+  "signInToContinue": "Sign in to continue",
+  "phoneNumber": "Phone number",
+  "phoneNumberHint": "99123456",
+  "password": "Password",
+  "forgotPassword": "Forgot Password?",
+  "passwordResetComingSoon": "Password reset coming soon!",
+  "signIn": "Sign In",
+  "or": "OR",
+  "registerAsPatient": "Register as Patient",
+  "registerAsDoctor": "Register as Doctor",
+  "pleaseEnterPhoneNumber": "Please enter your phone number",
+  "enterValidPhoneNumber": "Enter 8 digit number (e.g. 99123456)",
+  "pleaseEnterPassword": "Please enter your password",
+  "passwordMinLength": "Password must be at least 6 characters",
+  "signOut": "Sign Out",
+  "patientRegistration": "Patient Registration",
+  "doctorRegistration": "Doctor Registration",
+  "createPatientAccount": "Create Patient Account",
+  "createDoctorAccount": "Create Doctor Account",
+  "patientAccountCreated": "Patient account created successfully!",
+  "doctorAccountCreated": "Doctor account created successfully!",
+  "stepByStepOnboarding": "Step-by-step onboarding for a smoother experience.",
+  "basics": "Basics",
+  "security": "Security",
+  "createAccount": "Create Account",
+  "continue_": "Continue",
+  "alreadyHaveAccountSignIn": "Already have an account? Sign in",
+  "firstName": "First Name",
+  "lastName": "Last Name",
+  "email": "Email",
+  "emailOptional": "Email (optional)",
+  "age": "Age",
+  "gender": "Gender",
+  "male": "Male",
+  "female": "Female",
+  "other": "Other",
+  "permanentAddress": "Permanent Address",
+  "registrationNumber": "Registration Number",
+  "mongolianCitizen": "Mongolian Citizen",
+  "foreignCitizen": "Foreign Citizen",
+  "passportNumber": "Passport Number",
+  "allergies": "Allergies (medications, injections, etc.)",
+  "allergiesOptional": "Allergies (optional)",
+  "profilePhotoOptional": "Profile photo (optional)",
+  "uploadProfilePhoto": "Upload profile photo",
+  "changePhoto": "Change photo",
+  "profession": "Profession/Specialty",
+  "licenseNumber": "License Number",
+  "academicDegree": "Academic Degree",
+  "workExperience": "Work Experience (years)",
+  "professionalDevelopment": "Professional Development",
+  "register": "Register",
+  "alreadyHaveAccount": "Already have an account?",
+  "confirmPassword": "Confirm Password",
+  "passwordsMustMatch": "Passwords must match",
+  "home": "Home",
+  "services": "Services",
+  "requests": "Requests",
+  "profile": "Profile",
+  "labServices": "Lab Services",
+  "directServices": "Direct Services",
+  "laboratories": "Laboratories",
+  "findLabTests": "Find Lab Tests",
+  "bookDiagnostics": "Book Diagnostics & Nursing",
+  "viewAll": "View All",
+  "search": "Search",
+  "searchServices": "Search services...",
+  "searchDoctors": "Search doctors...",
+  "clinicVisit": "Clinic visit",
+  "makeAnAppointment": "Make an appointment",
+  "homeVisit": "Home visit",
+  "callTheDoctorHome": "Call the doctor home",
+  "availableTests": "Available Tests",
+  "welcome": "Welcome",
+  "errorLoadingData": "Error loading data",
+  "retry": "Retry",
+  "serviceCategories": "Service Categories",
+  "labTest": "Lab Test",
+  "diagnosticProcedure": "Diagnostic Procedure",
+  "nursingCare": "Nursing Care",
+  "price": "Price",
+  "priceInMNT": "{price} MNT",
+  "@priceInMNT": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
+  "estimatedDuration": "Estimated Duration",
+  "durationMinutes": "{minutes} minutes",
+  "@durationMinutes": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "durationHours": "{hours} hours",
+  "@durationHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "preparationInstructions": "Preparation Instructions",
+  "sampleType": "Sample Type",
+  "equipmentNeeded": "Equipment Needed",
+  "bookNow": "Book Now",
+  "laboratoryTestsTitle": "Laboratory Tests",
+  "searchTests": "Search for tests...",
+  "singleTestAvailable": "1 test available",
+  "testsAvailable": "{count} tests available",
+  "@testsAvailable": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "errorLoadingServices": "Error loading services",
+  "noServicesAvailable": "No services available",
+  "noResultsFound": "No results found",
+  "noServicesMatchSearch": "No services match your search",
+  "pleaseTryAgainLater": "Please try again later",
+  "tryDifferentKeywords": "Try searching with different keywords",
+  "preparationRequired": "Preparation required",
+  "allLaboratories": "All Laboratories",
+  "laboratoryDetails": "Laboratory Details",
+  "address": "Address",
+  "phoneContact": "Phone Contact",
+  "operatingHours": "Operating Hours",
+  "unableToLoadLaboratories": "Unable to load laboratories",
+  "noLaboratoriesAvailable": "No laboratories available right now",
+  "searchLaboratories": "Search laboratories...",
+  "noLaboratoriesMatchQuery": "No laboratories match \"{query}\".",
+  "@noLaboratoriesMatchQuery": {
+    "placeholders": {
+      "query": {
+        "type": "String"
+      }
+    }
+  },
+  "laboratoryFallback": "Laboratory",
+  "addressNotProvided": "Address not provided",
+  "addressNotAvailable": "Address not available",
+  "notSpecified": "Not specified",
+  "coordinates": "Coordinates",
+  "acceptingRequests": "Accepting requests",
+  "temporarilyUnavailable": "Temporarily unavailable",
+  "availableServices": "Available Services",
+  "servicesCount": "{count} services",
+  "@servicesCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "availableDoctors": "Available Doctors",
+  "noDoctorsAvailable": "No doctors available at the moment",
+  "doctorDetails": "Doctor Details",
+  "rating": "Rating",
+  "experience": "Experience",
+  "yearsExperience": "{years} years",
+  "@yearsExperience": {
+    "placeholders": {
+      "years": {
+        "type": "int"
+      }
+    }
+  },
+  "completedRequests": "Completed Requests",
+  "totalReviews": "Total Reviews",
+  "reviewsCount": "{count} reviews",
+  "@reviewsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "available": "Available",
+  "unavailable": "Unavailable",
+  "bio": "Bio",
+  "certifications": "Certifications",
+  "directDoctorServices": "Direct Doctor Services",
+  "bookService": "Book Service",
+  "selectDate": "Select Date",
+  "selectTime": "Select Time",
+  "selectTimeSlot": "Select Time Slot",
+  "selectDoctor": "Select Doctor",
+  "anyAvailableDoctor": "Any Available Doctor",
+  "yourAddress": "Your Address",
+  "addressHint": "Enter your full address",
+  "collectionAddress": "Collection Address",
+  "typeDifferentAddress": "Type a different address",
+  "useSavedAddress": "Use saved address",
+  "additionalNotes": "Additional Notes",
+  "additionalNotesOptional": "Additional Notes (optional)",
+  "notesHint": "Any special instructions or requirements",
+  "specialInstructionsHint": "Any special instructions...",
+  "confirmBooking": "Confirm Booking",
+  "requestSubmitted": "Request submitted successfully!",
+  "bookingSummary": "Booking Summary",
+  "service": "Service",
+  "date": "Date",
+  "time": "Time",
+  "doctor": "Doctor",
+  "totalAmount": "Total Amount",
+  "confirm": "Confirm",
+  "resultsReadyHours": "~{hours}h for results",
+  "@resultsReadyHours": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "myRequests": "My Requests",
+  "pendingRequests": "Pending Requests",
+  "activeRequests": "Active Requests",
+  "requestHistory": "Request History",
+  "requestDetails": "Request Details",
+  "requestId": "Request ID",
+  "patient": "Patient",
+  "patientInfo": "Patient Information",
+  "patientAddress": "Patient Address",
+  "patientNotes": "Patient Notes",
+  "scheduledFor": "Scheduled For",
+  "createdAt": "Created At",
+  "status": "Status",
+  "acceptRequest": "Accept Request",
+  "rejectRequest": "Reject Request",
+  "updateStatus": "Update Status",
+  "cancelRequest": "Cancel Request",
+  "cancellationReason": "Cancellation Reason",
+  "reasonHint": "Please provide a reason",
+  "noActiveRequests": "No active requests",
+  "noCompletedRequests": "No completed requests",
+  "noCancelledRequests": "No cancelled requests",
+  "requestHomeServicePrompt": "Request a home service to get started",
+  "labTestServiceLabel": "Lab Test Service",
+  "directHomeServiceLabel": "Direct Home Service",
+  "scheduledAt": "Scheduled: {date} {time}",
+  "@scheduledAt": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      },
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "labTestCollection": "Lab Test Collection",
+  "homeServiceRequest": "Home Service Request",
+  "pending": "Pending",
+  "accepted": "Accepted",
+  "onTheWay": "On the Way",
+  "sampleCollected": "Sample Collected",
+  "deliveredToLab": "Delivered to Lab",
+  "completed": "Completed",
+  "cancelled": "Cancelled",
+  "myProfile": "My Profile",
+  "editProfile": "Edit Profile",
+  "personalInformation": "Personal Information",
+  "contactInformation": "Contact Information",
+  "medicalInformation": "Medical Information",
+  "professionalInformation": "Professional Information",
+  "changeAvatar": "Change Avatar",
+  "saveChanges": "Save Changes",
+  "uploadingAvatar": "Uploading avatar...",
+  "updatingProfile": "Updating profile...",
+  "user": "User",
+  "noPhoneNumber": "No phone number",
+  "changeProfilePhoto": "Change profile photo",
+  "changeProfilePhotoConfirm": "Do you want to change your profile photo?",
+  "change": "Change",
+  "useThisPhoto": "Use this photo?",
+  "profilePhotoPreview": "This is how your profile photo will look.",
+  "profilePhotoUpdated": "Profile photo updated",
+  "failedToUpdatePhoto": "Failed to update photo",
+  "profileUpdatedSuccessfully": "Profile updated successfully",
+  "savedAddresses": "Saved addresses",
+  "editAddress": "Edit address",
+  "addAddress": "Add address",
+  "newAddress": "New address",
+  "saveAddress": "Save address",
+  "removeAddress": "Remove address",
+  "noDefaultAddressSaved": "No default address saved",
+  "addressSaved": "Address saved",
+  "savedAddressRemoved": "Saved address removed",
+  "pleaseEnterAddress": "Please enter your address",
+  "statistics": "Statistics",
+  "totalRequests": "Total Requests",
+  "completedCount": "Completed",
+  "pendingCount": "Pending",
+  "cancelledCount": "Cancelled",
+  "inProgressCount": "In Progress",
+  "yes": "Yes",
+  "no": "No",
+  "ok": "OK",
+  "cancel": "Cancel",
+  "error": "Error",
+  "success": "Success",
+  "warning": "Warning",
+  "info": "Info",
+  "loading": "Loading...",
+  "noData": "No data available",
+  "tryAgain": "Try Again",
+  "close": "Close",
+  "back": "Back",
+  "next": "Next",
+  "done": "Done",
+  "save": "Save",
+  "delete": "Delete",
+  "edit": "Edit",
+  "view": "View",
+  "filter": "Filter",
+  "sort": "Sort",
+  "refresh": "Refresh",
+  "required": "Required",
+  "adminPanel": "Admin Panel",
+  "dashboard": "Dashboard",
+  "users": "Users",
+  "patients": "Patients",
+  "doctors": "Doctors",
+  "allRequests": "All Requests",
+  "systemSettings": "System Settings",
+  "adminComingSoon": "Admin experience coming soon!",
+  "adminDescription": "We are finalizing the dedicated dashboard for this role. Please check back later or sign out to switch accounts.",
+  "notifications": "Notifications",
+  "noNotifications": "No notifications",
+  "markAsRead": "Mark as read",
+  "markAllAsRead": "Mark all as read",
+  "clearAll": "Clear all",
+  "invalidCredentials": "Invalid phone number or password",
+  "phoneAlreadyRegistered": "This phone number is already registered",
+  "rateLimitExceeded": "Too many attempts. Please try again later",
+  "networkError": "Network error. Please check your connection",
+  "unknownError": "An unknown error occurred",
+  "fieldRequired": "This field is required",
+  "invalidEmail": "Please enter a valid email",
+  "invalidPhoneNumber": "Please enter a valid phone number",
+  "invalidAge": "Please enter a valid age",
+  "mustBeAtLeast": "Must be at least {min}",
+  "@mustBeAtLeast": {
+    "placeholders": {
+      "min": {
+        "type": "int"
+      }
+    }
+  },
+  "mustBeAtMost": "Must be at most {max}",
+  "@mustBeAtMost": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  }
+}

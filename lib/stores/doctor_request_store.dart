@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:oncall_lab/data/models/test_request_model.dart';
 import 'package:oncall_lab/data/repositories/test_request_repository.dart';
@@ -8,7 +9,9 @@ part 'doctor_request_store.g.dart';
 class DoctorRequestStore = _DoctorRequestStore with _$DoctorRequestStore;
 
 abstract class _DoctorRequestStore with Store {
-  final TestRequestRepository _repository = TestRequestRepository();
+  _DoctorRequestStore(this._repository);
+
+  final TestRequestRepository _repository;
 
   StreamSubscription<List<TestRequestModel>>? _availableRequestsSubscription;
   StreamSubscription<List<TestRequestModel>>? _activeRequestsSubscription;
@@ -244,5 +247,7 @@ abstract class _DoctorRequestStore with Store {
   }
 }
 
-// Global instance
-final doctorRequestStore = DoctorRequestStore();
+final GetIt _doctorRequestGetIt = GetIt.instance;
+
+DoctorRequestStore get doctorRequestStore =>
+    _doctorRequestGetIt<DoctorRequestStore>();

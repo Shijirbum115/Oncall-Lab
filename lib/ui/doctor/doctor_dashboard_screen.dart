@@ -77,7 +77,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 15),
                         child: Container(
                           decoration: BoxDecoration(
-                            color: AppColors.grey.withOpacity(0.1),
+                            color: AppColors.grey.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(5),
                           ),
                           child: LayoutBuilder(
@@ -87,7 +87,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                               return TabBar(
                                 indicatorColor: AppColors.primary,
                                 unselectedLabelColor:
-                                    AppColors.black.withOpacity(0.5),
+                                    AppColors.black.withValues(alpha: 0.5),
                                 labelStyle: const TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.w600,
@@ -150,7 +150,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                   Icon(
                     Iconsax.clipboard_tick,
                     size: 60,
-                    color: AppColors.grey.withOpacity(0.5),
+                    color: AppColors.grey.withValues(alpha: 0.5),
                   ),
                   const SizedBox(height: 20),
                   const Text(
@@ -208,7 +208,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                   Icon(
                     Iconsax.task_square,
                     size: 60,
-                    color: AppColors.grey.withOpacity(0.5),
+                    color: AppColors.grey.withValues(alpha: 0.5),
                   ),
                   const SizedBox(height: 20),
                   const Text(
@@ -266,7 +266,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                   Icon(
                     Iconsax.tick_circle,
                     size: 60,
-                    color: AppColors.grey.withOpacity(0.5),
+                    color: AppColors.grey.withValues(alpha: 0.5),
                   ),
                   const SizedBox(height: 20),
                   const Text(
@@ -371,7 +371,8 @@ class _RequestCard extends StatelessWidget {
             ),
             boxShadow: [
               BoxShadow(
-                color: AppColors.getStatusColor(statusStr).withOpacity(0.1),
+                color: AppColors.getStatusColor(statusStr)
+                    .withValues(alpha: 0.1),
                 blurRadius: 8,
                 offset: const Offset(0, 2),
               ),
@@ -391,8 +392,8 @@ class _RequestCard extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                           decoration: BoxDecoration(
                             color: request.requestType == RequestType.labService
-                                ? Colors.blue.withOpacity(0.1)
-                                : Colors.purple.withOpacity(0.1),
+                                ? Colors.blue.withValues(alpha: 0.1)
+                                : Colors.purple.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
@@ -414,7 +415,8 @@ class _RequestCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(
-                      color: AppColors.getStatusColor(statusStr).withOpacity(0.2),
+                      color: AppColors.getStatusColor(statusStr)
+                          .withValues(alpha: 0.2),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(

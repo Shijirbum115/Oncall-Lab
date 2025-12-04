@@ -14,7 +14,7 @@ dependencies:
   supabase_flutter: ^2.0.0
   mobx: ^2.2.0
   flutter_mobx: ^2.1.0
-  get_it: ^7.6.0
+  get_it: ^7.7.0
   freezed_annotation: ^2.4.1
   json_annotation: ^4.8.1
   auto_route: ^7.8.0
@@ -766,20 +766,62 @@ Create `lib/core/di/service_locator.dart`:
 
 ```dart
 import 'package:get_it/get_it.dart';
-import 'package:oncall_lab/stores/auth_store.dart';
-import 'package:oncall_lab/stores/test_request_store.dart';
+import 'package:oncall_lab/data/repositories/auth_repository.dart';
+import 'package:oncall_lab/data/repositories/doctor_repository.dart';
+import 'package:oncall_lab/data/repositories/laboratory_repository.dart';
+import 'package:oncall_lab/data/repositories/service_repository.dart';
 import 'package:oncall_lab/data/repositories/test_request_repository.dart';
+import 'package:oncall_lab/stores/auth_store.dart';
+import 'package:oncall_lab/stores/doctor_request_store.dart';
+import 'package:oncall_lab/stores/home_store.dart';
+import 'package:oncall_lab/stores/locale_store.dart';
+import 'package:oncall_lab/stores/service_store.dart';
+import 'package:oncall_lab/stores/test_request_store.dart';
 
-final getIt = GetIt.instance;
+final locator = GetIt.instance;
 
-void setupServiceLocator() {
+Future<void> setupServiceLocator() async {
   // Repositories
-  getIt.registerLazySingleton<TestRequestRepository>(() => TestRequestRepository());
+  locator.registerLazySingleton<AuthRepository>(() => AuthRepository());
+  locator.registerLazySingleton<DoctorRepository>(() => DoctorRepository());
+  locator.registerLazySingleton<LaboratoryRepository>(
+    () => LaboratoryRepository(),
+  );
+  locator.registerLazySingleton<ServiceRepository>(() => ServiceRepository());
+  locator.registerLazySingleton<TestRequestRepository>(
+    () => TestRequestRepository(),
+  );
 
   // Stores
-  getIt.registerLazySingleton<AuthStore>(() => AuthStore());
-  getIt.registerLazySingleton<TestRequestStore>(() => TestRequestStore());
+  locator.registerLazySingleton<LocaleStore>(() => LocaleStore());
+  locator.registerLazySingleton<AuthStore>(
+    () => AuthStore(locator<AuthRepository>()),
+  );
+  locator.registerLazySingleton<HomeStore>(
+    () => HomeStore(
+      locator<ServiceRepository>(),
+      locator<DoctorRepository>(),
+    ),
+  );
+  locator.registerLazySingleton<ServiceStore>(
+    () => ServiceStore(locator<ServiceRepository>()),
+  );
+  locator.registerLazySingleton<TestRequestStore>(
+    () => TestRequestStore(locator<TestRequestRepository>()),
+  );
+  locator.registerLazySingleton<DoctorRequestStore>(
+    () => DoctorRequestStore(locator<TestRequestRepository>()),
+  );
 }
+```
+
+Expose helpers where needed so UI code can simply call `authStore`/`homeStore`:
+
+```dart
+final GetIt _getIt = GetIt.instance;
+
+AuthStore get authStore => _getIt<AuthStore>();
+HomeStore get homeStore => _getIt<HomeStore>();
 ```
 
 Update `main.dart`:
@@ -788,8 +830,8 @@ Update `main.dart`:
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  await setupServiceLocator();
   await SupabaseService.initialize();
-  setupServiceLocator();
 
   runApp(const MyApp());
 }
@@ -810,16 +852,19 @@ void main() {
     late AuthStore authStore;
 
     setUp(() {
-      authStore = AuthStore();
+      authStore = AuthStore(_FakeAuthRepository());
     });
 
     test('initial state should be unauthenticated', () {
       expect(authStore.isAuthenticated, false);
       expect(authStore.currentUser, null);
     });
-
-    // Add more tests
   });
+}
+
+class _FakeAuthRepository extends AuthRepository {
+  @override
+  User? get currentUser => null;
 }
 ```
 

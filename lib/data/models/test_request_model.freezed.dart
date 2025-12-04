@@ -27,8 +27,6 @@ mixin _$TestRequestModel {
   String? get doctorId => throw _privateConstructorUsedError;
   @JsonKey(name: 'laboratory_id')
   String? get laboratoryId => throw _privateConstructorUsedError;
-  @JsonKey(name: 'test_type_id')
-  String? get testTypeId => throw _privateConstructorUsedError;
   @JsonKey(name: 'request_type')
   RequestType get requestType => throw _privateConstructorUsedError;
   @JsonKey(name: 'service_id')
@@ -92,7 +90,6 @@ abstract class $TestRequestModelCopyWith<$Res> {
       @JsonKey(name: 'patient_id') String patientId,
       @JsonKey(name: 'doctor_id') String? doctorId,
       @JsonKey(name: 'laboratory_id') String? laboratoryId,
-      @JsonKey(name: 'test_type_id') String? testTypeId,
       @JsonKey(name: 'request_type') RequestType requestType,
       @JsonKey(name: 'service_id') String? serviceId,
       @JsonKey(name: 'laboratory_service_id') String? laboratoryServiceId,
@@ -135,7 +132,6 @@ class _$TestRequestModelCopyWithImpl<$Res, $Val extends TestRequestModel>
     Object? patientId = null,
     Object? doctorId = freezed,
     Object? laboratoryId = freezed,
-    Object? testTypeId = freezed,
     Object? requestType = null,
     Object? serviceId = freezed,
     Object? laboratoryServiceId = freezed,
@@ -176,10 +172,6 @@ class _$TestRequestModelCopyWithImpl<$Res, $Val extends TestRequestModel>
       laboratoryId: freezed == laboratoryId
           ? _value.laboratoryId
           : laboratoryId // ignore: cast_nullable_to_non_nullable
-              as String?,
-      testTypeId: freezed == testTypeId
-          ? _value.testTypeId
-          : testTypeId // ignore: cast_nullable_to_non_nullable
               as String?,
       requestType: null == requestType
           ? _value.requestType
@@ -290,7 +282,6 @@ abstract class _$$TestRequestModelImplCopyWith<$Res>
       @JsonKey(name: 'patient_id') String patientId,
       @JsonKey(name: 'doctor_id') String? doctorId,
       @JsonKey(name: 'laboratory_id') String? laboratoryId,
-      @JsonKey(name: 'test_type_id') String? testTypeId,
       @JsonKey(name: 'request_type') RequestType requestType,
       @JsonKey(name: 'service_id') String? serviceId,
       @JsonKey(name: 'laboratory_service_id') String? laboratoryServiceId,
@@ -331,7 +322,6 @@ class __$$TestRequestModelImplCopyWithImpl<$Res>
     Object? patientId = null,
     Object? doctorId = freezed,
     Object? laboratoryId = freezed,
-    Object? testTypeId = freezed,
     Object? requestType = null,
     Object? serviceId = freezed,
     Object? laboratoryServiceId = freezed,
@@ -372,10 +362,6 @@ class __$$TestRequestModelImplCopyWithImpl<$Res>
       laboratoryId: freezed == laboratoryId
           ? _value.laboratoryId
           : laboratoryId // ignore: cast_nullable_to_non_nullable
-              as String?,
-      testTypeId: freezed == testTypeId
-          ? _value.testTypeId
-          : testTypeId // ignore: cast_nullable_to_non_nullable
               as String?,
       requestType: null == requestType
           ? _value.requestType
@@ -481,7 +467,6 @@ class _$TestRequestModelImpl implements _TestRequestModel {
       @JsonKey(name: 'patient_id') required this.patientId,
       @JsonKey(name: 'doctor_id') this.doctorId,
       @JsonKey(name: 'laboratory_id') this.laboratoryId,
-      @JsonKey(name: 'test_type_id') this.testTypeId,
       @JsonKey(name: 'request_type') required this.requestType,
       @JsonKey(name: 'service_id') this.serviceId,
       @JsonKey(name: 'laboratory_service_id') this.laboratoryServiceId,
@@ -520,9 +505,6 @@ class _$TestRequestModelImpl implements _TestRequestModel {
   @override
   @JsonKey(name: 'laboratory_id')
   final String? laboratoryId;
-  @override
-  @JsonKey(name: 'test_type_id')
-  final String? testTypeId;
   @override
   @JsonKey(name: 'request_type')
   final RequestType requestType;
@@ -594,7 +576,7 @@ class _$TestRequestModelImpl implements _TestRequestModel {
 
   @override
   String toString() {
-    return 'TestRequestModel(id: $id, patientId: $patientId, doctorId: $doctorId, laboratoryId: $laboratoryId, testTypeId: $testTypeId, requestType: $requestType, serviceId: $serviceId, laboratoryServiceId: $laboratoryServiceId, doctorServiceId: $doctorServiceId, status: $status, scheduledDate: $scheduledDate, scheduledTimeSlot: $scheduledTimeSlot, patientAddress: $patientAddress, patientLatitude: $patientLatitude, patientLongitude: $patientLongitude, patientNotes: $patientNotes, acceptedAt: $acceptedAt, onTheWayAt: $onTheWayAt, sampleCollectedAt: $sampleCollectedAt, deliveredToLabAt: $deliveredToLabAt, completedAt: $completedAt, cancelledAt: $cancelledAt, priceMnt: $priceMnt, doctorCommissionMnt: $doctorCommissionMnt, cancellationReason: $cancellationReason, cancelledBy: $cancelledBy, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'TestRequestModel(id: $id, patientId: $patientId, doctorId: $doctorId, laboratoryId: $laboratoryId, requestType: $requestType, serviceId: $serviceId, laboratoryServiceId: $laboratoryServiceId, doctorServiceId: $doctorServiceId, status: $status, scheduledDate: $scheduledDate, scheduledTimeSlot: $scheduledTimeSlot, patientAddress: $patientAddress, patientLatitude: $patientLatitude, patientLongitude: $patientLongitude, patientNotes: $patientNotes, acceptedAt: $acceptedAt, onTheWayAt: $onTheWayAt, sampleCollectedAt: $sampleCollectedAt, deliveredToLabAt: $deliveredToLabAt, completedAt: $completedAt, cancelledAt: $cancelledAt, priceMnt: $priceMnt, doctorCommissionMnt: $doctorCommissionMnt, cancellationReason: $cancellationReason, cancelledBy: $cancelledBy, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -609,8 +591,6 @@ class _$TestRequestModelImpl implements _TestRequestModel {
                 other.doctorId == doctorId) &&
             (identical(other.laboratoryId, laboratoryId) ||
                 other.laboratoryId == laboratoryId) &&
-            (identical(other.testTypeId, testTypeId) ||
-                other.testTypeId == testTypeId) &&
             (identical(other.requestType, requestType) ||
                 other.requestType == requestType) &&
             (identical(other.serviceId, serviceId) ||
@@ -666,7 +646,6 @@ class _$TestRequestModelImpl implements _TestRequestModel {
         patientId,
         doctorId,
         laboratoryId,
-        testTypeId,
         requestType,
         serviceId,
         laboratoryServiceId,
@@ -713,7 +692,6 @@ abstract class _TestRequestModel implements TestRequestModel {
       @JsonKey(name: 'patient_id') required final String patientId,
       @JsonKey(name: 'doctor_id') final String? doctorId,
       @JsonKey(name: 'laboratory_id') final String? laboratoryId,
-      @JsonKey(name: 'test_type_id') final String? testTypeId,
       @JsonKey(name: 'request_type') required final RequestType requestType,
       @JsonKey(name: 'service_id') final String? serviceId,
       @JsonKey(name: 'laboratory_service_id') final String? laboratoryServiceId,
@@ -753,9 +731,6 @@ abstract class _TestRequestModel implements TestRequestModel {
   @override
   @JsonKey(name: 'laboratory_id')
   String? get laboratoryId;
-  @override
-  @JsonKey(name: 'test_type_id')
-  String? get testTypeId;
   @override
   @JsonKey(name: 'request_type')
   RequestType get requestType;

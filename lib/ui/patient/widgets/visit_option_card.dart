@@ -51,8 +51,8 @@ class VisitOptionCard extends StatelessWidget {
             boxShadow: [
               BoxShadow(
                 color: elevated
-                    ? AppColors.primary.withOpacity(0.25)
-                    : Colors.black.withOpacity(0.06),
+                    ? AppColors.primary.withValues(alpha: 0.25)
+                    : Colors.black.withValues(alpha: 0.06),
                 blurRadius: elevated ? 20 : 12,
                 offset: const Offset(0, 10),
               ),
@@ -79,7 +79,7 @@ class VisitOptionCard extends StatelessWidget {
                       CircleAvatar(
                         radius: 24,
                         backgroundColor: iconFilled
-                            ? AppColors.primary.withOpacity(0.12)
+                            ? AppColors.primary.withValues(alpha: 0.12)
                             : iconBackgroundColor,
                         child: Icon(
                           icon,
@@ -127,7 +127,7 @@ class _WavyPatternPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     Paint buildPaint(double opacity) => Paint()
-      ..color = color.withOpacity(opacity)
+      ..color = color.withValues(alpha: opacity)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 12
       ..strokeCap = StrokeCap.round;

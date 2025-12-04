@@ -1,16 +1,18 @@
-import 'package:flutter/material.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/core/services/supabase_service.dart';
-import 'package:oncall_lab/stores/auth_store.dart';
-import 'package:oncall_lab/data/models/profile_model.dart';
-import 'package:oncall_lab/ui/patient/widgets/visit_options_section.dart';
-import 'package:oncall_lab/ui/patient/widgets/test_types_section.dart';
 import 'dart:async';
 
+import 'package:flutter/material.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:oncall_lab/core/constants/app_colors.dart';
+import 'package:oncall_lab/stores/auth_store.dart';
+import 'package:oncall_lab/stores/home_store.dart';
+import 'package:oncall_lab/ui/patient/widgets/visit_options_section.dart';
+import 'package:oncall_lab/ui/patient/widgets/test_types_section.dart';
 import 'package:oncall_lab/ui/patient/widgets/available_doctors_section.dart';
 import 'package:oncall_lab/ui/patient/all_lab_services_screen.dart';
 import 'package:oncall_lab/ui/patient/direct_services_screen.dart';
 import 'package:oncall_lab/ui/shared/widgets/profile_avatar.dart';
+import 'package:oncall_lab/l10n/app_localizations.dart';
+import 'package:oncall_lab/ui/patient/widgets/ad_banner.dart';
 
 class PatientHomeScreen extends StatefulWidget {
   final VoidCallback onNavigateToProfile;
@@ -26,10 +28,7 @@ class PatientHomeScreen extends StatefulWidget {
 
 class _PatientHomeScreenState extends State<PatientHomeScreen>
     with SingleTickerProviderStateMixin {
-  List<Map<String, dynamic>> testTypes = [];
-  List<Map<String, dynamic>> availableDoctors = [];
-  bool isLoading = true;
-  String? errorMessage;
+  late final HomeStore _homeStore;
 
   late final AnimationController _waveController;
   late final Animation<double> _waveAnimation;
@@ -37,7 +36,8 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
   @override
   void initState() {
     super.initState();
-    _loadData();
+    _homeStore = homeStore;
+    _homeStore.loadHomeData();
     _waveController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1200),
@@ -65,154 +65,173 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
     super.dispose();
   }
 
-  Future<void> _loadData() async {
-    try {
-      // Load lab test services (for quick access on home screen)
-      final servicesData = await supabase
-          .from('services')
-          .select('''
-            *,
-            service_categories(*)
-          ''')
-          .eq('is_active', true)
-          .eq('service_categories.type', 'lab_test')
-          .order('name')
-          .limit(10);
-
-      // Load available doctors
-      final doctorsData = await supabase.rpc('get_available_doctors');
-
-      setState(() {
-        testTypes = List<Map<String, dynamic>>.from(servicesData);
-        availableDoctors = List<Map<String, dynamic>>.from(doctorsData);
-        isLoading = false;
-      });
-    } catch (e) {
-      debugPrint('Error loading data: $e');
-      setState(() {
-        errorMessage = e.toString();
-        isLoading = false;
-      });
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(
-          color: AppColors.primary,
-        ),
-      );
-    }
+    final l10n = AppLocalizations.of(context)!;
 
-    if (errorMessage != null) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
+    return Observer(
+      builder: (_) {
+        final hasData = _homeStore.testTypes.isNotEmpty ||
+            _homeStore.availableDoctors.isNotEmpty;
+
+        if (_homeStore.isLoading && !hasData) {
+          return const Center(
+            child: CircularProgressIndicator(
+              color: AppColors.primary,
+            ),
+          );
+        }
+
+        if (_homeStore.errorMessage != null && !hasData) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(
+                    Icons.error_outline,
+                    size: 60,
+                    color: AppColors.error,
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    l10n.errorLoadingData,
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    _homeStore.errorMessage ?? '',
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: AppColors.grey),
+                  ),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: _homeStore.loadHomeData,
+                    child: Text(l10n.retry),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        final tests = _homeStore.testTypes.toList();
+        final doctors = _homeStore.availableDoctors.toList();
+
+        return SafeArea(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(
-                Icons.error_outline,
-                size: 60,
-                color: AppColors.error,
-              ),
               const SizedBox(height: 20),
-              const Text(
-                'Error loading data',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+              _buildHeader(l10n),
+              const SizedBox(height: 20),
+              Expanded(
+                child: RefreshIndicator(
+                  color: AppColors.primary,
+                  onRefresh: _homeStore.loadHomeData,
+                  displacement: 30,
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(
+                      parent: BouncingScrollPhysics(),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        VisitOptionsSection(
+                          onClinicTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const AllLabServicesScreen(),
+                              ),
+                            );
+                          },
+                          onHomeTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const DirectServicesScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 30),
+                        const AdBanner(),
+                        const SizedBox(height: 24),
+                        TestTypesSection(
+                          testTypes: tests,
+                          onSeeAllTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const AllLabServicesScreen(),
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 35),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                l10n.availableDoctors,
+                                style: const TextStyle(
+                                  fontSize: 22,
+                                  color: AppColors.black,
+                                  letterSpacing: -.5,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          const DirectServicesScreen(),
+                                    ),
+                                  );
+                                },
+                                style: TextButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 4),
+                                  minimumSize: Size.zero,
+                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                ),
+                                child: Text(
+                                  l10n.viewAll,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 15),
+                        AvailableDoctorsSection(doctors: doctors),
+                        const SizedBox(height: 24),
+                      ],
+                    ),
+                  ),
                 ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                errorMessage!,
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: AppColors.grey),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    isLoading = true;
-                    errorMessage = null;
-                  });
-                  _loadData();
-                },
-                child: const Text('Retry'),
               ),
             ],
           ),
-        ),
-      );
-    }
-
-    return SafeArea(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: 20),
-          _buildHeader(),
-          const SizedBox(height: 20),
-          Expanded(
-            child: RefreshIndicator(
-              color: AppColors.primary,
-              onRefresh: _loadData,
-              displacement: 30,
-              child: SingleChildScrollView(
-                physics: const AlwaysScrollableScrollPhysics(
-                  parent: BouncingScrollPhysics(),
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    VisitOptionsSection(
-                      onClinicTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => const AllLabServicesScreen()),
-                        );
-                      },
-                      onHomeTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => const DirectServicesScreen()),
-                        );
-                      },
-                    ),
-                    const SizedBox(height: 30),
-                    TestTypesSection(testTypes: testTypes),
-                    const SizedBox(height: 35),
-                    const Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 15),
-                      child: Text(
-                        "Available doctors",
-                        style: TextStyle(
-                          fontSize: 22,
-                          color: AppColors.black,
-                          letterSpacing: -.5,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 15),
-                    AvailableDoctorsSection(doctors: availableDoctors),
-                    const SizedBox(height: 24),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
-  Widget _buildHeader() {
+  Widget _buildHeader(AppLocalizations l10n) {
     final profile = authStore.currentProfile;
     final displayName =
         (profile?.firstName?.isNotEmpty ?? false) ? profile!.firstName : profile?.displayName;
@@ -227,7 +246,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
               children: [
                 Flexible(
                   child: Text(
-                    displayName ?? 'Welcome',
+                    displayName ?? l10n.welcome,
                     style: const TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,

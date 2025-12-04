@@ -210,9 +210,11 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
               // Status Badge
               Center(
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                   decoration: BoxDecoration(
-                    color: AppColors.getStatusColor(statusStr).withOpacity(0.2),
+                    color: AppColors.getStatusColor(statusStr)
+                        .withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(25),
                   ),
                   child: Text(
@@ -331,7 +333,7 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
                   color: Colors.white,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
+                      color: Colors.black.withValues(alpha: 0.1),
                       blurRadius: 10,
                       offset: const Offset(0, -2),
                     ),
@@ -349,7 +351,7 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
           // Loading Overlay
           if (isUpdating)
             Container(
-              color: Colors.black.withOpacity(0.3),
+              color: Colors.black.withValues(alpha: 0.3),
               child: const Center(
                 child: CircularProgressIndicator(color: AppColors.primary),
               ),
@@ -397,7 +399,8 @@ class _InfoCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.grey.withOpacity(0.3)),
+        border:
+            Border.all(color: AppColors.grey.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -542,9 +545,6 @@ class _CancelRequestDialogState extends State<_CancelRequestDialog> {
             maxLines: 3,
             decoration: InputDecoration(
               hintText: 'Enter reason...',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
             ),
           ),
         ],

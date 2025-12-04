@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 /// Design matching Doctor Appointment UI template
 class AppColors {
   // Primary colors from Doctor Appointment UI
-  static const Color primary = Color.fromARGB(255, 90, 207, 172); // greenish color
+  static const Color primary = Color.fromARGB(255, 32, 179, 147); // greenish color
   static const Color grey = Color(0xFFA2A8B4);
   static const Color black = Color(0xFF2F2F32);
   static const Color white = Color(0xFFFFFFFF);

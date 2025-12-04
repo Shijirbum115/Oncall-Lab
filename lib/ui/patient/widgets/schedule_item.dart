@@ -17,7 +17,7 @@ class ScheduleItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppColors.grey.withOpacity(0.15),
+            color: AppColors.grey.withValues(alpha: 0.15),
             blurRadius: 12,
           )
         ],
@@ -47,7 +47,8 @@ class ScheduleItem extends StatelessWidget {
               ),
               CircleAvatar(
                 radius: 26,
-                backgroundColor: Color(schedule.badgeColor).withOpacity(0.3),
+                backgroundColor:
+                    Color(schedule.badgeColor).withValues(alpha: 0.3),
                 backgroundImage: NetworkImage(schedule.avatarUrl),
               ),
             ],
@@ -71,7 +72,7 @@ class ScheduleItem extends StatelessWidget {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
-                  color: Colors.green.withOpacity(0.1),
+                  color: Colors.green.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
@@ -89,7 +90,8 @@ class ScheduleItem extends StatelessWidget {
                   onPressed: () {},
                   style: OutlinedButton.styleFrom(
                     foregroundColor: AppColors.black,
-                    side: BorderSide(color: AppColors.grey.withOpacity(0.4)),
+                    side: BorderSide(
+                        color: AppColors.grey.withValues(alpha: 0.4)),
                   ),
                   child: const Text('Cancel'),
                 ),

@@ -1,6 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:oncall_lab/core/constants/app_colors.dart';
+import 'package:oncall_lab/core/services/storage_service.dart';
+import 'package:oncall_lab/core/services/supabase_service.dart';
 import 'package:oncall_lab/stores/auth_store.dart';
 import 'package:oncall_lab/ui/auth/widgets/step_progress_bar.dart';
 
@@ -38,12 +42,13 @@ class _DoctorRegistrationScreenState extends State<DoctorRegistrationScreen> {
   final _academicDegreeController = TextEditingController();
   final _experienceController = TextEditingController();
   final _developmentController = TextEditingController();
-  final _photoUrlController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+
+  File? _selectedProfilePhoto;
 
   @override
   void dispose() {
@@ -56,7 +61,6 @@ class _DoctorRegistrationScreenState extends State<DoctorRegistrationScreen> {
     _academicDegreeController.dispose();
     _experienceController.dispose();
     _developmentController.dispose();
-    _photoUrlController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     super.dispose();
@@ -101,13 +105,47 @@ class _DoctorRegistrationScreenState extends State<DoctorRegistrationScreen> {
       professionalDevelopment: _developmentController.text.trim().isEmpty
           ? null
           : _developmentController.text.trim(),
-      photoUrl: _photoUrlController.text.trim().isEmpty
-          ? null
-          : _photoUrlController.text.trim(),
+      photoUrl: null,
     );
 
     if (!mounted) return;
     if (success) {
+      // Optional profile photo upload after account creation
+      if (_selectedProfilePhoto != null) {
+        try {
+          final userId = authStore.currentUser?.id;
+          if (userId != null) {
+            final url = await StorageService.uploadProfilePhoto(
+              userId: userId,
+              file: _selectedProfilePhoto!,
+            );
+            if (url != null) {
+              final cacheBustedUrl =
+                  '$url?t=${DateTime.now().millisecondsSinceEpoch}';
+              await supabase
+                  .from('profiles')
+                  .update({
+                    'avatar_url': cacheBustedUrl,
+                    'updated_at': DateTime.now().toIso8601String(),
+                  })
+                  .eq('id', userId);
+
+              await supabase
+                  .from('doctor_profiles')
+                  .update({
+                    'photo_url': cacheBustedUrl,
+                    'updated_at': DateTime.now().toIso8601String(),
+                  })
+                  .eq('id', userId);
+
+              await authStore.loadCurrentProfile();
+            }
+          }
+        } catch (_) {
+          // Ignore upload errors here; application already submitted
+        }
+      }
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text(
@@ -295,14 +333,13 @@ class _DoctorRegistrationScreenState extends State<DoctorRegistrationScreen> {
           decoration: _buildInputDecoration(
             'Phone number *',
             Icons.phone_outlined,
-            hint: '+976 99123456',
+            hint: '99123456',
           ),
           validator: (value) {
-            if (value == null || value.trim().isEmpty) {
-              return 'Required';
-            }
-            if (!value.trim().startsWith('+')) {
-              return 'Include country code (e.g. +976)';
+            final v = value?.trim() ?? '';
+            if (v.isEmpty) return 'Required';
+            if (v.length != 8 || int.tryParse(v) == null) {
+              return 'Enter 8 digit number (e.g. 99123456)';
             }
             return null;
           },
@@ -371,12 +408,46 @@ class _DoctorRegistrationScreenState extends State<DoctorRegistrationScreen> {
           ),
         ),
         const SizedBox(height: 16),
-        TextFormField(
-          controller: _photoUrlController,
-          decoration: _buildInputDecoration(
-            'Profile photo URL (optional)',
-            Icons.photo_camera_outlined,
-          ),
+        const Text(
+          'Profile photo (optional)',
+          style: TextStyle(fontWeight: FontWeight.w600),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            CircleAvatar(
+              radius: 24,
+              backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+              backgroundImage: _selectedProfilePhoto != null
+                  ? FileImage(_selectedProfilePhoto!)
+                  : null,
+              child: _selectedProfilePhoto == null
+                  ? const Icon(
+                      Icons.camera_alt,
+                      color: AppColors.primary,
+                    )
+                  : null,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: () async {
+                  final file = await StorageService.pickImage();
+                  if (file != null) {
+                    setState(() {
+                      _selectedProfilePhoto = file;
+                    });
+                  }
+                },
+                icon: const Icon(Icons.upload),
+                label: Text(
+                  _selectedProfilePhoto == null
+                      ? 'Upload profile photo'
+                      : 'Change photo',
+                ),
+              ),
+            ),
+          ],
         ),
       ],
     );
@@ -457,11 +528,6 @@ class _DoctorRegistrationScreenState extends State<DoctorRegistrationScreen> {
       labelText: label,
       hintText: hint,
       prefixIcon: Icon(icon, color: AppColors.primary),
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      filled: true,
-      fillColor: AppColors.grey.withOpacity(0.05),
     );
   }
 }

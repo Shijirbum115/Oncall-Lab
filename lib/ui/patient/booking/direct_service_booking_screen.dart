@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/core/services/supabase_service.dart';
 import 'package:oncall_lab/core/utils/avatar_helper.dart';
+import 'package:oncall_lab/data/models/service_model.dart';
 import 'package:oncall_lab/stores/auth_store.dart';
 import 'package:oncall_lab/stores/service_store.dart';
 import 'package:oncall_lab/stores/test_request_store.dart';
-import 'package:oncall_lab/ui/patient/booking/widgets/saved_address_selector.dart';
+import 'package:oncall_lab/ui/patient/location/location_picker_screen.dart';
+import 'package:oncall_lab/ui/design_system/widgets/app_text_field.dart';
+import 'package:oncall_lab/ui/shared/widgets/app_card.dart';
 
 class DirectServiceBookingScreen extends StatefulWidget {
   final String serviceId;
@@ -26,7 +29,7 @@ class DirectServiceBookingScreen extends StatefulWidget {
 class _DirectServiceBookingScreenState
     extends State<DirectServiceBookingScreen> {
   List<Map<String, dynamic>> availableDoctors = [];
-  Map<String, dynamic>? serviceDetails;
+  ServiceModel? serviceDetails;
   Map<String, dynamic>? selectedDoctor;
   bool isLoadingDoctors = true;
   bool isLoadingService = true;
@@ -43,6 +46,10 @@ class _DirectServiceBookingScreenState
   String? savedAddress;
   bool useSavedAddress = false;
   bool showManualAddressField = false;
+
+  // Location data from picker
+  Map<String, dynamic>? selectedLocation;
+
   String? get _selectedDoctorId =>
       selectedDoctor == null ? null : _extractDoctorId(selectedDoctor!);
 
@@ -82,6 +89,51 @@ class _DirectServiceBookingScreenState
     super.dispose();
   }
 
+  Future<void> _openLocationPicker() async {
+    final result = await Navigator.push<Map<String, dynamic>>(
+      context,
+      MaterialPageRoute(
+        builder: (_) => LocationPickerScreen(
+          initialLocation: selectedLocation != null
+              ? LatLng(
+                  selectedLocation!['latitude'],
+                  selectedLocation!['longitude'],
+                )
+              : null,
+          initialAddress: selectedLocation?['address_line'],
+        ),
+      ),
+    );
+
+    if (result != null) {
+      setState(() {
+        selectedLocation = result;
+        useSavedAddress = false;
+        showManualAddressField = false;
+
+        // Build full address string
+        final parts = <String>[result['address_line']];
+        if (result['building_name']?.isNotEmpty == true) {
+          parts.add(result['building_name']);
+        }
+        if (result['entrance']?.isNotEmpty == true) {
+          parts.add('Entrance: ${result['entrance']}');
+        }
+        if (result['floor']?.isNotEmpty == true) {
+          parts.add('Floor: ${result['floor']}');
+        }
+        if (result['apartment_number']?.isNotEmpty == true) {
+          parts.add('Apt: ${result['apartment_number']}');
+        }
+        if (result['door_number']?.isNotEmpty == true) {
+          parts.add('Door: ${result['door_number']}');
+        }
+
+        _addressController.text = parts.join(', ');
+      });
+    }
+  }
+
   Future<void> _loadData() async {
     setState(() {
       isLoadingDoctors = true;
@@ -90,16 +142,10 @@ class _DirectServiceBookingScreenState
     });
 
     try {
-      // Load doctors
       final doctors =
           await serviceStore.getDoctorsForService(widget.serviceId);
-
-      // Load service details
-      final service = await supabase
-          .from('services')
-          .select('*, service_categories(*)')
-          .eq('id', widget.serviceId)
-          .single();
+      final service =
+          await serviceStore.fetchServiceById(widget.serviceId);
 
       setState(() {
         availableDoctors = doctors;
@@ -129,6 +175,17 @@ class _DirectServiceBookingScreenState
       return;
     }
 
+    // Validate location is selected
+    if (selectedLocation == null && _addressController.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please select your location on the map'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
+
     setState(() => isSubmitting = true);
 
     try {
@@ -144,17 +201,14 @@ class _DirectServiceBookingScreenState
         if (selectedId == null) {
           throw Exception('Selected doctor id missing');
         }
-        // Get the doctor_service record
-        final doctorService = await supabase
-            .from('doctor_services')
-            .select()
-            .eq('doctor_id', selectedId)
-            .eq('service_id', widget.serviceId)
-            .single();
+        final doctorService = await serviceStore.fetchDoctorService(
+          doctorId: selectedId,
+          serviceId: widget.serviceId,
+        );
 
-        doctorServiceId = doctorService['id'];
+        doctorServiceId = doctorService.id;
         doctorId = selectedId;
-        priceMnt = selectedDoctor!['price_mnt'];
+        priceMnt = doctorService.priceMnt;
       } else {
         // Use the minimum price from available doctors
         priceMnt = availableDoctors.isEmpty
@@ -226,7 +280,7 @@ class _DirectServiceBookingScreenState
                     children: [
                       _buildServiceInfo(),
                       const SizedBox(height: 24),
-                      if (serviceDetails!['preparation_instructions'] != null)
+                      if (serviceDetails!.preparationInstructions != null)
                         _buildPreparationInstructions(),
                       _buildDoctorSelection(),
                       const SizedBox(height: 24),
@@ -280,15 +334,16 @@ class _DirectServiceBookingScreenState
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.05),
+        color: AppColors.primary.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+        border:
+            Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            serviceDetails!['name'],
+            serviceDetails!.name,
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -296,23 +351,23 @@ class _DirectServiceBookingScreenState
             ),
           ),
           const SizedBox(height: 8),
-          if (serviceDetails!['description'] != null)
+          if (serviceDetails!.description != null)
             Text(
-              serviceDetails!['description'],
+              serviceDetails!.description!,
               style: const TextStyle(
                 fontSize: 14,
                 color: AppColors.grey,
                 height: 1.5,
               ),
             ),
-          if (serviceDetails!['estimated_duration_minutes'] != null) ...[
+          if (serviceDetails!.estimatedDurationMinutes != null) ...[
             const SizedBox(height: 12),
             Row(
               children: [
                 const Icon(Icons.access_time, size: 16, color: AppColors.grey),
                 const SizedBox(width: 4),
                 Text(
-                  '~${serviceDetails!['estimated_duration_minutes']} minutes',
+                  '~${serviceDetails!.estimatedDurationMinutes} minutes',
                   style: const TextStyle(
                     fontSize: 13,
                     color: AppColors.grey,
@@ -332,9 +387,10 @@ class _DirectServiceBookingScreenState
         Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppColors.warning.withOpacity(0.1),
+            color: AppColors.warning.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppColors.warning.withOpacity(0.3)),
+            border: Border.all(
+                color: AppColors.warning.withValues(alpha: 0.3)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -355,7 +411,7 @@ class _DirectServiceBookingScreenState
               ),
               const SizedBox(height: 8),
               Text(
-                serviceDetails!['preparation_instructions'],
+                serviceDetails!.preparationInstructions!,
                 style: const TextStyle(
                   fontSize: 14,
                   color: AppColors.black,
@@ -399,13 +455,13 @@ class _DirectServiceBookingScreenState
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               color: anyDoctor
-                  ? AppColors.primary.withOpacity(0.1)
+                  ? AppColors.primary.withValues(alpha: 0.1)
                   : Colors.white,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
                 color: anyDoctor
                     ? AppColors.primary
-                    : AppColors.grey.withOpacity(0.3),
+                    : AppColors.grey.withValues(alpha: 0.3),
                 width: 2,
               ),
             ),
@@ -466,7 +522,7 @@ class _DirectServiceBookingScreenState
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppColors.grey.withOpacity(0.1),
+                color: AppColors.grey.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Center(
@@ -519,12 +575,13 @@ class _DirectServiceBookingScreenState
             }
           },
           borderRadius: BorderRadius.circular(12),
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              border: Border.all(color: AppColors.grey.withOpacity(0.3)),
-              borderRadius: BorderRadius.circular(12),
-            ),
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                border: Border.all(
+                    color: AppColors.grey.withValues(alpha: 0.3)),
+                borderRadius: BorderRadius.circular(12),
+              ),
             child: Row(
               children: [
                 const Icon(Iconsax.calendar, color: AppColors.primary),
@@ -571,12 +628,12 @@ class _DirectServiceBookingScreenState
                 decoration: BoxDecoration(
                   color: isSelected
                       ? AppColors.primary
-                      : AppColors.grey.withOpacity(0.1),
+                      : AppColors.grey.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
                     color: isSelected
                         ? AppColors.primary
-                        : AppColors.grey.withOpacity(0.3),
+                        : AppColors.grey.withValues(alpha: 0.3),
                   ),
                 ),
                 child: Text(
@@ -608,47 +665,63 @@ class _DirectServiceBookingScreenState
           ),
         ),
         const SizedBox(height: 12),
-        if (savedAddress != null && savedAddress!.isNotEmpty) ...[
-          SavedAddressSelector(
-            address: savedAddress!,
-            selected: useSavedAddress,
-            onUseAddress: () {
-              setState(() {
-                useSavedAddress = true;
-                showManualAddressField = false;
-                _addressController.text = savedAddress!;
-              });
-            },
-            onManualEntry: () {
-              setState(() {
-                useSavedAddress = false;
-                showManualAddressField = true;
-                _addressController.clear();
-              });
-            },
-          ),
-          const SizedBox(height: 12),
-        ],
-        if (showManualAddressField)
-          TextFormField(
-            controller: _addressController,
-            maxLines: 3,
-            decoration: InputDecoration(
-              hintText: 'Enter your address...',
-              prefixIcon:
-                  const Icon(Iconsax.location, color: AppColors.primary),
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
+
+        // Location Picker Button
+        AppCard(
+          showShadow: false,
+          borderRadius: 14,
+          borderColor: selectedLocation != null
+              ? AppColors.primary.withValues(alpha: 0.3)
+              : AppColors.grey.withValues(alpha: 0.25),
+          backgroundColor: selectedLocation != null
+              ? AppColors.primary.withValues(alpha: 0.05)
+              : Colors.white,
+          onTap: _openLocationPicker,
+          child: Row(
+            children: [
+              Icon(
+                Iconsax.location,
+                color: selectedLocation != null
+                    ? AppColors.primary
+                    : AppColors.grey,
               ),
-              filled: true,
-              fillColor: AppColors.grey.withOpacity(0.1),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  selectedLocation != null
+                      ? _addressController.text
+                      : 'Select your location on the map',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: selectedLocation != null
+                        ? AppColors.black
+                        : AppColors.grey,
+                  ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+              const SizedBox(width: 8),
+              const Icon(
+                Icons.edit_location_alt,
+                color: AppColors.primary,
+                size: 20,
+              ),
+            ],
+          ),
+        ),
+
+        // Show hint if no location selected
+        if (selectedLocation == null && _addressController.text.isEmpty)
+          Padding(
+            padding: const EdgeInsets.only(top: 8, left: 12),
+            child: Text(
+              'Tap to open map and select your address',
+              style: TextStyle(
+                fontSize: 12,
+                color: AppColors.grey.withValues(alpha: 0.8),
+              ),
             ),
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return 'Please enter your address';
-              }
-              return null;
-            },
           ),
       ],
     );
@@ -667,17 +740,10 @@ class _DirectServiceBookingScreenState
           ),
         ),
         const SizedBox(height: 12),
-        TextFormField(
+        AppTextField(
           controller: _notesController,
           maxLines: 3,
-          decoration: InputDecoration(
-            hintText: 'Any special instructions...',
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            filled: true,
-            fillColor: AppColors.grey.withOpacity(0.1),
-          ),
+          hint: 'Any special instructions...',
         ),
       ],
     );
@@ -738,13 +804,13 @@ class _DoctorCard extends StatelessWidget {
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: isSelected
-                ? AppColors.primary.withOpacity(0.1)
+                ? AppColors.primary.withValues(alpha: 0.1)
                 : Colors.white,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
               color: isSelected
                   ? AppColors.primary
-                  : AppColors.grey.withOpacity(0.3),
+                  : AppColors.grey.withValues(alpha: 0.3),
               width: 2,
             ),
           ),
@@ -818,11 +884,11 @@ class _DoctorCard extends StatelessWidget {
 
     return CircleAvatar(
       radius: 28,
-      backgroundColor: AppColors.primary.withOpacity(0.2),
+      backgroundColor: AppColors.primary.withValues(alpha: 0.2),
       backgroundImage: hasAvatar
           ? (isDefaultAvatar
-              ? AssetImage(avatarUrl!) as ImageProvider
-              : NetworkImage(avatarUrl!))
+              ? AssetImage(avatarUrl) as ImageProvider
+              : NetworkImage(avatarUrl))
           : null,
       child: !hasAvatar
           ? Text(

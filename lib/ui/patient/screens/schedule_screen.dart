@@ -33,7 +33,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Container(
               decoration: BoxDecoration(
-                color: AppColors.grey.withOpacity(0.1),
+                color: AppColors.grey.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
               ),
               child: TabBar(
@@ -43,7 +43,8 @@ class _ScheduleScreenState extends State<ScheduleScreen>
                   borderRadius: BorderRadius.circular(10),
                 ),
                 labelColor: Colors.white,
-                unselectedLabelColor: AppColors.black.withOpacity(0.5),
+                unselectedLabelColor:
+                    AppColors.black.withValues(alpha: 0.5),
                 tabs: const [
                   Tab(text: 'Upcoming'),
                   Tab(text: 'Completed'),

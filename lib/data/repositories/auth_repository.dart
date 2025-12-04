@@ -7,7 +7,13 @@ class AuthRepository {
   static const String _phoneEmailDomain = 'oncalllab.dev';
 
   String _buildEmailFromPhone(String phoneNumber) {
-    final sanitized = phoneNumber.replaceAll(' ', '');
+    var sanitized = phoneNumber.replaceAll(' ', '');
+
+    // Support both legacy "+976XXXXXXXX" and new "XXXXXXXX" format
+    if (sanitized.startsWith('+976')) {
+      sanitized = sanitized.substring(4);
+    }
+
     return '$sanitized@$_phoneEmailDomain';
   }
 
@@ -16,8 +22,7 @@ class AuthRepository {
     required String phoneNumber,
     required String password,
   }) async {
-    // Use email-based auth for web development (phone auth requires production setup)
-    // Format: phone@oncalllab.dev (e.g., +97699123456@oncalllab.dev)
+    // Use email-based auth for web (phone@oncalllab.dev, e.g., 99123456@oncalllab.dev)
     final email = _buildEmailFromPhone(phoneNumber);
 
     final response = await supabase.auth.signUp(

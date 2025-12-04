@@ -31,7 +31,7 @@ class DoctorCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(10),
           boxShadow: [
             BoxShadow(
-              color: AppColors.secondary.withOpacity(0.2),
+              color: AppColors.secondary.withValues(alpha: 0.2),
               blurRadius: 10,
             ),
           ],
@@ -43,7 +43,7 @@ class DoctorCard extends StatelessWidget {
               children: [
                 CircleAvatar(
                   radius: 45,
-                  backgroundColor: AppColors.primary.withOpacity(0.2),
+                  backgroundColor: AppColors.primary.withValues(alpha: 0.2),
                   backgroundImage:
                       imageUrl != null ? NetworkImage(imageUrl!) : null,
                   child: imageUrl == null

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:oncall_lab/core/constants/app_colors.dart';
 import 'package:oncall_lab/core/utils/avatar_helper.dart';
 import 'package:oncall_lab/ui/patient/models/doctor_profile_ui.dart';
+import 'package:oncall_lab/l10n/app_localizations.dart';
 
 class DoctorCardTile extends StatelessWidget {
   const DoctorCardTile({
@@ -15,6 +16,7 @@ class DoctorCardTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final isDefaultAvatar = AvatarHelper.isDefaultAvatar(doctor.avatarUrl);
     final hasAvatar = doctor.avatarUrl != null && doctor.avatarUrl!.isNotEmpty;
 
@@ -27,7 +29,7 @@ class DoctorCardTile extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
-              color: AppColors.grey.withOpacity(0.15),
+              color: AppColors.grey.withValues(alpha: 0.15),
               blurRadius: 8,
               offset: const Offset(0, 4),
             ),
@@ -112,7 +114,7 @@ class DoctorCardTile extends StatelessWidget {
                       ),
                       const SizedBox(width: 3),
                       Text(
-                        '(${doctor.totalReviews})',
+                        '(${l10n.reviewsCount(doctor.totalReviews)})',
                         style: const TextStyle(
                           color: AppColors.grey,
                           fontSize: 10.5,
@@ -123,7 +125,7 @@ class DoctorCardTile extends StatelessWidget {
                 ),
                 const Spacer(),
                 Text(
-                  doctor.price != null ? '${doctor.price} ?' : '',
+                  doctor.price != null ? l10n.priceInMNT(doctor.price!) : '',
                   style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     color: AppColors.primary,

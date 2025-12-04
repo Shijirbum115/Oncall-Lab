@@ -78,6 +78,38 @@ mixin _$ServiceStore on _ServiceStore, Store {
     });
   }
 
+  late final _$serviceCacheAtom =
+      Atom(name: '_ServiceStore.serviceCache', context: context);
+
+  @override
+  ObservableMap<String, ServiceModel> get serviceCache {
+    _$serviceCacheAtom.reportRead();
+    return super.serviceCache;
+  }
+
+  @override
+  set serviceCache(ObservableMap<String, ServiceModel> value) {
+    _$serviceCacheAtom.reportWrite(value, super.serviceCache, () {
+      super.serviceCache = value;
+    });
+  }
+
+  late final _$doctorServiceCacheAtom =
+      Atom(name: '_ServiceStore.doctorServiceCache', context: context);
+
+  @override
+  ObservableMap<String, DoctorServiceModel> get doctorServiceCache {
+    _$doctorServiceCacheAtom.reportRead();
+    return super.doctorServiceCache;
+  }
+
+  @override
+  set doctorServiceCache(ObservableMap<String, DoctorServiceModel> value) {
+    _$doctorServiceCacheAtom.reportWrite(value, super.doctorServiceCache, () {
+      super.doctorServiceCache = value;
+    });
+  }
+
   late final _$isLoadingAtom =
       Atom(name: '_ServiceStore.isLoading', context: context);
 
@@ -147,6 +179,25 @@ mixin _$ServiceStore on _ServiceStore, Store {
         .run(() => super.getDoctorsForService(serviceId));
   }
 
+  late final _$fetchServiceByIdAsyncAction =
+      AsyncAction('_ServiceStore.fetchServiceById', context: context);
+
+  @override
+  Future<ServiceModel> fetchServiceById(String serviceId) {
+    return _$fetchServiceByIdAsyncAction
+        .run(() => super.fetchServiceById(serviceId));
+  }
+
+  late final _$fetchDoctorServiceAsyncAction =
+      AsyncAction('_ServiceStore.fetchDoctorService', context: context);
+
+  @override
+  Future<DoctorServiceModel> fetchDoctorService(
+      {required String doctorId, required String serviceId}) {
+    return _$fetchDoctorServiceAsyncAction.run(() =>
+        super.fetchDoctorService(doctorId: doctorId, serviceId: serviceId));
+  }
+
   late final _$searchServicesAsyncAction =
       AsyncAction('_ServiceStore.searchServices', context: context);
 
@@ -188,6 +239,8 @@ categories: ${categories},
 directServices: ${directServices},
 laboratoryServicesCache: ${laboratoryServicesCache},
 doctorsForServiceCache: ${doctorsForServiceCache},
+serviceCache: ${serviceCache},
+doctorServiceCache: ${doctorServiceCache},
 isLoading: ${isLoading},
 errorMessage: ${errorMessage}
     ''';

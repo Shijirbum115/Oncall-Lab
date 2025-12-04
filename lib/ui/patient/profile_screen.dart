@@ -1,63 +1,199 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:oncall_lab/core/constants/app_colors.dart';
+import 'package:oncall_lab/core/services/storage_service.dart';
+import 'package:oncall_lab/core/services/supabase_service.dart';
 import 'package:oncall_lab/data/models/profile_model.dart';
 import 'package:oncall_lab/stores/auth_store.dart';
 import 'package:oncall_lab/ui/shared/widgets/profile_avatar.dart';
+import 'package:oncall_lab/l10n/app_localizations.dart';
+import 'package:oncall_lab/ui/design_system/widgets/app_text_field.dart';
+import 'package:oncall_lab/ui/shared/widgets/language_switcher.dart';
 
 class PatientProfileScreen extends StatelessWidget {
   const PatientProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final profile = authStore.currentProfile;
+    final l10n = AppLocalizations.of(context)!;
 
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.all(15),
-        child: Column(
-          children: [
-            const SizedBox(height: 20),
-            ProfileAvatar(
-              avatarUrl: profile?.getAvatarUrl(),
-              initials: profile?.initials ?? 'U',
-              radius: 50,
-            ),
-            const SizedBox(height: 20),
-            Text(
-              profile?.displayName ?? 'User',
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              profile?.phoneNumber ?? profile?.email ?? 'No phone number',
-              style: const TextStyle(
-                fontSize: 16,
-                color: AppColors.grey,
-              ),
-            ),
-            const SizedBox(height: 10),
+        child: Observer(
+          builder: (_) {
+            final profile = authStore.currentProfile;
+            return Column(
+              children: [
+                const SizedBox(height: 20),
+                GestureDetector(
+                  onTap: () async {
+                    final user = authStore.currentUser;
+                    if (user == null) return;
+
+                    final change = await showDialog<bool>(
+                      context: context,
+                      builder: (ctx) {
+                        final dialogL10n = AppLocalizations.of(ctx)!;
+                        return AlertDialog(
+                          title: Text(dialogL10n.changeProfilePhoto),
+                          content: Text(dialogL10n.changeProfilePhotoConfirm),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(ctx).pop(false),
+                              child: Text(dialogL10n.cancel),
+                            ),
+                            ElevatedButton(
+                              onPressed: () => Navigator.of(ctx).pop(true),
+                              child: Text(dialogL10n.change),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+
+                    if (change != true || !context.mounted) return;
+
+                    final File? file = await StorageService.pickImage();
+                    if (file == null || !context.mounted) return;
+
+                    final confirm = await showDialog<bool>(
+                      context: context,
+                      builder: (ctx) {
+                        final dialogL10n = AppLocalizations.of(ctx)!;
+                        return AlertDialog(
+                          title: Text(dialogL10n.useThisPhoto),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              CircleAvatar(
+                                radius: 40,
+                                backgroundImage: FileImage(file),
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                dialogL10n.profilePhotoPreview,
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(ctx).pop(false),
+                              child: Text(dialogL10n.cancel),
+                            ),
+                            ElevatedButton(
+                              onPressed: () => Navigator.of(ctx).pop(true),
+                              child: Text(dialogL10n.save),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+
+                    if (confirm != true || !context.mounted) return;
+
+                    try {
+                      final url = await StorageService.uploadProfilePhoto(
+                        userId: user.id,
+                        file: file,
+                      );
+
+                      if (url == null) {
+                        throw Exception('Failed to upload photo');
+                      }
+
+                      final cacheBustedUrl =
+                          '$url?t=${DateTime.now().millisecondsSinceEpoch}';
+
+                      await supabase
+                          .from('profiles')
+                          .update({
+                            'avatar_url': cacheBustedUrl,
+                            'updated_at': DateTime.now().toIso8601String(),
+                          })
+                          .eq('id', user.id);
+
+                      await authStore.loadCurrentProfile();
+
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(l10n.profilePhotoUpdated),
+                          ),
+                        );
+                      }
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('${l10n.failedToUpdatePhoto}: $e'),
+                            backgroundColor: AppColors.error,
+                          ),
+                        );
+                      }
+                    }
+                  },
+                  child: Stack(
+                    alignment: Alignment.bottomRight,
+                    children: [
+                      ProfileAvatar(
+                        avatarUrl: profile?.getAvatarUrl(),
+                        initials: profile?.initials ?? 'U',
+                        radius: 50,
+                      ),
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.camera_alt,
+                          size: 18,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  profile?.displayName ?? l10n.user,
+                  style: const TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                Text(
+                  profile?.phoneNumber ?? profile?.email ?? l10n.noPhoneNumber,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: AppColors.grey,
+                  ),
+                ),
+                const SizedBox(height: 10),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
+                color: AppColors.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(20),
               ),
-              child: const Text(
-                'Patient',
-                style: TextStyle(
+              child: Text(
+                l10n.patient,
+                style: const TextStyle(
                   color: AppColors.primary,
                   fontWeight: FontWeight.bold,
                 ),
               ),
             ),
-            const SizedBox(height: 40),
-            _buildProfileOption(
+                const SizedBox(height: 40),
+                _buildProfileOption(
               icon: Icons.person_outline,
-              title: 'Edit Profile',
+              title: l10n.editProfile,
               onTap: () {
                 final userProfile = authStore.currentProfile;
                 if (userProfile != null) {
@@ -74,99 +210,85 @@ class PatientProfileScreen extends StatelessWidget {
                 }
               },
             ),
-            _buildProfileOption(
+                _buildProfileOption(
               icon: Icons.history,
-              title: 'Request History',
+              title: l10n.requestHistory,
               onTap: () {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('View history in Requests tab'),
+                  SnackBar(
+                    content: Text(l10n.viewAll),
                   ),
                 );
               },
             ),
-            _buildProfileOption(
-              icon: Icons.location_on_outlined,
-              title: 'Saved Addresses',
+                _buildProfileOption(
+              icon: Icons.language,
+              title: 'Language / Хэл',
               onTap: () {
-                final profile = authStore.currentProfile;
-                if (profile != null) {
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    backgroundColor: Colors.white,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(24)),
-                    ),
-                    builder: (_) => SavedAddressSheet(
-                      initialAddress: profile.permanentAddress,
-                    ),
-                  );
-                }
+                showModalBottomSheet(
+                  context: context,
+                  backgroundColor: Colors.white,
+                  shape: const RoundedRectangleBorder(
+                    borderRadius:
+                        BorderRadius.vertical(top: Radius.circular(24)),
+                  ),
+                  builder: (_) => const LanguageSettingsSheet(),
+                );
               },
             ),
-            _buildProfileOption(
+                _buildProfileOption(
               icon: Icons.notifications_outlined,
-              title: 'Notifications',
+              title: l10n.notifications,
               onTap: () {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Notifications feature coming soon!'),
-                  ),
-                );
-              },
-            ),
-            _buildProfileOption(
-              icon: Icons.help_outline,
-              title: 'Help & Support',
-              onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Help & support feature coming soon!'),
+                  SnackBar(
+                    content: Text('${l10n.notifications} ${l10n.adminComingSoon}'),
                   ),
                 );
               },
             ),
             const Spacer(),
-            Padding(
+                Padding(
               padding: const EdgeInsets.only(bottom: 20),
               child: OutlinedButton.icon(
                 onPressed: () async {
                   final shouldSignOut = await showDialog<bool>(
                     context: context,
-                    builder: (context) => AlertDialog(
-                      title: const Text('Sign Out'),
-                      content: const Text('Are you sure you want to sign out?'),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, false),
-                          child: const Text('Cancel'),
-                        ),
-                        ElevatedButton(
-                          onPressed: () => Navigator.pop(context, true),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.error,
+                    builder: (context) {
+                      final dialogL10n = AppLocalizations.of(context)!;
+                      return AlertDialog(
+                        title: Text(dialogL10n.signOut),
+                        content: Text('${dialogL10n.yes}? ${dialogL10n.signOut}'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, false),
+                            child: Text(dialogL10n.cancel),
                           ),
-                          child: const Text('Sign Out'),
-                        ),
-                      ],
-                    ),
+                          ElevatedButton(
+                            onPressed: () => Navigator.pop(context, true),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.error,
+                            ),
+                            child: Text(dialogL10n.signOut),
+                          ),
+                        ],
+                      );
+                    },
                   );
 
                   if (shouldSignOut == true && context.mounted) {
                     await authStore.signOut();
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Signed out successfully'),
+                        SnackBar(
+                          content: Text(l10n.success),
                         ),
                       );
                     }
                   }
                 },
                 icon: const Icon(Icons.logout),
-                label: const Text('Sign Out'),
+                label: Text(l10n.signOut),
                 style: OutlinedButton.styleFrom(
                   foregroundColor: AppColors.error,
                   side: const BorderSide(color: AppColors.error),
@@ -174,14 +296,16 @@ class PatientProfileScreen extends StatelessWidget {
                 ),
               ),
             ),
-            const Text(
+                const Text(
               'OnCall Lab v1.0.0',
               style: TextStyle(
                 color: AppColors.grey,
                 fontSize: 12,
               ),
             ),
-          ],
+              ],
+            );
+          },
         ),
       ),
     );
@@ -199,7 +323,7 @@ Widget _buildProfileOption({
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: AppColors.grey.withOpacity(0.1),
+            color: AppColors.grey.withValues(alpha: 0.1),
             blurRadius: 5,
             offset: const Offset(0, 2),
           ),
@@ -210,7 +334,7 @@ Widget _buildProfileOption({
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: AppColors.primary.withOpacity(0.1),
+            color: AppColors.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Icon(
@@ -282,6 +406,7 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
     if (!_formKey.currentState!.validate()) return;
     final navigator = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context)!;
 
     final success = await authStore.updateProfile(
       firstName: _firstNameController.text.trim(),
@@ -295,7 +420,7 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
     if (success) {
       navigator.pop();
       messenger.showSnackBar(
-        const SnackBar(content: Text('Profile updated successfully')),
+        SnackBar(content: Text(l10n.profileUpdatedSuccessfully)),
       );
     } else if (authStore.errorMessage != null) {
       messenger.showSnackBar(
@@ -310,6 +435,7 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
   @override
   Widget build(BuildContext context) {
     final bottomPadding = MediaQuery.of(context).viewInsets.bottom;
+    final l10n = AppLocalizations.of(context)!;
 
     return Padding(
       padding: EdgeInsets.only(
@@ -330,13 +456,13 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
                 height: 4,
                 margin: const EdgeInsets.only(bottom: 16),
                 decoration: BoxDecoration(
-                  color: AppColors.grey.withOpacity(0.3),
+                  color: AppColors.grey.withValues(alpha: 0.3),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
-              const Text(
-                'Edit Profile',
-                style: TextStyle(
+              Text(
+                l10n.editProfile,
+                style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
@@ -347,10 +473,10 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
                   Expanded(
                     child: _buildTextField(
                       controller: _firstNameController,
-                      label: 'First Name',
+                      label: l10n.firstName,
                       validator: (value) =>
                           value == null || value.trim().isEmpty
-                              ? 'Required'
+                              ? l10n.required
                               : null,
                     ),
                   ),
@@ -358,10 +484,10 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
                   Expanded(
                     child: _buildTextField(
                       controller: _lastNameController,
-                      label: 'Last Name',
+                      label: l10n.lastName,
                       validator: (value) =>
                           value == null || value.trim().isEmpty
-                              ? 'Required'
+                              ? l10n.required
                               : null,
                     ),
                   ),
@@ -370,24 +496,24 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
               const SizedBox(height: 12),
               _buildTextField(
                 controller: _emailController,
-                label: 'Email',
+                label: l10n.email,
                 keyboardType: TextInputType.emailAddress,
               ),
               const SizedBox(height: 12),
               _buildTextField(
                 controller: _addressController,
-                label: 'Address',
+                label: l10n.address,
                 maxLines: 2,
               ),
               const SizedBox(height: 12),
               _buildTextField(
                 controller: _registrationController,
-                label: 'Registration Number',
+                label: l10n.registrationNumber,
               ),
               const SizedBox(height: 12),
               _buildTextField(
                 controller: _allergiesController,
-                label: 'Allergies',
+                label: l10n.allergies,
                 maxLines: 2,
               ),
               const SizedBox(height: 24),
@@ -414,9 +540,9 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
                                   AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
                           )
-                        : const Text(
-                            'Save Changes',
-                            style: TextStyle(
+                        : Text(
+                            l10n.saveChanges,
+                            style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
                             ),
@@ -445,11 +571,6 @@ class _EditProfileSheetState extends State<EditProfileSheet> {
       validator: validator,
       decoration: InputDecoration(
         labelText: label,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        filled: true,
-        fillColor: AppColors.grey.withOpacity(0.05),
       ),
     );
   }
@@ -495,6 +616,7 @@ class _SavedAddressSheetState extends State<SavedAddressSheet> {
     if (trimmed.isEmpty) return;
 
     final messenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final success = await authStore.updateSavedAddress(trimmed);
 
     if (success) {
@@ -506,7 +628,7 @@ class _SavedAddressSheetState extends State<SavedAddressSheet> {
         _editController.text = trimmed;
       });
       messenger.showSnackBar(
-        const SnackBar(content: Text('Address saved')),
+        SnackBar(content: Text(l10n.addressSaved)),
       );
     } else if (authStore.errorMessage != null) {
       messenger.showSnackBar(
@@ -520,6 +642,7 @@ class _SavedAddressSheetState extends State<SavedAddressSheet> {
 
   Future<void> _clearAddress() async {
     final messenger = ScaffoldMessenger.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final success = await authStore.updateSavedAddress(null);
     if (success) {
       setState(() {
@@ -530,7 +653,7 @@ class _SavedAddressSheetState extends State<SavedAddressSheet> {
         _editController.clear();
       });
       messenger.showSnackBar(
-        const SnackBar(content: Text('Saved address removed')),
+        SnackBar(content: Text(l10n.savedAddressRemoved)),
       );
     }
   }
@@ -538,6 +661,7 @@ class _SavedAddressSheetState extends State<SavedAddressSheet> {
   @override
   Widget build(BuildContext context) {
     final hasAddress = _currentAddress != null && _currentAddress!.isNotEmpty;
+    final l10n = AppLocalizations.of(context)!;
 
     return Padding(
       padding: EdgeInsets.only(
@@ -555,13 +679,13 @@ class _SavedAddressSheetState extends State<SavedAddressSheet> {
             height: 4,
             margin: const EdgeInsets.only(bottom: 16),
             decoration: BoxDecoration(
-              color: AppColors.grey.withOpacity(0.3),
+              color: AppColors.grey.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          const Text(
-            'Saved addresses',
-            style: TextStyle(
+          Text(
+            l10n.savedAddresses,
+            style: const TextStyle(
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
@@ -575,20 +699,13 @@ class _SavedAddressSheetState extends State<SavedAddressSheet> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextFormField(
+                  AppTextField(
                     controller: _editController,
                     maxLines: 3,
-                    decoration: InputDecoration(
-                      labelText: 'Edit address',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      filled: true,
-                      fillColor: AppColors.grey.withOpacity(0.05),
-                    ),
+                    label: l10n.editAddress,
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'Please enter your address';
+                        return l10n.pleaseEnterAddress;
                       }
                       return null;
                     },
@@ -620,7 +737,7 @@ class _SavedAddressSheetState extends State<SavedAddressSheet> {
                                       Colors.white),
                                 ),
                               )
-                            : const Text('Save changes'),
+                            : Text(l10n.saveChanges),
                       ),
                     ),
                   ),
@@ -639,7 +756,7 @@ class _SavedAddressSheetState extends State<SavedAddressSheet> {
               });
             },
             icon: const Icon(Icons.add),
-            label: const Text('Add address'),
+            label: Text(l10n.addAddress),
           ),
           if (showAddField) ...[
             const SizedBox(height: 12),
@@ -647,20 +764,13 @@ class _SavedAddressSheetState extends State<SavedAddressSheet> {
               key: _addFormKey,
               child: Column(
                 children: [
-                  TextFormField(
+                  AppTextField(
                     controller: _addController,
                     maxLines: 3,
-                    decoration: InputDecoration(
-                      labelText: 'New address',
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      filled: true,
-                      fillColor: AppColors.grey.withOpacity(0.05),
-                    ),
+                    label: l10n.newAddress,
                     validator: (value) {
                       if (value == null || value.trim().isEmpty) {
-                        return 'Please enter your address';
+                        return l10n.pleaseEnterAddress;
                       }
                       return null;
                     },
@@ -688,7 +798,7 @@ class _SavedAddressSheetState extends State<SavedAddressSheet> {
                                       Colors.white),
                                 ),
                               )
-                            : const Text('Save address'),
+                            : Text(l10n.saveAddress),
                       ),
                     ),
                   ),
@@ -712,7 +822,7 @@ class _SavedAddressSheetState extends State<SavedAddressSheet> {
                 foregroundColor: Colors.white,
               ),
               child: Text(
-                hasAddress && isSelected ? 'Remove address' : 'Close',
+                hasAddress && isSelected ? l10n.removeAddress : l10n.close,
               ),
             ),
           ),
@@ -722,11 +832,13 @@ class _SavedAddressSheetState extends State<SavedAddressSheet> {
   }
 
   Widget _buildDefaultAddressCard(bool hasAddress) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       decoration: BoxDecoration(
         color: hasAddress
-            ? AppColors.primary.withOpacity(0.05)
-            : AppColors.grey.withOpacity(0.1),
+            ? AppColors.primary.withValues(alpha: 0.05)
+            : AppColors.grey.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: isSelected ? AppColors.primary : Colors.transparent,
@@ -742,7 +854,7 @@ class _SavedAddressSheetState extends State<SavedAddressSheet> {
               }
             : null,
         title: Text(
-          hasAddress ? _currentAddress! : 'No default address saved',
+          hasAddress ? _currentAddress! : l10n.noDefaultAddressSaved,
           style: TextStyle(
             fontWeight: hasAddress ? FontWeight.w600 : FontWeight.normal,
             color: hasAddress ? AppColors.black : AppColors.grey,

@@ -2,14 +2,17 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:oncall_lab/core/constants/app_colors.dart';
+import 'package:oncall_lab/l10n/app_localizations.dart';
 
 class TestTypesSection extends StatefulWidget {
   const TestTypesSection({
     super.key,
     required this.testTypes,
+    this.onSeeAllTap,
   });
 
   final List<Map<String, dynamic>> testTypes;
+  final VoidCallback? onSeeAllTap;
 
   @override
   State<TestTypesSection> createState() => _TestTypesSectionState();
@@ -74,6 +77,8 @@ class _TestTypesSectionState extends State<TestTypesSection> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     if (widget.testTypes.isEmpty) {
       return const SizedBox.shrink();
     }
@@ -81,16 +86,38 @@ class _TestTypesSectionState extends State<TestTypesSection> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 15),
-          child: Text(
-            'Available Tests',
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.bold,
-              letterSpacing: -.5,
-              color: AppColors.black,
-            ),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 15),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                l10n.availableTests,
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: -.5,
+                  color: AppColors.black,
+                ),
+              ),
+              if (widget.onSeeAllTap != null)
+                TextButton(
+                  onPressed: widget.onSeeAllTap,
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    minimumSize: Size.zero,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                  ),
+                  child: Text(
+                    l10n.viewAll,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primary,
+                    ),
+                  ),
+                ),
+            ],
           ),
         ),
         const SizedBox(height: 15),
@@ -104,6 +131,7 @@ class _TestTypesSectionState extends State<TestTypesSection> {
             physics: const BouncingScrollPhysics(),
             itemBuilder: (context, index) {
               final test = widget.testTypes[index];
+              final price = test['price_mnt'] as int?;
               return SizedBox(
                 width: _cardWidth,
                 child: Container(
@@ -112,12 +140,12 @@ class _TestTypesSectionState extends State<TestTypesSection> {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     border: Border.all(
-                      color: AppColors.grey.withOpacity(0.15),
+                      color: AppColors.grey.withValues(alpha: 0.15),
                     ),
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.03),
+                        color: Colors.black.withValues(alpha: 0.03),
                         blurRadius: 8,
                         offset: const Offset(0, 3),
                       ),
@@ -128,7 +156,7 @@ class _TestTypesSectionState extends State<TestTypesSection> {
                       Container(
                         padding: const EdgeInsets.all(8),
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.12),
+                          color: AppColors.primary.withValues(alpha: 0.12),
                           shape: BoxShape.circle,
                         ),
                         child: const Icon(
@@ -155,10 +183,13 @@ class _TestTypesSectionState extends State<TestTypesSection> {
                             ),
                             const SizedBox(height: 2),
                             Text(
-                              '${test['price_mnt']} MNT',
+                              price != null
+                                  ? l10n.priceInMNT(price)
+                                  : '',
                               style: TextStyle(
                                 fontSize: 12,
-                                color: AppColors.grey.withOpacity(0.9),
+                                color:
+                                    AppColors.grey.withValues(alpha: 0.9),
                               ),
                             ),
                           ],

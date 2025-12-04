@@ -41,7 +41,7 @@ class StepProgressBar extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: leftActive
                                   ? AppColors.primary
-                                  : AppColors.grey.withOpacity(0.2),
+                                  : AppColors.grey.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(4),
                             ),
                           ),
@@ -58,7 +58,7 @@ class StepProgressBar extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: rightActive
                                   ? AppColors.primary
-                                  : AppColors.grey.withOpacity(0.2),
+                                  : AppColors.grey.withValues(alpha: 0.2),
                               borderRadius: BorderRadius.circular(4),
                             ),
                           ),
@@ -104,12 +104,12 @@ class _StepCircle extends StatelessWidget {
       decoration: BoxDecoration(
         color: isActive
             ? AppColors.primary
-            : AppColors.grey.withOpacity(0.15),
+            : AppColors.grey.withValues(alpha: 0.15),
         shape: BoxShape.circle,
         boxShadow: isActive
             ? [
                 BoxShadow(
-                  color: AppColors.primary.withOpacity(0.3),
+                  color: AppColors.primary.withValues(alpha: 0.3),
                   blurRadius: 12,
                   offset: const Offset(0, 6),
                 ),

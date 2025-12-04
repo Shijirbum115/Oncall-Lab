@@ -20,7 +20,8 @@ class ProfileAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bgColor = backgroundColor ?? AppColors.primary.withOpacity(0.2);
+    final bgColor =
+        backgroundColor ?? AppColors.primary.withValues(alpha: 0.2);
 
     // If no avatar URL, show initials
     if (avatarUrl == null || avatarUrl!.isEmpty) {

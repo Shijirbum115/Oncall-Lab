@@ -5,6 +5,7 @@ import 'package:oncall_lab/ui/patient/home_screen.dart';
 import 'package:oncall_lab/ui/patient/laboratories_screen.dart';
 import 'package:oncall_lab/ui/patient/requests_screen.dart';
 import 'package:oncall_lab/ui/patient/profile_screen.dart';
+import 'package:oncall_lab/l10n/app_localizations.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -31,6 +32,8 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.white,
       bottomNavigationBar: BottomNavigationBar(
@@ -45,22 +48,22 @@ class _MainPageState extends State<MainPage> {
             selectedIndex = value;
           });
         },
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Iconsax.home5),
-            label: "Home",
+            icon: const Icon(Iconsax.home5),
+            label: l10n.home,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Iconsax.building),
-            label: "Laboratory",
+            icon: const Icon(Iconsax.building),
+            label: l10n.laboratories,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Iconsax.calendar),
-            label: "Requests",
+            icon: const Icon(Iconsax.calendar),
+            label: l10n.requests,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: "Profile",
+            icon: const Icon(Icons.person),
+            label: l10n.profile,
           ),
         ],
       ),

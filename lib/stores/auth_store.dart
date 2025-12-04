@@ -1,15 +1,20 @@
+import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:oncall_lab/data/repositories/auth_repository.dart';
 import 'package:oncall_lab/data/models/profile_model.dart';
 import 'package:oncall_lab/data/models/doctor_profile_model.dart';
+import 'package:oncall_lab/core/services/storage_service.dart';
+import 'package:oncall_lab/core/services/supabase_service.dart';
 
 part 'auth_store.g.dart';
 
 class AuthStore = _AuthStore with _$AuthStore;
 
 abstract class _AuthStore with Store {
-  final AuthRepository _repository = AuthRepository();
+  _AuthStore(this._repository);
+
+  final AuthRepository _repository;
 
   @observable
   User? currentUser;
@@ -34,6 +39,9 @@ abstract class _AuthStore with Store {
 
   @observable
   String? errorMessage;
+
+  @observable
+  bool isUploadingAvatar = false;
 
   @computed
   bool get isAuthenticated => currentUser != null && currentProfile != null;
@@ -253,6 +261,53 @@ abstract class _AuthStore with Store {
   }
 
   @action
+  Future<bool> uploadProfileAvatar() async {
+    final user = currentUser;
+    if (user == null) return false;
+
+    isUploadingAvatar = true;
+    errorMessage = null;
+
+    try {
+      final file = await StorageService.pickImage();
+      if (file == null) {
+        isUploadingAvatar = false;
+        return false;
+      }
+
+      final url = await StorageService.uploadProfilePhoto(
+        userId: user.id,
+        file: file,
+      );
+
+      if (url == null) {
+        throw Exception('Failed to upload avatar');
+      }
+
+      // Persist avatar URL directly on the profile record, with cache buster
+      final cacheBustedUrl =
+          '$url?t=${DateTime.now().millisecondsSinceEpoch}';
+      await supabase
+          .from('profiles')
+          .update({
+            'avatar_url': cacheBustedUrl,
+            'updated_at': DateTime.now().toIso8601String(),
+          })
+          .eq('id', user.id);
+
+      // Reload profile to ensure all fields are in sync
+      await loadCurrentProfile();
+
+      isUploadingAvatar = false;
+      return true;
+    } catch (e) {
+      errorMessage = _getErrorMessage(e);
+      isUploadingAvatar = false;
+      return false;
+    }
+  }
+
+  @action
   Future<bool> updateSavedAddress(String? address) async {
     final profile = currentProfile;
     if (profile == null) return false;
@@ -331,4 +386,6 @@ abstract class _AuthStore with Store {
   }
 }
 
-final AuthStore authStore = AuthStore();
+final GetIt _getIt = GetIt.instance;
+
+AuthStore get authStore => _getIt<AuthStore>();

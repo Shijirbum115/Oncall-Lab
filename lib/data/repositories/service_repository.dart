@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:oncall_lab/core/services/supabase_service.dart';
 import 'package:oncall_lab/data/models/service_category_model.dart';
 import 'package:oncall_lab/data/models/service_model.dart';
@@ -33,6 +35,77 @@ class ServiceRepository {
   Future<List<Map<String, dynamic>>> getDirectServices() async {
     final data = await supabase.rpc('get_direct_services');
     return List<Map<String, dynamic>>.from(data);
+  }
+
+  /// Aggregates all lab services and returns consolidated test types
+  Future<List<Map<String, dynamic>>> getAggregatedTestTypes({
+    int limit = 200,
+  }) async {
+    final data = await supabase
+        .from('laboratory_services')
+        .select('''
+            service_id,
+            price_mnt,
+            estimated_duration_hours,
+            laboratories ( name ),
+            services (
+              id,
+              name,
+              description,
+              service_categories ( type )
+            )
+          ''')
+        .eq('is_available', true)
+        .limit(limit);
+
+    final labServicesData = List<Map<String, dynamic>>.from(data);
+
+    final combinedTests = <String, Map<String, dynamic>>{};
+
+    for (final record in labServicesData) {
+      final service = record['services'] as Map<String, dynamic>?;
+      if (service == null) continue;
+
+      final serviceId = service['id']?.toString();
+      if (serviceId == null) continue;
+
+      final labName =
+          (record['laboratories'] as Map<String, dynamic>?)?['name'] as String?;
+      final offeredPrice = record['price_mnt'] as int?;
+
+      final entry = combinedTests.putIfAbsent(serviceId, () {
+        return {
+          'id': serviceId,
+          'name': service['name'] ?? '',
+          'price_mnt': offeredPrice ?? 0,
+          'labs': <String>[],
+          'lab_count': 0,
+          'service_categories': service['service_categories'],
+        };
+      });
+
+      if (offeredPrice != null) {
+        final currentPrice = entry['price_mnt'] as int? ?? offeredPrice;
+        entry['price_mnt'] = math.min(currentPrice, offeredPrice);
+      }
+
+      if (labName != null) {
+        final labs = entry['labs'] as List<String>;
+        if (!labs.contains(labName)) {
+          labs.add(labName);
+          entry['lab_count'] = labs.length;
+        }
+      }
+    }
+
+    final aggregatedTests = combinedTests.values.toList()
+      ..sort((a, b) {
+        final bCount = b['lab_count'] as int? ?? 0;
+        final aCount = a['lab_count'] as int? ?? 0;
+        return bCount.compareTo(aCount);
+      });
+
+    return aggregatedTests;
   }
 
   /// Get services offered by a laboratory
@@ -98,6 +171,21 @@ class ServiceRepository {
         .from('doctor_services')
         .select('*, services(*, service_categories(*))')
         .eq('id', doctorServiceId)
+        .single();
+
+    return DoctorServiceModel.fromJson(data);
+  }
+
+  /// Get a doctor service entry for a doctor and service combination
+  Future<DoctorServiceModel> getDoctorServiceByDoctor({
+    required String doctorId,
+    required String serviceId,
+  }) async {
+    final data = await supabase
+        .from('doctor_services')
+        .select('*, services(*, service_categories(*))')
+        .eq('doctor_id', doctorId)
+        .eq('service_id', serviceId)
         .single();
 
     return DoctorServiceModel.fromJson(data);

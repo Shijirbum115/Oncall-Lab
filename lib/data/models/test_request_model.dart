@@ -1,3 +1,4 @@
+// ignore_for_file: invalid_annotation_target
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'test_request_model.freezed.dart';
@@ -66,7 +67,6 @@ class TestRequestModel with _$TestRequestModel {
     @JsonKey(name: 'patient_id') required String patientId,
     @JsonKey(name: 'doctor_id') String? doctorId,
     @JsonKey(name: 'laboratory_id') String? laboratoryId,
-    @JsonKey(name: 'test_type_id') String? testTypeId,
     @JsonKey(name: 'request_type') required RequestType requestType,
     @JsonKey(name: 'service_id') String? serviceId,
     @JsonKey(name: 'laboratory_service_id') String? laboratoryServiceId,

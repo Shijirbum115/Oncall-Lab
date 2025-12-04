@@ -1,4 +1,6 @@
+import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
+import 'package:oncall_lab/data/models/doctor_service_model.dart';
 import 'package:oncall_lab/data/models/service_category_model.dart';
 import 'package:oncall_lab/data/models/service_model.dart';
 import 'package:oncall_lab/data/models/laboratory_service_model.dart';
@@ -9,7 +11,9 @@ part 'service_store.g.dart';
 class ServiceStore = _ServiceStore with _$ServiceStore;
 
 abstract class _ServiceStore with Store {
-  final ServiceRepository _repository = ServiceRepository();
+  _ServiceStore(this._repository);
+
+  final ServiceRepository _repository;
 
   @observable
   ObservableList<ServiceCategoryModel> categories =
@@ -26,6 +30,14 @@ abstract class _ServiceStore with Store {
   @observable
   ObservableMap<String, List<Map<String, dynamic>>> doctorsForServiceCache =
       ObservableMap<String, List<Map<String, dynamic>>>();
+
+  @observable
+  ObservableMap<String, ServiceModel> serviceCache =
+      ObservableMap<String, ServiceModel>();
+
+  @observable
+  ObservableMap<String, DoctorServiceModel> doctorServiceCache =
+      ObservableMap<String, DoctorServiceModel>();
 
   @observable
   bool isLoading = false;
@@ -110,6 +122,45 @@ abstract class _ServiceStore with Store {
   }
 
   @action
+  Future<ServiceModel> fetchServiceById(String serviceId) async {
+    if (serviceCache.containsKey(serviceId)) {
+      return serviceCache[serviceId]!;
+    }
+
+    try {
+      final service = await _repository.getServiceById(serviceId);
+      serviceCache[serviceId] = service;
+      return service;
+    } catch (e) {
+      errorMessage = e.toString();
+      rethrow;
+    }
+  }
+
+  @action
+  Future<DoctorServiceModel> fetchDoctorService({
+    required String doctorId,
+    required String serviceId,
+  }) async {
+    final cacheKey = '${doctorId}_$serviceId';
+    if (doctorServiceCache.containsKey(cacheKey)) {
+      return doctorServiceCache[cacheKey]!;
+    }
+
+    try {
+      final doctorService = await _repository.getDoctorServiceByDoctor(
+        doctorId: doctorId,
+        serviceId: serviceId,
+      );
+      doctorServiceCache[cacheKey] = doctorService;
+      return doctorService;
+    } catch (e) {
+      errorMessage = e.toString();
+      rethrow;
+    }
+  }
+
+  @action
   Future<List<Map<String, dynamic>>> searchServices(String searchTerm) async {
     if (searchTerm.isEmpty) return [];
 
@@ -125,6 +176,8 @@ abstract class _ServiceStore with Store {
   void clearCache() {
     laboratoryServicesCache.clear();
     doctorsForServiceCache.clear();
+    serviceCache.clear();
+    doctorServiceCache.clear();
   }
 
   @action
@@ -133,4 +186,6 @@ abstract class _ServiceStore with Store {
   }
 }
 
-final ServiceStore serviceStore = ServiceStore();
+final GetIt _serviceGetIt = GetIt.instance;
+
+ServiceStore get serviceStore => _serviceGetIt<ServiceStore>();

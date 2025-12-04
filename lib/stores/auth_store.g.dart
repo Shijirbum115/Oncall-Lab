@@ -171,6 +171,22 @@ mixin _$AuthStore on _AuthStore, Store {
     });
   }
 
+  late final _$isUploadingAvatarAtom =
+      Atom(name: '_AuthStore.isUploadingAvatar', context: context);
+
+  @override
+  bool get isUploadingAvatar {
+    _$isUploadingAvatarAtom.reportRead();
+    return super.isUploadingAvatar;
+  }
+
+  @override
+  set isUploadingAvatar(bool value) {
+    _$isUploadingAvatarAtom.reportWrite(value, super.isUploadingAvatar, () {
+      super.isUploadingAvatar = value;
+    });
+  }
+
   late final _$initializeAsyncAction =
       AsyncAction('_AuthStore.initialize', context: context);
 
@@ -289,6 +305,15 @@ mixin _$AuthStore on _AuthStore, Store {
         allergies: allergies));
   }
 
+  late final _$uploadProfileAvatarAsyncAction =
+      AsyncAction('_AuthStore.uploadProfileAvatar', context: context);
+
+  @override
+  Future<bool> uploadProfileAvatar() {
+    return _$uploadProfileAvatarAsyncAction
+        .run(() => super.uploadProfileAvatar());
+  }
+
   late final _$updateSavedAddressAsyncAction =
       AsyncAction('_AuthStore.updateSavedAddress', context: context);
 
@@ -323,6 +348,7 @@ isLoading: ${isLoading},
 isUpdatingProfile: ${isUpdatingProfile},
 isUpdatingAddress: ${isUpdatingAddress},
 errorMessage: ${errorMessage},
+isUploadingAvatar: ${isUploadingAvatar},
 isAuthenticated: ${isAuthenticated},
 userRole: ${userRole},
 isPatient: ${isPatient},

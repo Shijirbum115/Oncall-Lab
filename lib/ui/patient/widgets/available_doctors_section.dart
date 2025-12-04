@@ -3,6 +3,7 @@ import 'package:oncall_lab/core/constants/app_colors.dart';
 import 'package:oncall_lab/ui/patient/models/doctor_profile_ui.dart';
 import 'package:oncall_lab/ui/patient/screens/doctor_detail_screen.dart';
 import 'package:oncall_lab/ui/patient/widgets/doctor_card_tile.dart';
+import 'package:oncall_lab/l10n/app_localizations.dart';
 
 class AvailableDoctorsSection extends StatelessWidget {
   const AvailableDoctorsSection({
@@ -14,13 +15,15 @@ class AvailableDoctorsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     if (doctors.isEmpty) {
-      return const Center(
+      return Center(
         child: Padding(
-          padding: EdgeInsets.all(20),
+          padding: const EdgeInsets.all(20),
           child: Text(
-            'No doctors available at the moment',
-            style: TextStyle(
+            l10n.noDoctorsAvailable,
+            style: const TextStyle(
               fontSize: 16,
               color: AppColors.grey,
             ),

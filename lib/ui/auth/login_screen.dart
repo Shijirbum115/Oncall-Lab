@@ -4,6 +4,9 @@ import 'package:oncall_lab/core/constants/app_colors.dart';
 import 'package:oncall_lab/stores/auth_store.dart';
 import 'package:oncall_lab/ui/auth/patient_registration_screen.dart';
 import 'package:oncall_lab/ui/auth/doctor_registration_screen.dart';
+import 'package:oncall_lab/l10n/app_localizations.dart';
+import 'package:oncall_lab/ui/shared/widgets/language_switcher.dart';
+import 'package:oncall_lab/ui/design_system/widgets/app_text_field.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -45,6 +48,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -55,13 +60,19 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 40),
+                const SizedBox(height: 20),
+                // Language switcher at the top
+                const Align(
+                  alignment: Alignment.centerRight,
+                  child: LanguageSwitcher(),
+                ),
+                const SizedBox(height: 20),
                 // Logo or app name
                 Center(
                   child: Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
+                      color: AppColors.primary.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
@@ -72,40 +83,35 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                 ),
                 const SizedBox(height: 30),
-                const Text(
-                  'Welcome Back',
-                  style: TextStyle(
+                Text(
+                  l10n.welcomeBack,
+                  style: const TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
                     color: AppColors.black,
                   ),
                 ),
                 const SizedBox(height: 8),
-                const Text(
-                  'Sign in to continue',
-                  style: TextStyle(
+                Text(
+                  l10n.signInToContinue,
+                  style: const TextStyle(
                     fontSize: 16,
                     color: AppColors.grey,
                   ),
                 ),
                 const SizedBox(height: 40),
                 // Phone number field
-                TextFormField(
+                AppTextField(
                   controller: _phoneController,
                   keyboardType: TextInputType.phone,
-                  decoration: InputDecoration(
-                    labelText: 'Phone Number',
-                    hintText: '+976 99123456',
-                    prefixIcon: const Icon(Icons.phone),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    filled: true,
-                    fillColor: AppColors.grey.withOpacity(0.1),
-                  ),
+                  label: l10n.phoneNumber,
+                  hint: l10n.phoneNumberHint,
+                  prefixIcon: const Icon(Icons.phone),
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your phone number';
+                    final v = value?.trim() ?? '';
+                    if (v.isEmpty) return l10n.pleaseEnterPhoneNumber;
+                    if (v.length != 8 || int.tryParse(v) == null) {
+                      return l10n.enterValidPhoneNumber;
                     }
                     return null;
                   },
@@ -113,36 +119,29 @@ class _LoginScreenState extends State<LoginScreen> {
                 const SizedBox(height: 20),
                 // Password field
                 Observer(
-                  builder: (_) => TextFormField(
+                  builder: (_) => AppTextField(
                     controller: _passwordController,
+                    label: l10n.password,
+                    prefixIcon: const Icon(Icons.lock),
                     obscureText: _obscurePassword,
-                    decoration: InputDecoration(
-                      labelText: 'Password',
-                      prefixIcon: const Icon(Icons.lock),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscurePassword
+                            ? Icons.visibility_off
+                            : Icons.visibility,
                       ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      filled: true,
-                      fillColor: AppColors.grey.withOpacity(0.1),
+                      onPressed: () {
+                        setState(() {
+                          _obscurePassword = !_obscurePassword;
+                        });
+                      },
                     ),
                     validator: (value) {
                       if (value == null || value.isEmpty) {
-                        return 'Please enter your password';
+                        return l10n.pleaseEnterPassword;
                       }
                       if (value.length < 6) {
-                        return 'Password must be at least 6 characters';
+                        return l10n.passwordMinLength;
                       }
                       return null;
                     },
@@ -155,12 +154,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: TextButton(
                     onPressed: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Password reset coming soon!'),
+                        SnackBar(
+                          content: Text(l10n.passwordResetComingSoon),
                         ),
                       );
                     },
-                    child: const Text('Forgot Password?'),
+                    child: Text(l10n.forgotPassword),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -188,9 +187,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                     AlwaysStoppedAnimation<Color>(Colors.white),
                               ),
                             )
-                          : const Text(
-                              'Sign In',
-                              style: TextStyle(
+                          : Text(
+                              l10n.signIn,
+                              style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -203,20 +202,25 @@ class _LoginScreenState extends State<LoginScreen> {
                 Row(
                   children: [
                     Expanded(
-                      child: Divider(color: AppColors.grey.withOpacity(0.3)),
+                      child: Divider(
+                          color:
+                              AppColors.grey.withValues(alpha: 0.3)),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
-                        'OR',
+                        l10n.or,
                         style: TextStyle(
-                          color: AppColors.grey.withOpacity(0.7),
+                          color:
+                              AppColors.grey.withValues(alpha: 0.7),
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                     ),
                     Expanded(
-                      child: Divider(color: AppColors.grey.withOpacity(0.3)),
+                      child: Divider(
+                          color:
+                              AppColors.grey.withValues(alpha: 0.3)),
                     ),
                   ],
                 ),
@@ -235,7 +239,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       );
                     },
                     icon: const Icon(Icons.person_add),
-                    label: const Text('Register as Patient'),
+                    label: Text(l10n.registerAsPatient),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.primary,
                       side: const BorderSide(color: AppColors.primary),
@@ -260,7 +264,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       );
                     },
                     icon: const Icon(Icons.medical_services),
-                    label: const Text('Register as Doctor'),
+                    label: Text(l10n.registerAsDoctor),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.info,
                       side: const BorderSide(color: AppColors.info),

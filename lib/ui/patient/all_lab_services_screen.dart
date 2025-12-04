@@ -3,6 +3,9 @@ import 'package:iconsax/iconsax.dart';
 import 'package:oncall_lab/core/constants/app_colors.dart';
 import 'package:oncall_lab/core/services/supabase_service.dart';
 import 'package:oncall_lab/ui/patient/laboratories_screen.dart';
+import 'package:oncall_lab/l10n/app_localizations.dart';
+import 'package:oncall_lab/ui/shared/widgets/app_card.dart';
+import 'package:oncall_lab/ui/design_system/widgets/app_text_field.dart';
 
 class AllLabServicesScreen extends StatefulWidget {
   const AllLabServicesScreen({super.key});
@@ -94,10 +97,12 @@ class _AllLabServicesScreenState extends State<AllLabServicesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Laboratory Tests'),
+        title: Text(l10n.laboratoryTestsTitle),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
@@ -106,30 +111,15 @@ class _AllLabServicesScreenState extends State<AllLabServicesScreen> {
           // Search Bar
           Padding(
             padding: const EdgeInsets.all(16),
-            child: TextField(
+            child: AppSearchField(
               controller: _searchController,
-              decoration: InputDecoration(
-                hintText: 'Search for tests...',
-                prefixIcon: const Icon(Iconsax.search_normal, color: AppColors.grey),
-                suffixIcon: _searchController.text.isNotEmpty
-                    ? IconButton(
-                        icon: const Icon(Icons.clear, color: AppColors.grey),
-                        onPressed: () {
-                          _searchController.clear();
-                        },
-                      )
-                    : null,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: AppColors.grey.withOpacity(0.3)),
-                ),
-                filled: true,
-                fillColor: AppColors.grey.withOpacity(0.1),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 14,
-                ),
-              ),
+              hint: l10n.searchTests,
+              prefixIcon: Iconsax.search_normal,
+              onChanged: (_) => _filterServices(),
+              onClear: () {
+                _searchController.clear();
+                _filterServices();
+              },
             ),
           ),
 
@@ -140,7 +130,9 @@ class _AllLabServicesScreenState extends State<AllLabServicesScreen> {
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  '${filteredServices.length} test${filteredServices.length == 1 ? '' : 's'} available',
+                  filteredServices.length == 1
+                      ? l10n.singleTestAvailable
+                      : l10n.testsAvailable(filteredServices.length),
                   style: const TextStyle(
                     fontSize: 14,
                     color: AppColors.grey,
@@ -154,14 +146,14 @@ class _AllLabServicesScreenState extends State<AllLabServicesScreen> {
 
           // Services List
           Expanded(
-            child: _buildContent(),
+            child: _buildContent(l10n),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildContent(AppLocalizations l10n) {
     if (isLoading) {
       return const Center(
         child: CircularProgressIndicator(color: AppColors.primary),
@@ -181,9 +173,9 @@ class _AllLabServicesScreenState extends State<AllLabServicesScreen> {
                 color: AppColors.error,
               ),
               const SizedBox(height: 20),
-              const Text(
-                'Error loading services',
-                style: TextStyle(
+              Text(
+                l10n.errorLoadingServices,
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
@@ -201,7 +193,7 @@ class _AllLabServicesScreenState extends State<AllLabServicesScreen> {
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,
                 ),
-                child: const Text('Retry'),
+                child: Text(l10n.retry),
               ),
             ],
           ),
@@ -219,13 +211,13 @@ class _AllLabServicesScreenState extends State<AllLabServicesScreen> {
               Icon(
                 Iconsax.search_normal,
                 size: 60,
-                color: AppColors.grey.withOpacity(0.5),
+                color: AppColors.grey.withValues(alpha: 0.5),
               ),
               const SizedBox(height: 20),
               Text(
                 _searchController.text.isEmpty
-                    ? 'No services available'
-                    : 'No results found',
+                    ? l10n.noServicesAvailable
+                    : l10n.noResultsFound,
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -235,8 +227,8 @@ class _AllLabServicesScreenState extends State<AllLabServicesScreen> {
               const SizedBox(height: 10),
               Text(
                 _searchController.text.isEmpty
-                    ? 'Please try again later'
-                    : 'Try searching with different keywords',
+                    ? l10n.pleaseTryAgainLater
+                    : l10n.tryDifferentKeywords,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   color: AppColors.grey,
@@ -258,6 +250,7 @@ class _AllLabServicesScreenState extends State<AllLabServicesScreen> {
           final service = filteredServices[index];
           return _ServiceCard(
             service: service,
+            l10n: l10n,
             onTap: () => _navigateToLaboratories(service),
           );
         },
@@ -269,10 +262,12 @@ class _AllLabServicesScreenState extends State<AllLabServicesScreen> {
 class _ServiceCard extends StatelessWidget {
   final Map<String, dynamic> service;
   final VoidCallback onTap;
+  final AppLocalizations l10n;
 
   const _ServiceCard({
     required this.service,
     required this.onTap,
+    required this.l10n,
   });
 
   @override
@@ -280,28 +275,13 @@ class _ServiceCard extends StatelessWidget {
     final sampleType = service['sample_type'] as String?;
     final preparationInstructions = service['preparation_instructions'] as String?;
 
-    return Container(
+    return AppCard(
       margin: const EdgeInsets.only(bottom: 12),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: AppColors.grey.withOpacity(0.2),
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.grey.withOpacity(0.1),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Column(
+      borderRadius: 18,
+      borderColor: AppColors.grey.withValues(alpha: 0.16),
+      showShadow: false,
+      onTap: onTap,
+      child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
@@ -309,7 +289,7 @@ class _ServiceCard extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
+                      color: AppColors.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(10),
                     ),
                     child: const Icon(
@@ -338,14 +318,14 @@ class _ServiceCard extends StatelessWidget {
                               Icon(
                                 Iconsax.drop,
                                 size: 14,
-                                color: AppColors.grey.withOpacity(0.7),
+                                color: AppColors.grey.withValues(alpha: 0.7),
                               ),
                               const SizedBox(width: 4),
                               Text(
                                 sampleType.toUpperCase(),
                                 style: TextStyle(
                                   fontSize: 12,
-                                  color: AppColors.grey.withOpacity(0.7),
+                                  color: AppColors.grey.withValues(alpha: 0.7),
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
@@ -379,10 +359,10 @@ class _ServiceCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: AppColors.warning.withOpacity(0.1),
+                    color: AppColors.warning.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
                     border: Border.all(
-                      color: AppColors.warning.withOpacity(0.3),
+                      color: AppColors.warning.withValues(alpha: 0.3),
                     ),
                   ),
                   child: Row(
@@ -390,13 +370,13 @@ class _ServiceCard extends StatelessWidget {
                       Icon(
                         Icons.info_outline,
                         size: 16,
-                        color: AppColors.warning.withOpacity(0.8),
+                        color: AppColors.warning.withValues(alpha: 0.8),
                       ),
                       const SizedBox(width: 8),
-                      const Expanded(
+                      Expanded(
                         child: Text(
-                          'Preparation required',
-                          style: TextStyle(
+                          l10n.preparationRequired,
+                          style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
                             color: AppColors.warning,
@@ -409,8 +389,6 @@ class _ServiceCard extends StatelessWidget {
               ],
             ],
           ),
-        ),
-      ),
     );
   }
 }

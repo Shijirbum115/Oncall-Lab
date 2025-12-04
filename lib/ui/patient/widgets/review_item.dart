@@ -17,7 +17,7 @@ class ReviewItem extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 8,
           ),
         ],
@@ -29,7 +29,7 @@ class ReviewItem extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 24,
-                backgroundColor: Color(review.badgeColor).withOpacity(0.25),
+                backgroundColor: Color(review.badgeColor).withValues(alpha: 0.25),
                 backgroundImage: NetworkImage(review.avatarUrl),
               ),
               const SizedBox(width: 12),

@@ -3,6 +3,9 @@ import 'package:iconsax/iconsax.dart';
 import 'package:oncall_lab/core/constants/app_colors.dart';
 import 'package:oncall_lab/core/services/supabase_service.dart';
 import 'package:oncall_lab/ui/patient/laboratory_detail_screen_new.dart';
+import 'package:oncall_lab/l10n/app_localizations.dart';
+import 'package:oncall_lab/ui/design_system/widgets/app_text_field.dart';
+import 'package:oncall_lab/ui/shared/widgets/app_card.dart';
 
 class LaboratoriesScreen extends StatefulWidget {
   final String? preSelectedServiceId;
@@ -83,20 +86,24 @@ class _LaboratoriesScreenState extends State<LaboratoriesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: Text(widget.serviceName != null
-            ? 'Laboratories - ${widget.serviceName}'
-            : 'Laboratories'),
+        title: Text(
+          widget.serviceName != null
+              ? '${l10n.laboratories} - ${widget.serviceName}'
+              : l10n.laboratories,
+        ),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
-      body: _buildContent(),
+      body: _buildContent(l10n),
     );
   }
 
-  Widget _buildContent() {
+  Widget _buildContent(AppLocalizations l10n) {
     if (isLoading) {
       return const Center(
         child: CircularProgressIndicator(color: AppColors.primary),
@@ -113,7 +120,7 @@ class _LaboratoriesScreenState extends State<LaboratoriesScreen> {
               const Icon(Icons.error_outline, color: AppColors.error, size: 48),
               const SizedBox(height: 16),
               Text(
-                'Unable to load laboratories',
+                l10n.unableToLoadLaboratories,
                 style: Theme.of(context)
                     .textTheme
                     .titleMedium
@@ -134,7 +141,7 @@ class _LaboratoriesScreenState extends State<LaboratoriesScreen> {
                   });
                   _loadLaboratories();
                 },
-                child: const Text('Retry'),
+                child: Text(l10n.retry),
               ),
             ],
           ),
@@ -146,12 +153,12 @@ class _LaboratoriesScreenState extends State<LaboratoriesScreen> {
       return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
-          children: const [
-            Icon(Iconsax.buildings, size: 60, color: AppColors.grey),
-            SizedBox(height: 12),
+          children: [
+            const Icon(Iconsax.buildings, size: 60, color: AppColors.grey),
+            const SizedBox(height: 12),
             Text(
-              'No laboratories available right now',
-              style: TextStyle(
+              l10n.noLaboratoriesAvailable,
+              style: const TextStyle(
                 color: AppColors.grey,
                 fontWeight: FontWeight.w600,
               ),
@@ -172,10 +179,10 @@ class _LaboratoriesScreenState extends State<LaboratoriesScreen> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildSearchBar(),
+                _buildSearchBar(l10n),
                 if (filteredLaboratories.isEmpty) ...[
                   const SizedBox(height: 24),
-                  _buildEmptyResult(),
+                  _buildEmptyResult(l10n),
                 ] else
                   const SizedBox(height: 16),
               ],
@@ -185,7 +192,7 @@ class _LaboratoriesScreenState extends State<LaboratoriesScreen> {
           final isLast = index == filteredLaboratories.length;
           return Column(
             children: [
-              _buildLabCard(lab),
+              _buildLabCard(lab, l10n),
               if (!isLast) const SizedBox(height: 12),
             ],
           );
@@ -194,30 +201,23 @@ class _LaboratoriesScreenState extends State<LaboratoriesScreen> {
     );
   }
 
-  Widget _buildSearchBar() {
-    return TextField(
+  Widget _buildSearchBar(AppLocalizations l10n) {
+    return AppSearchField(
       controller: _searchController,
-      decoration: InputDecoration(
-        hintText: 'Search laboratories...',
-        prefixIcon: const Icon(Iconsax.search_normal_1, color: AppColors.primary),
-        suffixIcon: _query.isNotEmpty
-            ? IconButton(
-                icon: const Icon(Icons.close, color: AppColors.grey),
-                onPressed: () {
-                  _searchController.clear();
-                },
-              )
-            : null,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
-        filled: true,
-        fillColor: AppColors.grey.withOpacity(0.1),
-      ),
+      hint: l10n.searchLaboratories,
+      prefixIcon: Iconsax.search_normal_1,
+      onChanged: (_) => _onSearchChanged(),
+      onClear: () {
+        _searchController.clear();
+        _onSearchChanged();
+      },
     );
   }
 
-  Widget _buildLabCard(Map<String, dynamic> laboratory) {
+  Widget _buildLabCard(
+    Map<String, dynamic> laboratory,
+    AppLocalizations l10n,
+  ) {
     return _LaboratoryCard(
       laboratory: laboratory,
       onTap: () {
@@ -234,12 +234,12 @@ class _LaboratoriesScreenState extends State<LaboratoriesScreen> {
     );
   }
 
-  Widget _buildEmptyResult() {
+  Widget _buildEmptyResult(AppLocalizations l10n) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppColors.grey.withOpacity(0.1),
+        color: AppColors.grey.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -247,7 +247,7 @@ class _LaboratoriesScreenState extends State<LaboratoriesScreen> {
           const Icon(Icons.search_off, color: AppColors.grey, size: 42),
           const SizedBox(height: 8),
           Text(
-            'No laboratories match "$_query".',
+            l10n.noLaboratoriesMatchQuery(_query),
             textAlign: TextAlign.center,
             style: const TextStyle(color: AppColors.grey),
           ),
@@ -284,81 +284,69 @@ class _LaboratoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final name = laboratory['name'] as String? ?? 'Laboratory';
-    final address = laboratory['address'] as String? ?? 'Address not provided';
+    final l10n = AppLocalizations.of(context)!;
+    final name = laboratory['name'] as String? ?? l10n.laboratoryFallback;
+    final address =
+        laboratory['address'] as String? ?? l10n.addressNotProvided;
     final phone = laboratory['phone_number'] as String?;
 
-    return InkWell(
+    return AppCard(
+      borderRadius: 18,
       onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 10,
-              offset: const Offset(0, 4),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 28,
+            backgroundColor: AppColors.primary.withValues(alpha: 0.15),
+            child: const Icon(
+              Iconsax.buildings,
+              color: AppColors.primary,
             ),
-          ],
-        ),
-        child: Row(
-          children: [
-            CircleAvatar(
-              radius: 28,
-              backgroundColor: AppColors.primary.withOpacity(0.15),
-              child: const Icon(
-                Iconsax.buildings,
-                color: AppColors.primary,
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    name,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.black,
-                    ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.black,
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    address,
-                    style: const TextStyle(
-                      color: AppColors.grey,
-                      fontSize: 13,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  address,
+                  style: const TextStyle(
+                    color: AppColors.grey,
+                    fontSize: 13,
                   ),
-                  if (phone != null && phone.isNotEmpty) ...[
-                    const SizedBox(height: 6),
-                    Row(
-                      children: [
-                        const Icon(Icons.phone, size: 14, color: AppColors.grey),
-                        const SizedBox(width: 6),
-                        Text(
-                          phone,
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (phone != null && phone.isNotEmpty) ...[
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      const Icon(Icons.phone, size: 14, color: AppColors.grey),
+                      const SizedBox(width: 6),
+                      Text(
+                        phone,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
                         ),
-                      ],
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ],
-              ),
+              ],
             ),
-            const Icon(Iconsax.arrow_right_3, color: AppColors.grey),
-          ],
-        ),
+          ),
+          const Icon(Iconsax.arrow_right_3, color: AppColors.grey),
+        ],
       ),
     );
   }

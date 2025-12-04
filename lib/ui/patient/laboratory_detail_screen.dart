@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:oncall_lab/core/constants/app_colors.dart';
+import 'package:oncall_lab/l10n/app_localizations.dart';
 
 class LaboratoryDetailScreen extends StatelessWidget {
   const LaboratoryDetailScreen({super.key, required this.laboratory});
@@ -9,13 +10,14 @@ class LaboratoryDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final operatingHours = laboratory['operating_hours'] as Map<String, dynamic>?;
     final latitude = laboratory['latitude'];
     final longitude = laboratory['longitude'];
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(laboratory['name'] ?? 'Laboratory'),
+        title: Text(laboratory['name'] ?? l10n.laboratoryFallback),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -25,33 +27,33 @@ class LaboratoryDetailScreen extends StatelessWidget {
             children: [
               _InfoTile(
                 icon: Iconsax.location,
-                title: 'Address',
-                value: laboratory['address'] ?? 'Not specified',
+                title: l10n.address,
+                value: laboratory['address'] ?? l10n.notSpecified,
               ),
               const SizedBox(height: 12),
               _InfoTile(
                 icon: Iconsax.call,
-                title: 'Phone',
-                value: laboratory['phone_number'] ?? 'Not specified',
+                title: l10n.phoneContact,
+                value: laboratory['phone_number'] ?? l10n.notSpecified,
               ),
               const SizedBox(height: 12),
               _InfoTile(
                 icon: Iconsax.sms,
-                title: 'Email',
-                value: laboratory['email'] ?? 'Not specified',
+                title: l10n.email,
+                value: laboratory['email'] ?? l10n.notSpecified,
               ),
               const SizedBox(height: 12),
               if (latitude != null && longitude != null)
                 _InfoTile(
                   icon: Iconsax.map,
-                  title: 'Coordinates',
+                  title: l10n.coordinates,
                   value: '$latitude, $longitude',
                 ),
               if (operatingHours != null) ...[
                 const SizedBox(height: 24),
-                const Text(
-                  'Operating Hours',
-                  style: TextStyle(
+                Text(
+                  l10n.operatingHours,
+                  style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: AppColors.black,
@@ -84,10 +86,10 @@ class LaboratoryDetailScreen extends StatelessWidget {
               const SizedBox(height: 24),
               _InfoTile(
                 icon: Iconsax.information,
-                title: 'Status',
+                title: l10n.status,
                 value: (laboratory['is_active'] == true)
-                    ? 'Accepting requests'
-                    : 'Temporarily unavailable',
+                    ? l10n.acceptingRequests
+                    : l10n.temporarilyUnavailable,
               ),
             ],
           ),
@@ -118,7 +120,7 @@ class _InfoTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -130,7 +132,7 @@ class _InfoTile extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: AppColors.primary.withOpacity(0.1),
+              color: AppColors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: AppColors.primary),

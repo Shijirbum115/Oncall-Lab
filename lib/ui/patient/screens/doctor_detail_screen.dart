@@ -276,7 +276,7 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: AppColors.grey.withOpacity(0.1),
+                          color: AppColors.grey.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Text(
@@ -302,7 +302,7 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
                         CircleAvatar(
                           radius: 28,
                           backgroundColor:
-                              AppColors.primary.withOpacity(0.15),
+                              AppColors.primary.withValues(alpha: 0.15),
                           child: const Icon(
                             Icons.location_on,
                             color: AppColors.primary,
@@ -343,7 +343,7 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: AppColors.grey.withOpacity(0.3),
+              color: AppColors.grey.withValues(alpha: 0.3),
               blurRadius: 8,
             ),
           ],
@@ -409,7 +409,7 @@ class _ActionCircle extends StatelessWidget {
       onTap: onTap,
       child: CircleAvatar(
         radius: 30,
-        backgroundColor: Colors.white.withOpacity(0.25),
+        backgroundColor: Colors.white.withValues(alpha: 0.25),
         child: Icon(icon, color: Colors.white),
       ),
     );

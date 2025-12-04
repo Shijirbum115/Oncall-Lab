@@ -4,6 +4,8 @@ import 'package:iconsax/iconsax.dart';
 import 'package:oncall_lab/core/constants/app_colors.dart';
 import 'package:oncall_lab/stores/service_store.dart';
 import 'package:oncall_lab/ui/patient/booking/direct_service_booking_screen.dart';
+import 'package:oncall_lab/l10n/app_localizations.dart';
+import 'package:oncall_lab/ui/shared/widgets/app_card.dart';
 
 class DirectServicesScreen extends StatefulWidget {
   const DirectServicesScreen({super.key});
@@ -21,10 +23,12 @@ class _DirectServicesScreenState extends State<DirectServicesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Direct Doctor Services'),
+        title: Text(l10n.directDoctorServices),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
@@ -46,9 +50,9 @@ class _DirectServicesScreenState extends State<DirectServicesScreen> {
                     const Icon(Icons.error_outline,
                         size: 60, color: AppColors.error),
                     const SizedBox(height: 16),
-                    const Text(
-                      'Error loading services',
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    Text(
+                      l10n.errorLoadingServices,
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -59,7 +63,7 @@ class _DirectServicesScreenState extends State<DirectServicesScreen> {
                     const SizedBox(height: 16),
                     ElevatedButton(
                       onPressed: () => serviceStore.loadDirectServices(),
-                      child: const Text('Retry'),
+                      child: Text(l10n.retry),
                     ),
                   ],
                 ),
@@ -70,15 +74,15 @@ class _DirectServicesScreenState extends State<DirectServicesScreen> {
           final services = serviceStore.directServices;
 
           if (services.isEmpty) {
-            return const Center(
+            return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Iconsax.health, size: 60, color: AppColors.grey),
-                  SizedBox(height: 16),
+                  const Icon(Iconsax.health, size: 60, color: AppColors.grey),
+                  const SizedBox(height: 16),
                   Text(
-                    'No services available',
-                    style: TextStyle(
+                    l10n.noServicesAvailable,
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                       color: AppColors.grey,
@@ -115,6 +119,7 @@ class _DirectServicesScreenState extends State<DirectServicesScreen> {
                   categoryType: categoryType,
                   categoryIcon: categoryIcon,
                   services: categoryServices,
+                  l10n: l10n,
                 );
               },
             ),
@@ -130,12 +135,14 @@ class _CategorySection extends StatelessWidget {
   final String categoryType;
   final String? categoryIcon;
   final List<Map<String, dynamic>> services;
+  final AppLocalizations l10n;
 
   const _CategorySection({
     required this.categoryName,
     required this.categoryType,
     required this.categoryIcon,
     required this.services,
+    required this.l10n,
   });
 
   IconData _getCategoryIcon() {
@@ -174,7 +181,7 @@ class _CategorySection extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           margin: const EdgeInsets.only(bottom: 12),
           decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
+            color: color.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(12),
           ),
           child: Row(
@@ -214,6 +221,7 @@ class _CategorySection extends StatelessWidget {
         ...services.map((service) => _ServiceCard(
               service: service,
               categoryColor: color,
+              l10n: l10n,
             )),
 
         const SizedBox(height: 24),
@@ -225,10 +233,12 @@ class _CategorySection extends StatelessWidget {
 class _ServiceCard extends StatelessWidget {
   final Map<String, dynamic> service;
   final Color categoryColor;
+  final AppLocalizations l10n;
 
   const _ServiceCard({
     required this.service,
     required this.categoryColor,
+    required this.l10n,
   });
 
   @override
@@ -236,131 +246,119 @@ class _ServiceCard extends StatelessWidget {
     final minPrice = service['min_price_mnt'] as int?;
     final maxPrice = service['max_price_mnt'] as int?;
     final doctorsCount = service['available_doctors_count'] as int? ?? 0;
+    final priceLabel = minPrice == null
+        ? null
+        : (maxPrice != null && minPrice != maxPrice
+            ? '${l10n.priceInMNT(minPrice)} - ${l10n.priceInMNT(maxPrice)}'
+            : l10n.priceInMNT(minPrice));
 
-    return Container(
+    return AppCard(
       margin: const EdgeInsets.only(bottom: 12),
-      child: InkWell(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (_) => DirectServiceBookingScreen(
-                serviceId: service['service_id'],
-                serviceName: service['service_name'],
-              ),
+      borderRadius: 18,
+      borderColor: categoryColor.withValues(alpha: 0.15),
+      showShadow: false,
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => DirectServiceBookingScreen(
+              serviceId: service['service_id'],
+              serviceName: service['service_name'],
             ),
-          );
-        },
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: categoryColor.withOpacity(0.3)),
-            boxShadow: [
-              BoxShadow(
-                color: categoryColor.withOpacity(0.1),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
+          ),
+        );
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  service['service_name'],
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.black,
+                  ),
+                ),
+              ),
+              const Icon(
+                Iconsax.arrow_right_3,
+                size: 20,
+                color: AppColors.grey,
               ),
             ],
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          if (service['service_description'] != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              service['service_description'],
+              style: const TextStyle(
+                fontSize: 14,
+                color: AppColors.grey,
+                height: 1.4,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+          const SizedBox(height: 12),
+          Row(
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Text(
-                      service['service_name'],
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.black,
-                      ),
+              if (priceLabel != null) ...[
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: categoryColor.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    priceLabel,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: categoryColor,
                     ),
                   ),
-                  const Icon(
-                    Iconsax.arrow_right_3,
-                    size: 20,
-                    color: AppColors.grey,
+                ),
+                const SizedBox(width: 12),
+              ],
+              Row(
+                children: [
+                  Icon(Icons.person, size: 16, color: categoryColor),
+                  const SizedBox(width: 4),
+                  Text(
+                    '$doctorsCount ${doctorsCount == 1 ? l10n.doctor : l10n.doctors}',
+                    style: TextStyle(
+                      fontSize: 13,
+                      color: categoryColor,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ],
               ),
-              if (service['service_description'] != null) ...[
-                const SizedBox(height: 8),
-                Text(
-                  service['service_description'],
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.grey,
-                    height: 1.4,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+              if (service['estimated_duration_minutes'] != null) ...[
+                const SizedBox(width: 12),
+                Row(
+                  children: [
+                    const Icon(Icons.access_time,
+                        size: 16, color: AppColors.grey),
+                    const SizedBox(width: 4),
+                    Text(
+                      '~${l10n.durationMinutes(service['estimated_duration_minutes'] as int)}',
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: AppColors.grey,
+                      ),
+                    ),
+                  ],
                 ),
               ],
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  if (minPrice != null) ...[
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 6),
-                      decoration: BoxDecoration(
-                        color: categoryColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        minPrice == maxPrice
-                            ? '$minPrice MNT'
-                            : '$minPrice - $maxPrice MNT',
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.bold,
-                          color: categoryColor,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                  ],
-                  Row(
-                    children: [
-                      Icon(Icons.person, size: 16, color: categoryColor),
-                      const SizedBox(width: 4),
-                      Text(
-                        '$doctorsCount ${doctorsCount == 1 ? 'doctor' : 'doctors'}',
-                        style: TextStyle(
-                          fontSize: 13,
-                          color: categoryColor,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                  if (service['estimated_duration_minutes'] != null) ...[
-                    const SizedBox(width: 12),
-                    Row(
-                      children: [
-                        const Icon(Icons.access_time,
-                            size: 16, color: AppColors.grey),
-                        const SizedBox(width: 4),
-                        Text(
-                          '~${service['estimated_duration_minutes']}min',
-                          style: const TextStyle(
-                            fontSize: 13,
-                            color: AppColors.grey,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ],
-              ),
             ],
           ),
-        ),
+        ],
       ),
     );
   }
