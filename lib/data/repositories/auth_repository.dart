@@ -44,16 +44,26 @@ class AuthRepository {
   }) async {
     final email = _buildEmailFromPhone(phoneNumber);
 
-    final response = await supabase.auth.signInWithPassword(
-      email: email,
-      password: password,
-    );
+    print('🔐 [AUTH] Attempting login with phone: $phoneNumber');
+    print('🔐 [AUTH] Converted to email: $email');
 
-    if (response.user == null) {
-      throw Exception('Failed to sign in');
+    try {
+      final response = await supabase.auth.signInWithPassword(
+        email: email,
+        password: password,
+      );
+
+      if (response.user == null) {
+        print('❌ [AUTH] Login failed: No user returned');
+        throw Exception('Failed to sign in');
+      }
+
+      print('✅ [AUTH] Login successful! User ID: ${response.user!.id}');
+      return response.user!;
+    } catch (e) {
+      print('❌ [AUTH] Login error: $e');
+      rethrow;
     }
-
-    return response.user!;
   }
 
   /// Create patient profile
@@ -164,8 +174,12 @@ class AuthRepository {
   /// Get current user profile
   Future<ProfileModel?> getCurrentProfile() async {
     final user = supabase.auth.currentUser;
-    if (user == null) return null;
+    if (user == null) {
+      print('⚠️ [AUTH] No current user when fetching profile');
+      return null;
+    }
 
+    print('👤 [AUTH] Fetching profile for user ID: ${user.id}');
     try {
       final data = await supabase
           .from('profiles')
@@ -173,8 +187,10 @@ class AuthRepository {
           .eq('id', user.id)
           .single();
 
+      print('✅ [AUTH] Profile loaded successfully: ${data['full_name']}');
       return ProfileModel.fromJson(data);
     } catch (e) {
+      print('❌ [AUTH] Failed to load profile: $e');
       return null;
     }
   }

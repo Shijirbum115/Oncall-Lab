@@ -96,17 +96,26 @@ abstract class _AuthStore with Store {
     isLoading = true;
     errorMessage = null;
 
+    print('📱 [AUTH_STORE] Starting sign in process...');
     try {
       currentUser = await _repository.signIn(
         phoneNumber: phoneNumber,
         password: password,
       );
 
+      print('📱 [AUTH_STORE] User authenticated, loading profile...');
       await loadCurrentProfile();
 
+      if (currentProfile == null) {
+        print('❌ [AUTH_STORE] Profile is null after loading!');
+        throw Exception('Failed to load user profile');
+      }
+
+      print('✅ [AUTH_STORE] Sign in complete! Role: ${currentProfile?.role}');
       isLoading = false;
       return true;
     } catch (e) {
+      print('❌ [AUTH_STORE] Sign in failed: $e');
       errorMessage = _getErrorMessage(e);
       isLoading = false;
       return false;
