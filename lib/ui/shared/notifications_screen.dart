@@ -6,6 +6,7 @@ import 'package:oncall_lab/data/models/notification_model.dart';
 import 'package:oncall_lab/stores/auth_store.dart';
 import 'package:oncall_lab/stores/notification_store.dart';
 import 'package:oncall_lab/core/constants/app_colors.dart';
+import 'package:oncall_lab/ui/shared/widgets/mascot_state_widget.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -73,33 +74,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           }
 
           if (_notificationStore.notifications.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.notifications_none,
-                    size: 80,
-                    color: Colors.grey[300],
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'No notifications yet',
-                    style: TextStyle(
-                      fontSize: 18,
-                      color: Colors.grey[600],
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'You\'ll see updates about your requests here',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[500],
-                    ),
-                  ),
-                ],
+            return const Center(
+              child: MascotStateWidget(
+                emotion: MascotEmotion.sleeping,
+                title: 'No notifications yet',
+                subtitle: 'You\'ll see updates about your requests here',
               ),
             );
           }

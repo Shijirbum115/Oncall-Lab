@@ -1,10 +1,11 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 /// Simple push notification service for Firebase Cloud Messaging
 class PushNotificationService {
-  final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+  FirebaseMessaging? _messaging;
   final FlutterLocalNotificationsPlugin _localNotifications =
       FlutterLocalNotificationsPlugin();
 
@@ -14,8 +15,17 @@ class PushNotificationService {
   /// Initialize push notifications
   Future<void> initialize() async {
     try {
+      // Check if Firebase is initialized
+      try {
+        Firebase.app();
+        _messaging = FirebaseMessaging.instance;
+      } catch (e) {
+        debugPrint('⚠️ Firebase not initialized, push notifications disabled');
+        return;
+      }
+
       // Request permission
-      final settings = await _messaging.requestPermission(
+      final settings = await _messaging!.requestPermission(
         alert: true,
         badge: true,
         sound: true,
@@ -28,11 +38,11 @@ class PushNotificationService {
         await _initializeLocalNotifications();
 
         // Get FCM token
-        _fcmToken = await _messaging.getToken();
+        _fcmToken = await _messaging!.getToken();
         debugPrint('📱 FCM Token: $_fcmToken');
 
         // Listen for token refresh
-        _messaging.onTokenRefresh.listen((token) {
+        _messaging!.onTokenRefresh.listen((token) {
           _fcmToken = token;
           debugPrint('🔄 FCM Token refreshed: $token');
         });
@@ -44,7 +54,7 @@ class PushNotificationService {
         FirebaseMessaging.onMessageOpenedApp.listen(_handleNotificationTap);
 
         // Check if app was opened from notification
-        final initialMessage = await _messaging.getInitialMessage();
+        final initialMessage = await _messaging!.getInitialMessage();
         if (initialMessage != null) {
           _handleNotificationTap(initialMessage);
         }
@@ -121,14 +131,16 @@ class PushNotificationService {
 
   /// Get current FCM token
   Future<String?> getToken() async {
+    if (_messaging == null) return null;
     if (_fcmToken != null) return _fcmToken;
-    _fcmToken = await _messaging.getToken();
+    _fcmToken = await _messaging!.getToken();
     return _fcmToken;
   }
 
   /// Delete FCM token (on logout)
   Future<void> deleteToken() async {
-    await _messaging.deleteToken();
+    if (_messaging == null) return;
+    await _messaging!.deleteToken();
     _fcmToken = null;
     debugPrint('🗑️ FCM token deleted');
   }

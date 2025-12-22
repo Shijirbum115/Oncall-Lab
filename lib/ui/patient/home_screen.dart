@@ -12,6 +12,7 @@ import 'package:oncall_lab/ui/patient/all_lab_services_screen.dart';
 import 'package:oncall_lab/ui/patient/direct_services_screen.dart';
 import 'package:oncall_lab/ui/shared/widgets/profile_avatar.dart';
 import 'package:oncall_lab/ui/shared/widgets/notification_bell.dart';
+import 'package:oncall_lab/ui/shared/widgets/mascot_state_widget.dart';
 import 'package:oncall_lab/l10n/app_localizations.dart';
 import 'package:oncall_lab/ui/patient/widgets/ad_banner.dart';
 
@@ -77,44 +78,22 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
 
         if (_homeStore.isLoading && !hasData) {
           return const Center(
-            child: CircularProgressIndicator(
-              color: AppColors.primary,
+            child: MascotStateWidget(
+              emotion: MascotEmotion.loading,
+              title: 'Мэдээлэл уншиж байна...',
             ),
           );
         }
 
         if (_homeStore.errorMessage != null && !hasData) {
           return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.error_outline,
-                    size: 60,
-                    color: AppColors.error,
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    l10n.errorLoadingData,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    _homeStore.errorMessage ?? '',
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(color: AppColors.grey),
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: _homeStore.loadHomeData,
-                    child: Text(l10n.retry),
-                  ),
-                ],
+            child: SingleChildScrollView(
+              child: MascotStateWidget(
+                emotion: MascotEmotion.error,
+                title: l10n.errorLoadingData,
+                subtitle: _homeStore.errorMessage ?? '',
+                actionText: l10n.retry,
+                onAction: _homeStore.loadHomeData,
               ),
             ),
           );

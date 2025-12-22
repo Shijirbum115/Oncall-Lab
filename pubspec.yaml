@@ -1,5 +1,5 @@
 name: oncall_lab
-description: "OnCall Lab - Home laboratory test sample collection app for Ulaanbaatar"
+description: "BUGAMED - Гэрээс лабораторийн шинжилгээ"
 publish_to: 'none'
 
 version: 1.0.0+1
@@ -45,6 +45,7 @@ dependencies:
   json_annotation: ^4.9.0
   url_launcher: ^6.3.1
   shared_preferences: ^2.3.4
+  flutter_dotenv: ^5.2.1
 
   # UI Enhancements (from Doctor Appointment App)
   animate_do: ^3.3.4
@@ -55,6 +56,9 @@ dependencies:
   geolocator: ^10.1.0
   geocoding: ^2.1.1
   http: ^1.1.0
+
+  # QR Code
+  qr_flutter: ^4.1.0
 
 dev_dependencies:
   flutter_test:
@@ -79,7 +83,9 @@ flutter:
   # Assets
   assets:
     - assets/images/
+    - assets/images/mascot/
     - assets/avatars/
+    - .env
 
   # fonts:
   #   - family: SFPro

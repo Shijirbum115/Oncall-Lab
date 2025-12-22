@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:oncall_lab/core/services/supabase_service.dart';
 import 'package:oncall_lab/core/services/push_notification_service.dart';
 import 'package:oncall_lab/core/constants/app_colors.dart';
@@ -20,11 +21,23 @@ import 'package:oncall_lab/ui/design_system/app_theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase
-  await Firebase.initializeApp();
+  // Load environment variables
+  await dotenv.load(fileName: '.env');
 
-  // Register background message handler
-  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  // Initialize Firebase (optional - required for push notifications)
+  bool firebaseInitialized = false;
+  try {
+    await Firebase.initializeApp();
+    firebaseInitialized = true;
+
+    // Register background message handler
+    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+    print('✅ Firebase initialized successfully');
+  } catch (e) {
+    print('⚠️  Firebase initialization failed: $e');
+    print('📱 App will run without push notifications');
+    print('ℹ️  To enable push notifications, run: flutterfire configure');
+  }
 
   await setupServiceLocator();
 
@@ -33,15 +46,21 @@ void main() async {
   await authStore.initialize();
   await localeStore.initialize();
 
-  // Initialize push notifications
-  final pushService = locator<PushNotificationService>();
-  await pushService.initialize();
+  // Initialize push notifications only if Firebase is available
+  if (firebaseInitialized) {
+    try {
+      final pushService = locator<PushNotificationService>();
+      await pushService.initialize();
 
-  // Initialize notification store if user is authenticated
-  if (authStore.isAuthenticated && authStore.currentProfile != null) {
-    final notificationStore = locator<NotificationStore>();
-    await notificationStore.initialize(authStore.currentProfile!.id);
-    await notificationStore.updateFcmToken(authStore.currentProfile!.id);
+      // Initialize notification store if user is authenticated
+      if (authStore.isAuthenticated && authStore.currentProfile != null) {
+        final notificationStore = locator<NotificationStore>();
+        await notificationStore.initialize(authStore.currentProfile!.id);
+        await notificationStore.updateFcmToken(authStore.currentProfile!.id);
+      }
+    } catch (e) {
+      print('⚠️  Push notification setup failed: $e');
+    }
   }
 
   runApp(const OnCallLabApp());
@@ -54,7 +73,7 @@ class OnCallLabApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return Observer(
       builder: (_) => MaterialApp(
-        title: 'OnCall Lab',
+        title: 'BUGAMED',
         debugShowCheckedModeBanner: false,
         // Localization support
         localizationsDelegates: const [

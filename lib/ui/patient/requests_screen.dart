@@ -6,6 +6,7 @@ import 'package:oncall_lab/stores/test_request_store.dart';
 import 'package:oncall_lab/data/models/test_request_model.dart';
 import 'package:oncall_lab/l10n/app_localizations.dart';
 import 'package:oncall_lab/ui/shared/widgets/app_card.dart';
+import 'package:oncall_lab/ui/shared/widgets/mascot_state_widget.dart';
 
 class PatientRequestsScreen extends StatefulWidget {
   const PatientRequestsScreen({super.key});
@@ -215,48 +216,24 @@ class _PatientRequestsScreenState extends State<PatientRequestsScreen> {
     AppLocalizations l10n,
   ) {
     if (requests.isEmpty) {
-      final iconData = switch (type) {
-        'active' => Icons.calendar_today_outlined,
-        'completed' => Icons.emoji_events_outlined,
-        _ => Icons.cancel_outlined,
+      final emotion = switch (type) {
+        'active' => MascotEmotion.empty,
+        'completed' => MascotEmotion.sleeping,
+        _ => MascotEmotion.canceled,
+      };
+
+      final title = switch (type) {
+        'active' => l10n.noActiveRequests,
+        'completed' => l10n.noCompletedRequests,
+        _ => l10n.noCancelledRequests,
       };
 
       return Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 32),
-          child: AppCard(
-            borderRadius: 20,
-            showShadow: false,
-            backgroundColor: AppColors.grey.withValues(alpha: 0.08),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(iconData, size: 48, color: AppColors.grey),
-                const SizedBox(height: 16),
-                Text(
-                  switch (type) {
-                    'active' => l10n.noActiveRequests,
-                    'completed' => l10n.noCompletedRequests,
-                    _ => l10n.noCancelledRequests,
-                  },
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.black,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  l10n.requestHomeServicePrompt,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.grey,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-            ),
+        child: SingleChildScrollView(
+          child: MascotStateWidget(
+            emotion: emotion,
+            title: title,
+            subtitle: l10n.requestHomeServicePrompt,
           ),
         ),
       );
