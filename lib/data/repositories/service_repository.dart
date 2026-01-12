@@ -23,7 +23,7 @@ class ServiceRepository {
   Future<List<ServiceModel>> getServicesByCategory(String categoryId) async {
     final data = await supabase
         .from('services')
-        .select('*, service_categories(*)')
+        .select('id, category_id, name, name_mn, description, description_mn, sample_type, equipment_needed, preparation_instructions, estimated_duration_minutes, is_active, created_at, updated_at, service_categories(*)')
         .eq('category_id', categoryId)
         .eq('is_active', true)
         .order('name');
@@ -51,6 +51,7 @@ class ServiceRepository {
             services (
               id,
               name,
+              name_mn,
               description,
               service_categories ( type )
             )
@@ -77,6 +78,7 @@ class ServiceRepository {
         return {
           'id': serviceId,
           'name': service['name'] ?? '',
+          'name_mn': service['name_mn'],
           'price_mnt': offeredPrice ?? 0,
           'labs': <String>[],
           'lab_count': 0,
@@ -113,7 +115,7 @@ class ServiceRepository {
       String laboratoryId) async {
     final data = await supabase
         .from('laboratory_services')
-        .select('*, services(*, service_categories(*))')
+        .select('*, services(id, category_id, name, name_mn, description, description_mn, sample_type, equipment_needed, preparation_instructions, estimated_duration_minutes, is_active, created_at, updated_at, service_categories(*))')
         .eq('laboratory_id', laboratoryId)
         .eq('is_available', true)
         .order('services(name)');
@@ -146,7 +148,7 @@ class ServiceRepository {
   Future<ServiceModel> getServiceById(String serviceId) async {
     final data = await supabase
         .from('services')
-        .select('*, service_categories(*)')
+        .select('id, category_id, name, name_mn, description, description_mn, sample_type, equipment_needed, preparation_instructions, estimated_duration_minutes, is_active, created_at, updated_at, service_categories(*)')
         .eq('id', serviceId)
         .single();
 
@@ -158,7 +160,7 @@ class ServiceRepository {
       String laboratoryServiceId) async {
     final data = await supabase
         .from('laboratory_services')
-        .select('*, services(*, service_categories(*))')
+        .select('*, services(id, category_id, name, name_mn, description, description_mn, sample_type, equipment_needed, preparation_instructions, estimated_duration_minutes, is_active, created_at, updated_at, service_categories(*))')
         .eq('id', laboratoryServiceId)
         .single();
 
@@ -169,7 +171,7 @@ class ServiceRepository {
   Future<DoctorServiceModel> getDoctorService(String doctorServiceId) async {
     final data = await supabase
         .from('doctor_services')
-        .select('*, services(*, service_categories(*))')
+        .select('*, services(id, category_id, name, name_mn, description, description_mn, sample_type, equipment_needed, preparation_instructions, estimated_duration_minutes, is_active, created_at, updated_at, service_categories(*))')
         .eq('id', doctorServiceId)
         .single();
 
@@ -183,7 +185,7 @@ class ServiceRepository {
   }) async {
     final data = await supabase
         .from('doctor_services')
-        .select('*, services(*, service_categories(*))')
+        .select('*, services(id, category_id, name, name_mn, description, description_mn, sample_type, equipment_needed, preparation_instructions, estimated_duration_minutes, is_active, created_at, updated_at, service_categories(*))')
         .eq('doctor_id', doctorId)
         .eq('service_id', serviceId)
         .single();

@@ -66,6 +66,14 @@ class _AllLabServicesScreenState extends State<AllLabServicesScreen> {
     }
   }
 
+  String _getLocalizedServiceName(Map<String, dynamic> service) {
+    final l10n = AppLocalizations.of(context)!;
+    if (l10n.localeName == 'mn' && service['name_mn'] != null) {
+      return service['name_mn'];
+    }
+    return service['name'];
+  }
+
   void _filterServices() {
     final query = _searchController.text.toLowerCase();
 
@@ -75,9 +83,10 @@ class _AllLabServicesScreenState extends State<AllLabServicesScreen> {
       } else {
         filteredServices = allServices.where((service) {
           final name = (service['name'] as String).toLowerCase();
+          final nameMn = (service['name_mn'] as String?)?.toLowerCase() ?? '';
           final description =
               (service['description'] as String?)?.toLowerCase() ?? '';
-          return name.contains(query) || description.contains(query);
+          return name.contains(query) || nameMn.contains(query) || description.contains(query);
         }).toList();
       }
     });
@@ -89,7 +98,7 @@ class _AllLabServicesScreenState extends State<AllLabServicesScreen> {
       MaterialPageRoute(
         builder: (_) => LaboratoriesScreen(
           preSelectedServiceId: service['id'],
-          serviceName: service['name'],
+          serviceName: _getLocalizedServiceName(service),
         ),
       ),
     );
@@ -203,15 +212,14 @@ class _AllLabServicesScreenState extends State<AllLabServicesScreen> {
 
     if (filteredServices.isEmpty) {
       return Center(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Iconsax.search_normal,
-                size: 60,
-                color: AppColors.grey.withValues(alpha: 0.5),
+              Image.asset(
+                'assets/images/mascot/deer_searching.jpeg',
+                height: 180,
               ),
               const SizedBox(height: 20),
               Text(
@@ -221,7 +229,7 @@ class _AllLabServicesScreenState extends State<AllLabServicesScreen> {
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.grey,
+                  color: AppColors.black,
                 ),
               ),
               const SizedBox(height: 10),
@@ -270,6 +278,13 @@ class _ServiceCard extends StatelessWidget {
     required this.l10n,
   });
 
+  String _getLocalizedServiceName() {
+    if (l10n.localeName == 'mn' && service['name_mn'] != null) {
+      return service['name_mn'];
+    }
+    return service['name'];
+  }
+
   @override
   Widget build(BuildContext context) {
     final sampleType = service['sample_type'] as String?;
@@ -304,7 +319,7 @@ class _ServiceCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          service['name'],
+                          _getLocalizedServiceName(),
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,

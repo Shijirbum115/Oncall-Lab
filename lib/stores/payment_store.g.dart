@@ -94,12 +94,12 @@ mixin _$PaymentStore on _PaymentStore, Store {
 
   @override
   Future<PaymentModel?> createQPayPayment(
-      {required String userId,
+      {required String patientId,
       required int amountMnt,
       required String description,
-      String? testRequestId}) {
+      required String testRequestId}) {
     return _$createQPayPaymentAsyncAction.run(() => super.createQPayPayment(
-        userId: userId,
+        patientId: patientId,
         amountMnt: amountMnt,
         description: description,
         testRequestId: testRequestId));

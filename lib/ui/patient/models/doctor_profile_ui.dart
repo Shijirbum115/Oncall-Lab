@@ -27,7 +27,14 @@ class DoctorProfileUI {
 
   factory DoctorProfileUI.fromMap(Map<String, dynamic> json) {
     final name = (json['full_name'] as String?) ?? 'Doctor';
-    final id = (json['id'] ?? name).toString();
+
+    // ID is required - must be a valid UUID from database
+    final rawId = json['id'];
+    if (rawId == null) {
+      throw ArgumentError('Doctor ID is required but was null in data: $json');
+    }
+    final id = rawId.toString();
+
     final gender = json['gender'] as String?;
 
     // Get avatar URL - use provided avatar_url, or generate default

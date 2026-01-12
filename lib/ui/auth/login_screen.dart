@@ -8,6 +8,8 @@ import 'package:oncall_lab/l10n/app_localizations.dart';
 import 'package:oncall_lab/ui/shared/widgets/language_switcher.dart';
 import 'package:oncall_lab/ui/design_system/widgets/app_text_field.dart';
 
+import 'package:oncall_lab/core/utils/notification_helper.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
@@ -37,12 +39,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
 
     if (!success && authStore.errorMessage != null && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(authStore.errorMessage!),
-          backgroundColor: AppColors.error,
-        ),
-      );
+      NotificationHelper.showError(context, authStore.errorMessage!);
     }
   }
 
@@ -54,16 +51,9 @@ class _LoginScreenState extends State<LoginScreen> {
       backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
       body: SafeArea(
-        child: LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: constraints.maxHeight - 48,
-                ),
-                child: IntrinsicHeight(
-                  child: Form(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -161,11 +151,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   alignment: Alignment.centerRight,
                   child: TextButton(
                     onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(l10n.passwordResetComingSoon),
-                        ),
-                      );
+                      NotificationHelper.show(context, l10n.passwordResetComingSoon);
                     },
                     child: Text(l10n.forgotPassword),
                   ),
@@ -284,11 +270,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ],
             ),
-                  ),
-                ),
-              ),
-            );
-          },
+          ),
         ),
       ),
     );

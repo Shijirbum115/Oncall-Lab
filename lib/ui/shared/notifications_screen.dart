@@ -7,6 +7,7 @@ import 'package:oncall_lab/stores/auth_store.dart';
 import 'package:oncall_lab/stores/notification_store.dart';
 import 'package:oncall_lab/core/constants/app_colors.dart';
 import 'package:oncall_lab/ui/shared/widgets/mascot_state_widget.dart';
+import 'package:oncall_lab/ui/shared/notification_detail_screen.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -107,7 +108,16 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     if (userId != null && !notification.isRead) {
       _notificationStore.markAsRead(notification.id, userId);
     }
-    // TODO: Navigate to related screen based on notification type
+
+    // Navigate to notification detail screen
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => NotificationDetailScreen(
+          notification: notification,
+        ),
+      ),
+    );
   }
 }
 

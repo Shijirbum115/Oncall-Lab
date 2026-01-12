@@ -39,7 +39,13 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
   void initState() {
     super.initState();
     _homeStore = homeStore;
+
+    // Load initial data
     _homeStore.loadHomeData();
+
+    // Start real-time subscriptions for live updates
+    _homeStore.startRealtimeSubscriptions();
+
     _waveController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1200),
@@ -64,6 +70,8 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
   @override
   void dispose() {
     _waveController.dispose();
+    // Cancel real-time subscriptions to prevent memory leaks
+    _homeStore.dispose();
     super.dispose();
   }
 
@@ -198,7 +206,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
                         ),
                         const SizedBox(height: 15),
                         AvailableDoctorsSection(doctors: doctors),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 110), // Extra padding for floating navbar
                       ],
                     ),
                   ),

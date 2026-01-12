@@ -1759,6 +1759,330 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Must be at most {max}'**
   String mustBeAtMost(int max);
+
+  /// No description provided for @payment.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment'**
+  String get payment;
+
+  /// No description provided for @orderSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Summary'**
+  String get orderSummary;
+
+  /// No description provided for @qpayIntegrationComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'QPay integration coming soon! For now, this is a demo payment flow.'**
+  String get qpayIntegrationComingSoon;
+
+  /// No description provided for @payNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Pay Now'**
+  String get payNow;
+
+  /// No description provided for @paymentSuccessful.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Successful!'**
+  String get paymentSuccessful;
+
+  /// No description provided for @bookingConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Your booking has been confirmed. A doctor will be assigned to your request soon.'**
+  String get bookingConfirmed;
+
+  /// No description provided for @amountPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount Paid'**
+  String get amountPaid;
+
+  /// No description provided for @laboratory.
+  ///
+  /// In en, this message translates to:
+  /// **'Laboratory'**
+  String get laboratory;
+
+  /// No description provided for @viewBookingDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'View Booking Details'**
+  String get viewBookingDetails;
+
+  /// No description provided for @backToHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Home'**
+  String get backToHome;
+
+  /// No description provided for @bookingConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking Confirmation'**
+  String get bookingConfirmation;
+
+  /// No description provided for @creatingYourBooking.
+  ///
+  /// In en, this message translates to:
+  /// **'Creating Your Booking'**
+  String get creatingYourBooking;
+
+  /// No description provided for @pleaseWait.
+  ///
+  /// In en, this message translates to:
+  /// **'Please wait a moment...'**
+  String get pleaseWait;
+
+  /// No description provided for @bookingID.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking ID'**
+  String get bookingID;
+
+  /// No description provided for @bookingDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Booking Details'**
+  String get bookingDetails;
+
+  /// No description provided for @amount.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount'**
+  String get amount;
+
+  /// No description provided for @doctorWillAcceptSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Your request is pending. A doctor will accept and process your request soon. You\'ll receive a notification once it\'s accepted.'**
+  String get doctorWillAcceptSoon;
+
+  /// No description provided for @notificationDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification Details'**
+  String get notificationDetails;
+
+  /// No description provided for @additionalInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Additional Information'**
+  String get additionalInfo;
+
+  /// No description provided for @viewRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'View Request'**
+  String get viewRequest;
+
+  /// No description provided for @goBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Go Back'**
+  String get goBack;
+
+  /// No description provided for @yearsExp.
+  ///
+  /// In en, this message translates to:
+  /// **'Years Exp.'**
+  String get yearsExp;
+
+  /// No description provided for @reviews.
+  ///
+  /// In en, this message translates to:
+  /// **'Reviews'**
+  String get reviews;
+
+  /// No description provided for @about.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get about;
+
+  /// No description provided for @showLess.
+  ///
+  /// In en, this message translates to:
+  /// **'Show less'**
+  String get showLess;
+
+  /// No description provided for @readMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Read more'**
+  String get readMore;
+
+  /// No description provided for @monday.
+  ///
+  /// In en, this message translates to:
+  /// **'Monday'**
+  String get monday;
+
+  /// No description provided for @tuesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Tuesday'**
+  String get tuesday;
+
+  /// No description provided for @wednesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Wednesday'**
+  String get wednesday;
+
+  /// No description provided for @thursday.
+  ///
+  /// In en, this message translates to:
+  /// **'Thursday'**
+  String get thursday;
+
+  /// No description provided for @friday.
+  ///
+  /// In en, this message translates to:
+  /// **'Friday'**
+  String get friday;
+
+  /// No description provided for @saturday.
+  ///
+  /// In en, this message translates to:
+  /// **'Saturday'**
+  String get saturday;
+
+  /// No description provided for @sunday.
+  ///
+  /// In en, this message translates to:
+  /// **'Sunday'**
+  String get sunday;
+
+  /// No description provided for @workingHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Working Hours'**
+  String get workingHours;
+
+  /// No description provided for @closed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get closed;
+
+  /// No description provided for @bookAppointment.
+  ///
+  /// In en, this message translates to:
+  /// **'Book Appointment'**
+  String get bookAppointment;
+
+  /// No description provided for @errorLoadingDoctorDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Error Loading Doctor Details'**
+  String get errorLoadingDoctorDetails;
+
+  /// No description provided for @doctorProfileNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Doctor profile not found. This doctor may not be available anymore.'**
+  String get doctorProfileNotFound;
+
+  /// No description provided for @notifRequestCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'New Request Created'**
+  String get notifRequestCreated;
+
+  /// No description provided for @notifRequestAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Accepted'**
+  String get notifRequestAccepted;
+
+  /// No description provided for @notifRequestUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Updated'**
+  String get notifRequestUpdated;
+
+  /// No description provided for @notifStatusChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Status Changed'**
+  String get notifStatusChanged;
+
+  /// No description provided for @notifSystemAlert.
+  ///
+  /// In en, this message translates to:
+  /// **'System Alert'**
+  String get notifSystemAlert;
+
+  /// No description provided for @notifDoctorAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'{doctorName} has accepted your test request.'**
+  String notifDoctorAccepted(Object doctorName);
+
+  /// No description provided for @notifDoctorOnTheWay.
+  ///
+  /// In en, this message translates to:
+  /// **'Doctor On The Way'**
+  String get notifDoctorOnTheWay;
+
+  /// No description provided for @notifDoctorOnTheWayMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Dr. {doctorName} is on the way to your location.'**
+  String notifDoctorOnTheWayMsg(Object doctorName);
+
+  /// No description provided for @notifSampleCollected.
+  ///
+  /// In en, this message translates to:
+  /// **'Sample Collected'**
+  String get notifSampleCollected;
+
+  /// No description provided for @notifSampleCollectedMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Your sample has been collected successfully.'**
+  String get notifSampleCollectedMsg;
+
+  /// No description provided for @notifDeliveredToLab.
+  ///
+  /// In en, this message translates to:
+  /// **'Sample Delivered to Lab'**
+  String get notifDeliveredToLab;
+
+  /// No description provided for @notifDeliveredToLabMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Your sample has been delivered to the laboratory for testing.'**
+  String get notifDeliveredToLabMsg;
+
+  /// No description provided for @notifTestCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Test Completed'**
+  String get notifTestCompleted;
+
+  /// No description provided for @notifTestCompletedMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Your test results are now ready.'**
+  String get notifTestCompletedMsg;
+
+  /// No description provided for @notifRequestCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Cancelled'**
+  String get notifRequestCancelled;
+
+  /// No description provided for @notifRequestCancelledMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'The test request has been cancelled.'**
+  String get notifRequestCancelledMsg;
 }
 
 class _AppLocalizationsDelegate

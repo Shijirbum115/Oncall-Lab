@@ -243,7 +243,7 @@ class _PatientRequestsScreenState extends State<PatientRequestsScreen> {
       onRefresh: _refreshRequests,
       child: ListView.separated(
         physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(16, 4, 16, 24),
+        padding: const EdgeInsets.fromLTRB(16, 4, 16, 110), // Extra padding for floating navbar
         itemCount: requests.length,
         itemBuilder: (context, index) =>
             _RequestCard(request: requests[index], l10n: l10n),

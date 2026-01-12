@@ -30,10 +30,10 @@ abstract class _PaymentStore with Store {
 
   @action
   Future<PaymentModel?> createQPayPayment({
-    required String userId,
+    required String patientId,
     required int amountMnt,
     required String description,
-    String? testRequestId,
+    required String testRequestId,
   }) async {
     isLoading = true;
     errorMessage = null;
@@ -47,17 +47,21 @@ abstract class _PaymentStore with Store {
 
       currentInvoice = invoice;
 
+      // Convert URLs list to Map for storage
+      final qpayUrlsMap = {
+        for (var url in invoice.urls) url.name: url.link
+      };
+
       // Create payment record in database
       final payment = await _paymentRepository.createPayment(
-        userId: userId,
+        patientId: patientId,
         amountMnt: amountMnt,
         paymentMethod: PaymentMethod.qpay,
         testRequestId: testRequestId,
-        description: description,
         qpayInvoiceId: invoice.invoiceId,
         qpayQrText: invoice.qrText,
-        qpayQrImage: invoice.qrImage,
-        qpayUrls: invoice.urls.map((url) => url.link).toList(),
+        qpayUrls: qpayUrlsMap,
+        metadata: {'description': description},
       );
 
       currentPayment = payment;
@@ -96,8 +100,8 @@ abstract class _PaymentStore with Store {
       if (paymentCheck.paymentStatus == 'PAID') {
         final updatedPayment = await _paymentRepository.updatePaymentStatus(
           paymentId: paymentId,
-          status: PaymentStatus.paid,
-          qpayPaymentId: paymentCheck.paymentId,
+          status: PaymentStatus.completed,
+          transactionId: paymentCheck.paymentId,
         );
         currentPayment = updatedPayment;
         return true;
@@ -160,10 +164,17 @@ abstract class _PaymentStore with Store {
       }
 
       // Update payment status in database
-      final updatedPayment = await _paymentRepository.cancelPayment(paymentId);
-      currentPayment = updatedPayment;
+      final success = await _paymentRepository.cancelPayment(
+        paymentId: paymentId,
+        cancellationReason: 'User cancelled',
+      );
+      
+      if (success) {
+        // Reload the payment to get updated status
+        currentPayment = await _paymentRepository.getPaymentById(paymentId);
+      }
 
-      return true;
+      return success;
     } catch (e) {
       errorMessage = e.toString();
       return false;

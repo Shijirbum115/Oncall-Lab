@@ -42,11 +42,16 @@ class _QPayPaymentWidgetState extends State<QPayPaymentWidget> {
   }
 
   Future<void> _initializePayment() async {
+    if (widget.testRequestId == null) {
+      // Handle the case where testRequestId is missing, maybe show error
+      return;
+    }
+    
     await _paymentStore.createQPayPayment(
-      userId: widget.userId,
+      patientId: widget.userId,
       amountMnt: widget.amountMnt,
       description: widget.description,
-      testRequestId: widget.testRequestId,
+      testRequestId: widget.testRequestId!,
     );
     setState(() {
       _isInitialized = true;
@@ -110,7 +115,7 @@ class _QPayPaymentWidgetState extends State<QPayPaymentWidget> {
           );
         }
 
-        if (payment.status == PaymentStatus.paid) {
+        if (payment.paymentStatus == PaymentStatus.completed) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

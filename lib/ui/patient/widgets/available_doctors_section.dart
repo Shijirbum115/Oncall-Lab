@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:oncall_lab/core/constants/app_colors.dart';
+import 'package:oncall_lab/stores/home_store.dart';
 import 'package:oncall_lab/ui/patient/models/doctor_profile_ui.dart';
 import 'package:oncall_lab/ui/patient/screens/doctor_detail_screen.dart';
 import 'package:oncall_lab/ui/patient/widgets/doctor_card_tile.dart';
@@ -35,6 +36,9 @@ class AvailableDoctorsSection extends StatelessWidget {
     final uiDoctors =
         doctors.map((e) => DoctorProfileUI.fromMap(e)).toList();
 
+    // Show maximum doctors on home screen (defined in HomeStore)
+    final displayDoctors = uiDoctors.take(maxDoctorsOnHome).toList();
+
     return GridView.builder(
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
@@ -45,9 +49,9 @@ class AvailableDoctorsSection extends StatelessWidget {
         mainAxisSpacing: 14,
         mainAxisExtent: 110,
       ),
-      itemCount: uiDoctors.length,
+      itemCount: displayDoctors.length,
       itemBuilder: (context, index) {
-        final doctor = uiDoctors[index];
+        final doctor = displayDoctors[index];
         return DoctorCardTile(
           doctor: doctor,
           onTap: () {

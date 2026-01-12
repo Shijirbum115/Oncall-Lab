@@ -81,6 +81,37 @@ mixin _$HomeStore on _HomeStore, Store {
     return _$loadHomeDataAsyncAction.run(() => super.loadHomeData());
   }
 
+  late final _$_handleDoctorUpdatesAsyncAction =
+      AsyncAction('_HomeStore._handleDoctorUpdates', context: context);
+
+  @override
+  Future<void> _handleDoctorUpdates(List<Map<String, dynamic>> data) {
+    return _$_handleDoctorUpdatesAsyncAction
+        .run(() => super._handleDoctorUpdates(data));
+  }
+
+  late final _$_reloadTestTypesAsyncAction =
+      AsyncAction('_HomeStore._reloadTestTypes', context: context);
+
+  @override
+  Future<void> _reloadTestTypes() {
+    return _$_reloadTestTypesAsyncAction.run(() => super._reloadTestTypes());
+  }
+
+  late final _$_HomeStoreActionController =
+      ActionController(name: '_HomeStore', context: context);
+
+  @override
+  void startRealtimeSubscriptions() {
+    final _$actionInfo = _$_HomeStoreActionController.startAction(
+        name: '_HomeStore.startRealtimeSubscriptions');
+    try {
+      return super.startRealtimeSubscriptions();
+    } finally {
+      _$_HomeStoreActionController.endAction(_$actionInfo);
+    }
+  }
+
   @override
   String toString() {
     return '''

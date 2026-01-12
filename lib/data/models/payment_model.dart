@@ -4,18 +4,20 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'payment_model.freezed.dart';
 part 'payment_model.g.dart';
 
-/// Payment status enum
+/// Payment status enum (matches database enum)
 enum PaymentStatus {
   @JsonValue('pending')
   pending,
-  @JsonValue('paid')
-  paid,
+  @JsonValue('processing')
+  processing,
+  @JsonValue('completed')
+  completed,
   @JsonValue('failed')
   failed,
-  @JsonValue('cancelled')
-  cancelled,
   @JsonValue('refunded')
   refunded,
+  @JsonValue('cancelled')
+  cancelled,
 }
 
 extension PaymentStatusX on PaymentStatus {
@@ -23,14 +25,16 @@ extension PaymentStatusX on PaymentStatus {
     switch (this) {
       case PaymentStatus.pending:
         return 'pending';
-      case PaymentStatus.paid:
-        return 'paid';
+      case PaymentStatus.processing:
+        return 'processing';
+      case PaymentStatus.completed:
+        return 'completed';
       case PaymentStatus.failed:
         return 'failed';
-      case PaymentStatus.cancelled:
-        return 'cancelled';
       case PaymentStatus.refunded:
         return 'refunded';
+      case PaymentStatus.cancelled:
+        return 'cancelled';
     }
   }
 
@@ -38,19 +42,21 @@ extension PaymentStatusX on PaymentStatus {
     switch (this) {
       case PaymentStatus.pending:
         return 'Хүлээгдэж байна';
-      case PaymentStatus.paid:
+      case PaymentStatus.processing:
+        return 'Боловсруулж байна';
+      case PaymentStatus.completed:
         return 'Төлсөн';
       case PaymentStatus.failed:
         return 'Амжилтгүй';
-      case PaymentStatus.cancelled:
-        return 'Цуцлагдсан';
       case PaymentStatus.refunded:
         return 'Буцаасан';
+      case PaymentStatus.cancelled:
+        return 'Цуцлагдсан';
     }
   }
 }
 
-/// Payment method enum
+/// Payment method enum (matches database enum)
 enum PaymentMethod {
   @JsonValue('qpay')
   qpay,
@@ -58,6 +64,8 @@ enum PaymentMethod {
   cash,
   @JsonValue('card')
   card,
+  @JsonValue('bank_transfer')
+  bankTransfer,
 }
 
 extension PaymentMethodX on PaymentMethod {
@@ -69,6 +77,8 @@ extension PaymentMethodX on PaymentMethod {
         return 'cash';
       case PaymentMethod.card:
         return 'card';
+      case PaymentMethod.bankTransfer:
+        return 'bank_transfer';
     }
   }
 
@@ -80,6 +90,8 @@ extension PaymentMethodX on PaymentMethod {
         return 'Бэлэн мөнгө';
       case PaymentMethod.card:
         return 'Карт';
+      case PaymentMethod.bankTransfer:
+        return 'Банкны шилжүүлэг';
     }
   }
 }
@@ -89,18 +101,36 @@ extension PaymentMethodX on PaymentMethod {
 class PaymentModel with _$PaymentModel {
   const factory PaymentModel({
     required String id,
-    @JsonKey(name: 'user_id') required String userId,
-    @JsonKey(name: 'test_request_id') String? testRequestId,
+    @JsonKey(name: 'patient_id') required String patientId,
+    @JsonKey(name: 'test_request_id') required String testRequestId,
     @JsonKey(name: 'amount_mnt') required int amountMnt,
     @JsonKey(name: 'payment_method') required PaymentMethod paymentMethod,
-    required PaymentStatus status,
+    @JsonKey(name: 'payment_status') required PaymentStatus paymentStatus,
+
+    // QPay specific fields
     @JsonKey(name: 'qpay_invoice_id') String? qpayInvoiceId,
-    @JsonKey(name: 'qpay_payment_id') String? qpayPaymentId,
     @JsonKey(name: 'qpay_qr_text') String? qpayQrText,
-    @JsonKey(name: 'qpay_qr_image') String? qpayQrImage,
-    @JsonKey(name: 'qpay_urls') List<String>? qpayUrls,
-    @JsonKey(name: 'description') String? description,
+    @JsonKey(name: 'qpay_urls') Map<String, dynamic>? qpayUrls,
+
+    // Transaction tracking
+    @JsonKey(name: 'transaction_id') String? transactionId,
+    @JsonKey(name: 'transaction_reference') String? transactionReference,
+
+    // Timestamps
     @JsonKey(name: 'paid_at') DateTime? paidAt,
+    @JsonKey(name: 'failed_at') DateTime? failedAt,
+    @JsonKey(name: 'refunded_at') DateTime? refundedAt,
+    @JsonKey(name: 'cancelled_at') DateTime? cancelledAt,
+
+    // Reasons
+    @JsonKey(name: 'failure_reason') String? failureReason,
+    @JsonKey(name: 'refund_reason') String? refundReason,
+    @JsonKey(name: 'cancellation_reason') String? cancellationReason,
+
+    // Metadata
+    Map<String, dynamic>? metadata,
+
+    // Audit fields
     @JsonKey(name: 'created_at') required DateTime createdAt,
     @JsonKey(name: 'updated_at') required DateTime updatedAt,
   }) = _PaymentModel;

@@ -9,7 +9,8 @@
       "Bash(cat:*)",
       "mcp__supabase__get_advisors",
       "mcp__supabase__list_edge_functions",
-      "mcp__supabase__execute_sql"
+      "mcp__supabase__execute_sql",
+      "Bash(test:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

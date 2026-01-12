@@ -7,6 +7,7 @@ import 'package:oncall_lab/core/services/supabase_service.dart';
 import 'package:oncall_lab/core/services/push_notification_service.dart';
 import 'package:oncall_lab/core/constants/app_colors.dart';
 import 'package:oncall_lab/core/di/service_locator.dart';
+import 'package:oncall_lab/core/utils/navigation_helper.dart';
 import 'package:oncall_lab/stores/auth_store.dart';
 import 'package:oncall_lab/stores/locale_store.dart';
 import 'package:oncall_lab/stores/notification_store.dart';
@@ -75,6 +76,7 @@ class OnCallLabApp extends StatelessWidget {
       builder: (_) => MaterialApp(
         title: 'BUGAMED',
         debugShowCheckedModeBanner: false,
+        navigatorKey: navigatorKey, // Global navigator key for push notifications
         // Localization support
         localizationsDelegates: const [
           AppLocalizations.delegate,

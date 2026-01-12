@@ -223,7 +223,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get makeAnAppointment => 'Цаг захиалах';
 
   @override
-  String get homeVisit => 'Гэрээр үзлэг';
+  String get homeVisit => 'Дуудлагын шинжилгээ';
 
   @override
   String get callTheDoctorHome => 'Эмчийг гэртээ дуудах';
@@ -796,7 +796,7 @@ class AppLocalizationsMn extends AppLocalizations {
   String get users => 'Хэрэглэгчид';
 
   @override
-  String get patients => 'Өвчтөнүүд';
+  String get patients => 'Өвчтөн';
 
   @override
   String get doctors => 'Эмч нар';
@@ -867,4 +867,177 @@ class AppLocalizationsMn extends AppLocalizations {
   String mustBeAtMost(int max) {
     return 'Дээд тал нь $max байх ёстой';
   }
+
+  @override
+  String get payment => 'Төлбөр';
+
+  @override
+  String get orderSummary => 'Захиалгын дэлгэрэнгүй';
+
+  @override
+  String get qpayIntegrationComingSoon =>
+      'QPay холболт удахгүй нэмэгдэнэ! Одоогоор демо төлбөрийн горим ажиллаж байна.';
+
+  @override
+  String get payNow => 'Төлбөр төлөх';
+
+  @override
+  String get paymentSuccessful => 'Төлбөр амжилттай!';
+
+  @override
+  String get bookingConfirmed =>
+      'Таны захиалга батлагдлаа. Удахгүй эмч томилогдох болно.';
+
+  @override
+  String get amountPaid => 'Төлсөн дүн';
+
+  @override
+  String get laboratory => 'Лаборатори';
+
+  @override
+  String get viewBookingDetails => 'Захиалгын дэлгэрэнгүй';
+
+  @override
+  String get backToHome => 'Нүүр хуудас руу буцах';
+
+  @override
+  String get bookingConfirmation => 'Захиалга батлах';
+
+  @override
+  String get creatingYourBooking => 'Захиалга үүсгэж байна';
+
+  @override
+  String get pleaseWait => 'Түр хүлээнэ үү...';
+
+  @override
+  String get bookingID => 'Захиалгын дугаар';
+
+  @override
+  String get bookingDetails => 'Захиалгын мэдээлэл';
+
+  @override
+  String get amount => 'Дүн';
+
+  @override
+  String get doctorWillAcceptSoon =>
+      'Таны хүсэлт хүлээгдэж байна. Удахгүй эмч таны хүсэлтийг хүлээн авна. Хүлээн авмагц танд мэдэгдэл ирнэ.';
+
+  @override
+  String get notificationDetails => 'Мэдэгдлийн дэлгэрэнгүй';
+
+  @override
+  String get additionalInfo => 'Нэмэлт мэдээлэл';
+
+  @override
+  String get viewRequest => 'Хүсэлт харах';
+
+  @override
+  String get goBack => 'Буцах';
+
+  @override
+  String get yearsExp => 'Туршлага';
+
+  @override
+  String get reviews => 'Сэтгэгдэл';
+
+  @override
+  String get about => 'Танилцуулга';
+
+  @override
+  String get showLess => 'Хураангуй харах';
+
+  @override
+  String get readMore => 'Бүтнээр унших';
+
+  @override
+  String get monday => 'Даваа';
+
+  @override
+  String get tuesday => 'Мягмар';
+
+  @override
+  String get wednesday => 'Лхагва';
+
+  @override
+  String get thursday => 'Пүрэв';
+
+  @override
+  String get friday => 'Баасан';
+
+  @override
+  String get saturday => 'Бямба';
+
+  @override
+  String get sunday => 'Ням';
+
+  @override
+  String get workingHours => 'Ажлын цаг';
+
+  @override
+  String get closed => 'Амарна';
+
+  @override
+  String get bookAppointment => 'Цаг захиалах';
+
+  @override
+  String get errorLoadingDoctorDetails =>
+      'Эмчийн мэдээлэл ачааллахад алдаа гарлаа';
+
+  @override
+  String get doctorProfileNotFound =>
+      'Эмчийн профайл олдсонгүй. Энэ эмч боломжгүй байж магадгүй.';
+
+  @override
+  String get notifRequestCreated => 'Шинэ захиалга үүслээ';
+
+  @override
+  String get notifRequestAccepted => 'Захиалга хүлээн авсан';
+
+  @override
+  String get notifRequestUpdated => 'Захиалга шинэчлэгдсэн';
+
+  @override
+  String get notifStatusChanged => 'Төлөв өөрчлөгдсөн';
+
+  @override
+  String get notifSystemAlert => 'Системийн мэдэгдэл';
+
+  @override
+  String notifDoctorAccepted(Object doctorName) {
+    return '$doctorName таны шинжилгээний захиалгыг хүлээн авлаа.';
+  }
+
+  @override
+  String get notifDoctorOnTheWay => 'Эмч замд явж байна';
+
+  @override
+  String notifDoctorOnTheWayMsg(Object doctorName) {
+    return 'Др. $doctorName таны байршил руу ирж байна.';
+  }
+
+  @override
+  String get notifSampleCollected => 'Дээж авсан';
+
+  @override
+  String get notifSampleCollectedMsg => 'Таны дээж амжилттай авагдлаа.';
+
+  @override
+  String get notifDeliveredToLab => 'Дээж лабораторид хүргэгдсэн';
+
+  @override
+  String get notifDeliveredToLabMsg =>
+      'Таны дээж шинжилгээ хийхээр лабораторид хүргэгдлээ.';
+
+  @override
+  String get notifTestCompleted => 'Шинжилгээ дууссан';
+
+  @override
+  String get notifTestCompletedMsg => 'Таны шинжилгээний үр дүн бэлэн боллоо.';
+
+  @override
+  String get notifRequestCancelled => 'Захиалга цуцлагдсан';
+
+  @override
+  String get notifRequestCancelledMsg =>
+      'Шинжилгээний захиалга цуцлагдсан байна.';
 }

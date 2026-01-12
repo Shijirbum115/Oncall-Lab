@@ -36,41 +36,76 @@ class _MainPageState extends State<MainPage> {
 
     return Scaffold(
       backgroundColor: Colors.white,
-      bottomNavigationBar: BottomNavigationBar(
-        elevation: 0,
-        backgroundColor: Colors.white,
-        unselectedItemColor: Colors.black26,
-        selectedItemColor: AppColors.primary,
-        type: BottomNavigationBarType.fixed,
-        currentIndex: selectedIndex,
-        onTap: (value) {
-          setState(() {
-            selectedIndex = value;
-          });
-        },
-        items: [
-          BottomNavigationBarItem(
-            icon: const Icon(Iconsax.home5),
-            label: l10n.home,
+      body: Stack(
+        children: [
+          // Main content
+          IndexedStack(
+            index: selectedIndex,
+            children: pages,
           ),
-          BottomNavigationBarItem(
-            icon: const Icon(Iconsax.building),
-            label: l10n.laboratories,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Iconsax.calendar),
-            label: l10n.requests,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.person),
-            label: l10n.profile,
+
+          // Floating Navigation Bar
+          Positioned(
+            left: 20,
+            right: 20,
+            bottom: 20,
+            child: Container(
+              height: 65,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.1),
+                    blurRadius: 20,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: BottomNavigationBar(
+                  elevation: 0,
+                  backgroundColor: Colors.transparent,
+                  unselectedItemColor: AppColors.grey,
+                  selectedItemColor: AppColors.primary,
+                  type: BottomNavigationBarType.fixed,
+                  currentIndex: selectedIndex,
+                  selectedFontSize: 12,
+                  unselectedFontSize: 12,
+                  showUnselectedLabels: true,
+                  onTap: (value) {
+                    setState(() {
+                      selectedIndex = value;
+                    });
+                  },
+                  items: [
+                    _buildNavItem(Iconsax.home5, Iconsax.home_15, l10n.home, 0),
+                    _buildNavItem(Iconsax.building, Iconsax.building5, l10n.laboratories, 1),
+                    _buildNavItem(Iconsax.calendar, Iconsax.calendar5, l10n.requests, 2),
+                    _buildNavItem(Icons.person_outline, Icons.person, l10n.profile, 3),
+                  ],
+                ),
+              ),
+            ),
           ),
         ],
       ),
-      body: IndexedStack(
-        index: selectedIndex,
-        children: pages,
+    );
+  }
+
+  BottomNavigationBarItem _buildNavItem(
+      IconData icon, IconData activeIcon, String label, int index) {
+    return BottomNavigationBarItem(
+      icon: Container(
+        padding: const EdgeInsets.only(bottom: 4),
+        child: Icon(icon),
       ),
+      activeIcon: Container(
+        padding: const EdgeInsets.only(bottom: 4),
+        child: Icon(activeIcon),
+      ),
+      label: label,
     );
   }
 }

@@ -19,7 +19,7 @@ class _SplashWrapperState extends State<SplashWrapper> {
   @override
   void initState() {
     super.initState();
-    Timer(const Duration(seconds: 2), () {
+    Timer(const Duration(seconds: 3), () {
       if (!mounted) return;
       setState(() => _showSplash = false);
     });
@@ -33,7 +33,8 @@ class _SplashWrapperState extends State<SplashWrapper> {
         if (!_splashRemoved)
           AnimatedOpacity(
             opacity: _showSplash ? 1 : 0,
-            duration: const Duration(milliseconds: 500),
+            duration: const Duration(milliseconds: 800),
+            curve: Curves.easeInOut,
             onEnd: () {
               if (!_showSplash && mounted) {
                 setState(() => _splashRemoved = true);
@@ -52,48 +53,79 @@ class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.primary,
-      body: Center(
+      backgroundColor: Colors.white,
+      body: SafeArea(
         child: Column(
-          mainAxisSize: MainAxisSize.min,
           children: [
+            const Spacer(),
+            // Mascot Image
             Container(
-              padding: const EdgeInsets.all(26),
+              margin: const EdgeInsets.symmetric(horizontal: 40),
               decoration: BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.1),
-                    blurRadius: 20,
-                    offset: const Offset(0, 8),
+                    color: AppColors.primary.withValues(alpha: 0.1),
+                    blurRadius: 30,
+                    offset: const Offset(0, 10),
                   ),
                 ],
               ),
-              child: const Icon(
-                Icons.local_hospital_rounded,
-                size: 64,
-                color: AppColors.primary,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Image.asset(
+                  'assets/images/mascot/deer_welcome.jpeg',
+                  fit: BoxFit.contain,
+                ),
               ),
             ),
-            const SizedBox(height: 32),
-            const Text(
-              'All you have to do is',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.w500,
-                letterSpacing: 0.5,
-              ),
+            const SizedBox(height: 40),
+            // App Title
+            Column(
+              children: [
+                const Text(
+                  'OnCall Lab',
+                  style: TextStyle(
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primary,
+                    letterSpacing: -0.5,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Healthcare at your doorstep',
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: AppColors.grey.withValues(alpha: 0.8),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
-            const Text(
-              'CALL US',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 36,
-                fontWeight: FontWeight.w800,
-                letterSpacing: 1.5,
+            const Spacer(),
+            // Loading Indicator
+            Padding(
+              padding: const EdgeInsets.only(bottom: 40),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(
+                    width: 40,
+                    height: 40,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 3,
+                      valueColor: AlwaysStoppedAnimation<Color>(AppColors.primary),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'v1.0.0',
+                    style: TextStyle(
+                      color: AppColors.grey.withValues(alpha: 0.5),
+                      fontSize: 12,
+                    ),
+                  ),
+                ],
               ),
             ),
           ],

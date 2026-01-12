@@ -145,6 +145,15 @@ class _CategorySection extends StatelessWidget {
     required this.l10n,
   });
 
+  String _getLocalizedCategoryName() {
+    if (services.isEmpty) return categoryName;
+    final categoryNameMn = services.first['category_name_mn'] as String?;
+    if (l10n.localeName == 'mn' && categoryNameMn != null) {
+      return categoryNameMn;
+    }
+    return categoryName;
+  }
+
   IconData _getCategoryIcon() {
     switch (categoryIcon) {
       case 'heart':
@@ -190,7 +199,7 @@ class _CategorySection extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
-                  categoryName,
+                  _getLocalizedCategoryName(),
                   style: TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -241,6 +250,20 @@ class _ServiceCard extends StatelessWidget {
     required this.l10n,
   });
 
+  String _getLocalizedServiceName() {
+    if (l10n.localeName == 'mn' && service['service_name_mn'] != null) {
+      return service['service_name_mn'];
+    }
+    return service['service_name'];
+  }
+
+  String? _getLocalizedServiceDescription() {
+    if (l10n.localeName == 'mn' && service['service_description_mn'] != null) {
+      return service['service_description_mn'];
+    }
+    return service['service_description'];
+  }
+
   @override
   Widget build(BuildContext context) {
     final minPrice = service['min_price_mnt'] as int?;
@@ -263,7 +286,7 @@ class _ServiceCard extends StatelessWidget {
           MaterialPageRoute(
             builder: (_) => DirectServiceBookingScreen(
               serviceId: service['service_id'],
-              serviceName: service['service_name'],
+              serviceName: _getLocalizedServiceName(),
             ),
           ),
         );
@@ -275,7 +298,7 @@ class _ServiceCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  service['service_name'],
+                  _getLocalizedServiceName(),
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,
@@ -290,10 +313,10 @@ class _ServiceCard extends StatelessWidget {
               ),
             ],
           ),
-          if (service['service_description'] != null) ...[
+          if (_getLocalizedServiceDescription() != null) ...[
             const SizedBox(height: 8),
             Text(
-              service['service_description'],
+              _getLocalizedServiceDescription()!,
               style: const TextStyle(
                 fontSize: 14,
                 color: AppColors.grey,

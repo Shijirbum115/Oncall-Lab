@@ -12,6 +12,8 @@ import 'package:oncall_lab/l10n/app_localizations.dart';
 import 'package:oncall_lab/ui/design_system/widgets/app_text_field.dart';
 import 'package:oncall_lab/ui/shared/widgets/language_switcher.dart';
 
+import 'package:oncall_lab/core/utils/notification_helper.dart'; // Import NotificationHelper
+
 class PatientProfileScreen extends StatelessWidget {
   const PatientProfileScreen({super.key});
 
@@ -119,20 +121,11 @@ class PatientProfileScreen extends StatelessWidget {
                       await authStore.loadCurrentProfile();
 
                       if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(l10n.profilePhotoUpdated),
-                          ),
-                        );
+                        NotificationHelper.showSuccess(context, l10n.profilePhotoUpdated);
                       }
                     } catch (e) {
                       if (context.mounted) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('${l10n.failedToUpdatePhoto}: $e'),
-                            backgroundColor: AppColors.error,
-                          ),
-                        );
+                        NotificationHelper.showError(context, '${l10n.failedToUpdatePhoto}: $e');
                       }
                     }
                   },
@@ -214,11 +207,7 @@ class PatientProfileScreen extends StatelessWidget {
               icon: Icons.history,
               title: l10n.requestHistory,
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(l10n.viewAll),
-                  ),
-                );
+                NotificationHelper.show(context, l10n.viewAll);
               },
             ),
                 _buildProfileOption(
@@ -240,52 +229,100 @@ class PatientProfileScreen extends StatelessWidget {
               icon: Icons.notifications_outlined,
               title: l10n.notifications,
               onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('${l10n.notifications} ${l10n.adminComingSoon}'),
-                  ),
-                );
+                NotificationHelper.show(context, '${l10n.notifications} ${l10n.adminComingSoon}');
               },
             ),
             const Spacer(),
                 Padding(
-              padding: const EdgeInsets.only(bottom: 20),
+              padding: const EdgeInsets.only(bottom: 100), // Extra padding for floating navbar
               child: OutlinedButton.icon(
                 onPressed: () async {
-                  final shouldSignOut = await showDialog<bool>(
+                  showModalBottomSheet(
                     context: context,
+                    backgroundColor: Colors.white,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                    ),
                     builder: (context) {
                       final dialogL10n = AppLocalizations.of(context)!;
-                      return AlertDialog(
-                        title: Text(dialogL10n.signOut),
-                        content: Text('${dialogL10n.yes}? ${dialogL10n.signOut}'),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context, false),
-                            child: Text(dialogL10n.cancel),
-                          ),
-                          ElevatedButton(
-                            onPressed: () => Navigator.pop(context, true),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.error,
+                      return Padding(
+                        padding: const EdgeInsets.all(24.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
+                              width: 40,
+                              height: 4,
+                              margin: const EdgeInsets.only(bottom: 24),
+                              decoration: BoxDecoration(
+                                color: AppColors.grey.withValues(alpha: 0.3),
+                                borderRadius: BorderRadius.circular(2),
+                              ),
                             ),
-                            child: Text(dialogL10n.signOut),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-
-                  if (shouldSignOut == true && context.mounted) {
-                    await authStore.signOut();
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(l10n.success),
+                            Text(
+                              dialogL10n.signOut,
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.error,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Text(
+                              '${dialogL10n.yes}? ${dialogL10n.signOut}',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                color: AppColors.grey,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                            const SizedBox(height: 32),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: OutlinedButton(
+                                    onPressed: () => Navigator.pop(context),
+                                    style: OutlinedButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(vertical: 16),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                    ),
+                                    child: Text(dialogL10n.cancel),
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.pop(context, true);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: AppColors.error,
+                                      foregroundColor: Colors.white,
+                                      padding: const EdgeInsets.symmetric(vertical: 16),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                    ),
+                                    child: Text(dialogL10n.signOut),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                          ],
                         ),
                       );
+                    },
+                  ).then((shouldSignOut) async {
+                    if (shouldSignOut == true && context.mounted) {
+                      await authStore.signOut();
+                      if (context.mounted) {
+                        NotificationHelper.showSuccess(context, l10n.success);
+                      }
                     }
-                  }
+                  });
                 },
                 icon: const Icon(Icons.logout),
                 label: Text(l10n.signOut),
@@ -293,6 +330,9 @@ class PatientProfileScreen extends StatelessWidget {
                   foregroundColor: AppColors.error,
                   side: const BorderSide(color: AppColors.error),
                   padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
             ),

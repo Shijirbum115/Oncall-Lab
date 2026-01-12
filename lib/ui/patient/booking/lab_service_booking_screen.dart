@@ -3,12 +3,13 @@ import 'package:iconsax/iconsax.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:oncall_lab/core/constants/app_colors.dart';
 import 'package:oncall_lab/data/models/laboratory_service_model.dart';
+import 'package:oncall_lab/data/models/service_model_extensions.dart';
 import 'package:oncall_lab/stores/auth_store.dart';
-import 'package:oncall_lab/stores/test_request_store.dart';
 import 'package:oncall_lab/ui/patient/location/location_picker_screen.dart';
 import 'package:oncall_lab/ui/design_system/widgets/app_text_field.dart';
 import 'package:oncall_lab/l10n/app_localizations.dart';
 import 'package:oncall_lab/ui/shared/widgets/app_card.dart';
+import 'package:oncall_lab/ui/payment/payment_screen.dart';
 
 class LabServiceBookingScreen extends StatefulWidget {
   final Map<String, dynamic> laboratory;
@@ -128,50 +129,37 @@ class _LabServiceBookingScreenState extends State<LabServiceBookingScreen> {
       return;
     }
 
-    final l10n = AppLocalizations.of(context)!;
     setState(() => isSubmitting = true);
 
     try {
-      final userId = authStore.currentUser!.id;
-
-      // Create lab service request using the store
-      final request = await testRequestStore.createLabServiceRequest(
-        patientId: userId,
-        laboratoryId: widget.laboratory['id'],
-        laboratoryServiceId: widget.laboratoryService.id,
-        serviceId: widget.laboratoryService.serviceId,
-        scheduledDate: selectedDate.toIso8601String().split('T')[0],
-        scheduledTimeSlot: selectedTimeSlot,
-        patientAddress: _addressController.text.trim(),
-        priceMnt: widget.laboratoryService.priceMnt,
-        patientNotes: _notesController.text.trim().isEmpty
+      // Prepare booking data
+      final bookingData = {
+        'laboratoryId': widget.laboratory['id'],
+        'laboratoryServiceId': widget.laboratoryService.id,
+        'serviceId': widget.laboratoryService.serviceId,
+        'scheduledDate': selectedDate.toIso8601String().split('T')[0],
+        'scheduledTimeSlot': selectedTimeSlot,
+        'patientAddress': _addressController.text.trim(),
+        'patientLatitude': selectedLocation?['latitude'],
+        'patientLongitude': selectedLocation?['longitude'],
+        'patientNotes': _notesController.text.trim().isEmpty
             ? null
             : _notesController.text.trim(),
-      );
+      };
 
       if (mounted) {
-        if (request != null) {
-          // Show success message
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(l10n.requestSubmitted),
-              backgroundColor: AppColors.success,
+        // Navigate to payment screen
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PaymentScreen(
+              amountMnt: widget.laboratoryService.priceMnt,
+              serviceName: widget.laboratoryService.service!.getLocalizedName(context),
+              laboratoryName: widget.laboratory['name'],
+              bookingData: bookingData,
             ),
-          );
-
-          // Navigate back to main page
-          Navigator.of(context).popUntil((route) => route.isFirst);
-        } else {
-          // Show error from store
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                '${l10n.error}: ${testRequestStore.errorMessage ?? l10n.unknownError}',
-              ),
-              backgroundColor: AppColors.error,
-            ),
-          );
-        }
+          ),
+        );
       }
     } finally {
       if (mounted) {
@@ -207,7 +195,7 @@ class _LabServiceBookingScreenState extends State<LabServiceBookingScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    service.name,
+                    service.getLocalizedName(context),
                     style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,

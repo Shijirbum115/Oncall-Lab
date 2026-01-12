@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 /// Design matching Doctor Appointment UI template
 class AppColors {
   // Primary colors from Doctor Appointment UI
-  static const Color primary = Color(0xFF52C196); // BUGAMED Teal
-  static const Color secondary = Color(0xFF4A9B7F); // Deeper Teal
+  static const Color primary = Color.fromARGB(255, 51, 138, 104); // BUGAMED Teal
+  static const Color secondary = Color.fromARGB(255, 44, 122, 95); // Deeper Teal
   static const Color accent = Color(0xFFFFB84D); // Warm yellow for CTAs
   
   static const Color grey = Color(0xFFA2A8B4);

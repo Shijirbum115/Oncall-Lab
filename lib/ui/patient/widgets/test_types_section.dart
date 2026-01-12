@@ -172,7 +172,9 @@ class _TestTypesSectionState extends State<TestTypesSection> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              test['name'],
+                              l10n.localeName == 'mn' && test['name_mn'] != null
+                                  ? test['name_mn']
+                                  : test['name'],
                               style: const TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,

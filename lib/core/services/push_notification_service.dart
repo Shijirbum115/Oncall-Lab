@@ -2,6 +2,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:oncall_lab/core/utils/navigation_helper.dart';
+import 'package:oncall_lab/core/di/service_locator.dart';
+import 'package:oncall_lab/stores/notification_store.dart';
 
 /// Simple push notification service for Firebase Cloud Messaging
 class PushNotificationService {
@@ -120,13 +123,38 @@ class PushNotificationService {
   /// Handle notification tap
   void _handleNotificationTap(RemoteMessage message) {
     debugPrint('👆 Notification tapped: ${message.data}');
-    // TODO: Navigate to relevant screen based on notification type
+    _navigateToNotification(message.data);
   }
 
   /// Handle local notification tap
   void _onNotificationTapped(NotificationResponse response) {
     debugPrint('👆 Local notification tapped: ${response.payload}');
-    // TODO: Navigate to notification detail
+    if (response.payload != null) {
+      _navigateToNotification({'notification_id': response.payload});
+    }
+  }
+
+  /// Navigate to notification detail screen
+  Future<void> _navigateToNotification(Map<String, dynamic> data) async {
+    try {
+      final notificationId = data['notification_id'];
+      if (notificationId == null) {
+        debugPrint('⚠️ No notification_id in data');
+        return;
+      }
+
+      // Get the notification from the store
+      final notificationStore = locator<NotificationStore>();
+      final notification = notificationStore.notifications.firstWhere(
+        (n) => n.id == notificationId,
+        orElse: () => throw Exception('Notification not found'),
+      );
+
+      // Navigate to notification detail screen with mascot
+      NavigationHelper.handleNotificationNavigation(notification);
+    } catch (e) {
+      debugPrint('❌ Error navigating to notification: $e');
+    }
   }
 
   /// Get current FCM token

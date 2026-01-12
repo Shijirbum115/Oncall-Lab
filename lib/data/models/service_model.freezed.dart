@@ -24,7 +24,11 @@ mixin _$ServiceModel {
   @JsonKey(name: 'category_id')
   String get categoryId => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
+  @JsonKey(name: 'name_mn')
+  String? get nameMn => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
+  @JsonKey(name: 'description_mn')
+  String? get descriptionMn => throw _privateConstructorUsedError;
   @JsonKey(name: 'sample_type')
   String? get sampleType => throw _privateConstructorUsedError;
   @JsonKey(name: 'equipment_needed')
@@ -59,7 +63,9 @@ abstract class $ServiceModelCopyWith<$Res> {
       {String id,
       @JsonKey(name: 'category_id') String categoryId,
       String name,
+      @JsonKey(name: 'name_mn') String? nameMn,
       String? description,
+      @JsonKey(name: 'description_mn') String? descriptionMn,
       @JsonKey(name: 'sample_type') String? sampleType,
       @JsonKey(name: 'equipment_needed') String? equipmentNeeded,
       @JsonKey(name: 'preparation_instructions')
@@ -90,7 +96,9 @@ class _$ServiceModelCopyWithImpl<$Res, $Val extends ServiceModel>
     Object? id = null,
     Object? categoryId = null,
     Object? name = null,
+    Object? nameMn = freezed,
     Object? description = freezed,
+    Object? descriptionMn = freezed,
     Object? sampleType = freezed,
     Object? equipmentNeeded = freezed,
     Object? preparationInstructions = freezed,
@@ -113,9 +121,17 @@ class _$ServiceModelCopyWithImpl<$Res, $Val extends ServiceModel>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
+      nameMn: freezed == nameMn
+          ? _value.nameMn
+          : nameMn // ignore: cast_nullable_to_non_nullable
+              as String?,
       description: freezed == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
+              as String?,
+      descriptionMn: freezed == descriptionMn
+          ? _value.descriptionMn
+          : descriptionMn // ignore: cast_nullable_to_non_nullable
               as String?,
       sampleType: freezed == sampleType
           ? _value.sampleType
@@ -177,7 +193,9 @@ abstract class _$$ServiceModelImplCopyWith<$Res>
       {String id,
       @JsonKey(name: 'category_id') String categoryId,
       String name,
+      @JsonKey(name: 'name_mn') String? nameMn,
       String? description,
+      @JsonKey(name: 'description_mn') String? descriptionMn,
       @JsonKey(name: 'sample_type') String? sampleType,
       @JsonKey(name: 'equipment_needed') String? equipmentNeeded,
       @JsonKey(name: 'preparation_instructions')
@@ -207,7 +225,9 @@ class __$$ServiceModelImplCopyWithImpl<$Res>
     Object? id = null,
     Object? categoryId = null,
     Object? name = null,
+    Object? nameMn = freezed,
     Object? description = freezed,
+    Object? descriptionMn = freezed,
     Object? sampleType = freezed,
     Object? equipmentNeeded = freezed,
     Object? preparationInstructions = freezed,
@@ -230,9 +250,17 @@ class __$$ServiceModelImplCopyWithImpl<$Res>
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
               as String,
+      nameMn: freezed == nameMn
+          ? _value.nameMn
+          : nameMn // ignore: cast_nullable_to_non_nullable
+              as String?,
       description: freezed == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
+              as String?,
+      descriptionMn: freezed == descriptionMn
+          ? _value.descriptionMn
+          : descriptionMn // ignore: cast_nullable_to_non_nullable
               as String?,
       sampleType: freezed == sampleType
           ? _value.sampleType
@@ -277,7 +305,9 @@ class _$ServiceModelImpl implements _ServiceModel {
       {required this.id,
       @JsonKey(name: 'category_id') required this.categoryId,
       required this.name,
+      @JsonKey(name: 'name_mn') this.nameMn,
       this.description,
+      @JsonKey(name: 'description_mn') this.descriptionMn,
       @JsonKey(name: 'sample_type') this.sampleType,
       @JsonKey(name: 'equipment_needed') this.equipmentNeeded,
       @JsonKey(name: 'preparation_instructions') this.preparationInstructions,
@@ -299,7 +329,13 @@ class _$ServiceModelImpl implements _ServiceModel {
   @override
   final String name;
   @override
+  @JsonKey(name: 'name_mn')
+  final String? nameMn;
+  @override
   final String? description;
+  @override
+  @JsonKey(name: 'description_mn')
+  final String? descriptionMn;
   @override
   @JsonKey(name: 'sample_type')
   final String? sampleType;
@@ -328,7 +364,7 @@ class _$ServiceModelImpl implements _ServiceModel {
 
   @override
   String toString() {
-    return 'ServiceModel(id: $id, categoryId: $categoryId, name: $name, description: $description, sampleType: $sampleType, equipmentNeeded: $equipmentNeeded, preparationInstructions: $preparationInstructions, estimatedDurationMinutes: $estimatedDurationMinutes, isActive: $isActive, createdAt: $createdAt, updatedAt: $updatedAt, category: $category)';
+    return 'ServiceModel(id: $id, categoryId: $categoryId, name: $name, nameMn: $nameMn, description: $description, descriptionMn: $descriptionMn, sampleType: $sampleType, equipmentNeeded: $equipmentNeeded, preparationInstructions: $preparationInstructions, estimatedDurationMinutes: $estimatedDurationMinutes, isActive: $isActive, createdAt: $createdAt, updatedAt: $updatedAt, category: $category)';
   }
 
   @override
@@ -340,8 +376,11 @@ class _$ServiceModelImpl implements _ServiceModel {
             (identical(other.categoryId, categoryId) ||
                 other.categoryId == categoryId) &&
             (identical(other.name, name) || other.name == name) &&
+            (identical(other.nameMn, nameMn) || other.nameMn == nameMn) &&
             (identical(other.description, description) ||
                 other.description == description) &&
+            (identical(other.descriptionMn, descriptionMn) ||
+                other.descriptionMn == descriptionMn) &&
             (identical(other.sampleType, sampleType) ||
                 other.sampleType == sampleType) &&
             (identical(other.equipmentNeeded, equipmentNeeded) ||
@@ -369,7 +408,9 @@ class _$ServiceModelImpl implements _ServiceModel {
       id,
       categoryId,
       name,
+      nameMn,
       description,
+      descriptionMn,
       sampleType,
       equipmentNeeded,
       preparationInstructions,
@@ -398,7 +439,9 @@ abstract class _ServiceModel implements ServiceModel {
       {required final String id,
       @JsonKey(name: 'category_id') required final String categoryId,
       required final String name,
+      @JsonKey(name: 'name_mn') final String? nameMn,
       final String? description,
+      @JsonKey(name: 'description_mn') final String? descriptionMn,
       @JsonKey(name: 'sample_type') final String? sampleType,
       @JsonKey(name: 'equipment_needed') final String? equipmentNeeded,
       @JsonKey(name: 'preparation_instructions')
@@ -422,7 +465,13 @@ abstract class _ServiceModel implements ServiceModel {
   @override
   String get name;
   @override
+  @JsonKey(name: 'name_mn')
+  String? get nameMn;
+  @override
   String? get description;
+  @override
+  @JsonKey(name: 'description_mn')
+  String? get descriptionMn;
   @override
   @JsonKey(name: 'sample_type')
   String? get sampleType;

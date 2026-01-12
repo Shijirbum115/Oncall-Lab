@@ -77,5 +77,5 @@ class UserModel {
     };
   }
 
-  String get displayName => fullName ?? '$firstName $lastName' ?? phoneNumber;
+  String get displayName => fullName ?? (firstName != null && lastName != null ? '$firstName $lastName' : phoneNumber);
 }

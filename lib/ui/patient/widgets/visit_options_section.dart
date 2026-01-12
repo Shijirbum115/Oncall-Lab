@@ -41,18 +41,27 @@ class VisitOptionsSection extends StatelessWidget {
           ),
           const SizedBox(width: 12),
           Expanded(
-            child: VisitOptionCard(
-              icon: Iconsax.home_2,
-              iconFilled: true,
-              title: l10n.homeVisit,
-              subtitle: l10n.callTheDoctorHome,
-              backgroundColor: Colors.white,
-              titleColor: AppColors.black,
-              subtitleColor: AppColors.black,
-              iconBackgroundColor: AppColors.primary.withValues(alpha: 0.12),
-              iconColor: AppColors.primary,
-              elevated: false,
-              onTap: onHomeTap,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(
+                  color: AppColors.grey.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+              ),
+              child: VisitOptionCard(
+                icon: Iconsax.home_2,
+                iconFilled: true,
+                title: l10n.homeVisit,
+                subtitle: l10n.callTheDoctorHome,
+                backgroundColor: Colors.transparent, // Transparent to show container border
+                titleColor: AppColors.black,
+                subtitleColor: AppColors.black,
+                iconBackgroundColor: AppColors.primary.withValues(alpha: 0.12),
+                iconColor: AppColors.primary,
+                elevated: false,
+                onTap: onHomeTap,
+              ),
             ),
           ),
         ],

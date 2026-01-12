@@ -8,7 +8,7 @@ class DoctorRepository {
         .from('doctor_profiles')
         .select('''
           *,
-          profiles!inner(
+          profiles(
             id,
             full_name,
             phone_number,
@@ -17,7 +17,11 @@ class DoctorRepository {
           )
         ''')
         .eq('id', doctorId)
-        .single();
+        .maybeSingle();
+
+    if (doctorData == null) {
+      throw Exception('Doctor profile not found for ID: $doctorId');
+    }
 
     // Get doctor's services with pricing
     final servicesData = await supabase

@@ -867,4 +867,176 @@ class AppLocalizationsEn extends AppLocalizations {
   String mustBeAtMost(int max) {
     return 'Must be at most $max';
   }
+
+  @override
+  String get payment => 'Payment';
+
+  @override
+  String get orderSummary => 'Order Summary';
+
+  @override
+  String get qpayIntegrationComingSoon =>
+      'QPay integration coming soon! For now, this is a demo payment flow.';
+
+  @override
+  String get payNow => 'Pay Now';
+
+  @override
+  String get paymentSuccessful => 'Payment Successful!';
+
+  @override
+  String get bookingConfirmed =>
+      'Your booking has been confirmed. A doctor will be assigned to your request soon.';
+
+  @override
+  String get amountPaid => 'Amount Paid';
+
+  @override
+  String get laboratory => 'Laboratory';
+
+  @override
+  String get viewBookingDetails => 'View Booking Details';
+
+  @override
+  String get backToHome => 'Back to Home';
+
+  @override
+  String get bookingConfirmation => 'Booking Confirmation';
+
+  @override
+  String get creatingYourBooking => 'Creating Your Booking';
+
+  @override
+  String get pleaseWait => 'Please wait a moment...';
+
+  @override
+  String get bookingID => 'Booking ID';
+
+  @override
+  String get bookingDetails => 'Booking Details';
+
+  @override
+  String get amount => 'Amount';
+
+  @override
+  String get doctorWillAcceptSoon =>
+      'Your request is pending. A doctor will accept and process your request soon. You\'ll receive a notification once it\'s accepted.';
+
+  @override
+  String get notificationDetails => 'Notification Details';
+
+  @override
+  String get additionalInfo => 'Additional Information';
+
+  @override
+  String get viewRequest => 'View Request';
+
+  @override
+  String get goBack => 'Go Back';
+
+  @override
+  String get yearsExp => 'Years Exp.';
+
+  @override
+  String get reviews => 'Reviews';
+
+  @override
+  String get about => 'About';
+
+  @override
+  String get showLess => 'Show less';
+
+  @override
+  String get readMore => 'Read more';
+
+  @override
+  String get monday => 'Monday';
+
+  @override
+  String get tuesday => 'Tuesday';
+
+  @override
+  String get wednesday => 'Wednesday';
+
+  @override
+  String get thursday => 'Thursday';
+
+  @override
+  String get friday => 'Friday';
+
+  @override
+  String get saturday => 'Saturday';
+
+  @override
+  String get sunday => 'Sunday';
+
+  @override
+  String get workingHours => 'Working Hours';
+
+  @override
+  String get closed => 'Closed';
+
+  @override
+  String get bookAppointment => 'Book Appointment';
+
+  @override
+  String get errorLoadingDoctorDetails => 'Error Loading Doctor Details';
+
+  @override
+  String get doctorProfileNotFound =>
+      'Doctor profile not found. This doctor may not be available anymore.';
+
+  @override
+  String get notifRequestCreated => 'New Request Created';
+
+  @override
+  String get notifRequestAccepted => 'Request Accepted';
+
+  @override
+  String get notifRequestUpdated => 'Request Updated';
+
+  @override
+  String get notifStatusChanged => 'Status Changed';
+
+  @override
+  String get notifSystemAlert => 'System Alert';
+
+  @override
+  String notifDoctorAccepted(Object doctorName) {
+    return '$doctorName has accepted your test request.';
+  }
+
+  @override
+  String get notifDoctorOnTheWay => 'Doctor On The Way';
+
+  @override
+  String notifDoctorOnTheWayMsg(Object doctorName) {
+    return 'Dr. $doctorName is on the way to your location.';
+  }
+
+  @override
+  String get notifSampleCollected => 'Sample Collected';
+
+  @override
+  String get notifSampleCollectedMsg =>
+      'Your sample has been collected successfully.';
+
+  @override
+  String get notifDeliveredToLab => 'Sample Delivered to Lab';
+
+  @override
+  String get notifDeliveredToLabMsg =>
+      'Your sample has been delivered to the laboratory for testing.';
+
+  @override
+  String get notifTestCompleted => 'Test Completed';
+
+  @override
+  String get notifTestCompletedMsg => 'Your test results are now ready.';
+
+  @override
+  String get notifRequestCancelled => 'Request Cancelled';
+
+  @override
+  String get notifRequestCancelledMsg => 'The test request has been cancelled.';
 }

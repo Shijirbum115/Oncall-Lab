@@ -6,10 +6,10 @@ import 'package:oncall_lab/core/utils/avatar_helper.dart';
 import 'package:oncall_lab/data/models/service_model.dart';
 import 'package:oncall_lab/stores/auth_store.dart';
 import 'package:oncall_lab/stores/service_store.dart';
-import 'package:oncall_lab/stores/test_request_store.dart';
 import 'package:oncall_lab/ui/patient/location/location_picker_screen.dart';
 import 'package:oncall_lab/ui/design_system/widgets/app_text_field.dart';
 import 'package:oncall_lab/ui/shared/widgets/app_card.dart';
+import 'package:oncall_lab/ui/payment/payment_screen.dart';
 
 class DirectServiceBookingScreen extends StatefulWidget {
   final String serviceId;
@@ -189,8 +189,6 @@ class _DirectServiceBookingScreenState
     setState(() => isSubmitting = true);
 
     try {
-      final userId = authStore.currentUser!.id;
-
       // Get the doctor_service_id if a doctor is selected
       String? doctorServiceId;
       String? doctorId;
@@ -218,40 +216,35 @@ class _DirectServiceBookingScreenState
                 .reduce((a, b) => a < b ? a : b);
       }
 
-      // Create direct service request using the store
-      final request = await testRequestStore.createDirectServiceRequest(
-        patientId: userId,
-        serviceId: widget.serviceId,
-        scheduledDate: selectedDate.toIso8601String().split('T')[0],
-        scheduledTimeSlot: selectedTimeSlot,
-        patientAddress: _addressController.text.trim(),
-        priceMnt: priceMnt,
-        doctorId: doctorId, // null if anyDoctor is true
-        doctorServiceId: doctorServiceId,
-        patientNotes: _notesController.text.trim().isEmpty
+      // Prepare booking data
+      final bookingData = {
+        'serviceId': widget.serviceId,
+        'doctorServiceId': doctorServiceId,
+        'doctorId': doctorId,
+        'scheduledDate': selectedDate.toIso8601String().split('T')[0],
+        'scheduledTimeSlot': selectedTimeSlot,
+        'patientAddress': _addressController.text.trim(),
+        'patientLatitude': selectedLocation?['latitude'],
+        'patientLongitude': selectedLocation?['longitude'],
+        'doctorCommissionMnt': (priceMnt * 0.7).round(), // 70% commission for doctor
+        'patientNotes': _notesController.text.trim().isEmpty
             ? null
             : _notesController.text.trim(),
-      );
+      };
 
       if (mounted) {
-        if (request != null) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Request submitted successfully!'),
-              backgroundColor: AppColors.success,
+        // Navigate to payment screen
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PaymentScreen(
+              amountMnt: priceMnt,
+              serviceName: widget.serviceName,
+              laboratoryName: null,
+              bookingData: bookingData,
             ),
-          );
-
-          Navigator.of(context).popUntil((route) => route.isFirst);
-        } else {
-          // Show error from store
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error: ${testRequestStore.errorMessage ?? "Unknown error"}'),
-              backgroundColor: AppColors.error,
-            ),
-          );
-        }
+          ),
+        );
       }
     } finally {
       if (mounted) {
