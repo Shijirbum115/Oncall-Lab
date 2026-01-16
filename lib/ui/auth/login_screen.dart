@@ -11,7 +11,17 @@ import 'package:oncall_lab/ui/design_system/widgets/app_text_field.dart';
 import 'package:oncall_lab/core/utils/notification_helper.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({
+    super.key,
+    this.message,
+    this.onLoginSuccess,
+  });
+
+  /// Optional message to display above the login form
+  final String? message;
+
+  /// Optional callback to execute after successful login
+  final VoidCallback? onLoginSuccess;
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -38,7 +48,15 @@ class _LoginScreenState extends State<LoginScreen> {
       password: _passwordController.text,
     );
 
-    if (!success && authStore.errorMessage != null && mounted) {
+    if (success) {
+      // Execute callback if provided
+      widget.onLoginSuccess?.call();
+      
+      // Pop with success result if this screen was pushed
+      if (mounted && Navigator.of(context).canPop()) {
+        Navigator.of(context).pop(true);
+      }
+    } else if (authStore.errorMessage != null && mounted) {
       NotificationHelper.showError(context, authStore.errorMessage!);
     }
   }
@@ -97,6 +115,39 @@ class _LoginScreenState extends State<LoginScreen> {
                     color: AppColors.grey,
                   ),
                 ),
+                // Show custom message if provided
+                if (widget.message != null) ...[
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: AppColors.primary.withValues(alpha: 0.3),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.info_outline,
+                          color: AppColors.primary,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            widget.message!,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: AppColors.black,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 40),
                 // Phone number field
                 AppTextField(

@@ -4,6 +4,7 @@ import 'package:oncall_lab/core/di/service_locator.dart';
 import 'package:oncall_lab/data/models/payment_model.dart';
 import 'package:oncall_lab/stores/payment_store.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// Widget to display QPAY payment options
 ///
@@ -233,9 +234,17 @@ class _QPayPaymentWidgetState extends State<QPayPaymentWidget> {
                   title: Text(url.name),
                   subtitle: Text(url.description),
                   trailing: const Icon(Icons.arrow_forward),
-                  onTap: () {
-                    // Launch URL - requires url_launcher package
-                    // You can implement this using url_launcher
+                  onTap: () async {
+                    final uri = Uri.parse(url.link);
+                    if (await canLaunchUrl(uri)) {
+                      await launchUrl(uri, mode: LaunchMode.externalApplication);
+                    } else {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('${url.name} апп суулгагдаагүй байна')),
+                        );
+                      }
+                    }
                   },
                 ),
               )),

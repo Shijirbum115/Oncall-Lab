@@ -44,8 +44,22 @@ class DoctorRepository {
   }
 
   /// Get available doctors (lightweight query for list views)
-  Future<List<Map<String, dynamic>>> getAvailableDoctors() async {
-    final data = await supabase.rpc('get_available_doctors');
+  Future<List<Map<String, dynamic>>> getAvailableDoctors({
+    DateTime? scheduledDate,
+    String? scheduledTime,
+  }) async {
+    final params = <String, dynamic>{};
+    
+    if (scheduledDate != null) {
+      // Format date as YYYY-MM-DD
+      params['p_scheduled_date'] = scheduledDate.toIso8601String().split('T')[0];
+    }
+    
+    if (scheduledTime != null) {
+      params['p_scheduled_time'] = scheduledTime;
+    }
+    
+    final data = await supabase.rpc('get_available_doctors', params: params);
     return List<Map<String, dynamic>>.from(data);
   }
 

@@ -105,23 +105,27 @@ class AuthGate extends StatelessWidget {
   Widget build(BuildContext context) {
     return Observer(
       builder: (_) {
-        if (!authStore.isAuthenticated) {
-          return const LoginScreen();
+        // Allow unauthenticated users to browse the app
+        // Authentication is only required for payments and booking services
+        
+        if (authStore.isAuthenticated) {
+          // Authenticated users get role-specific experiences
+          if (authStore.isPatient) {
+            return const MainPage();
+          }
+
+          if (authStore.isDoctor) {
+            return const DoctorMainPage();
+          }
+
+          if (authStore.isAdmin) {
+            return const _RolePlaceholderScreen(roleName: 'Admin');
+          }
         }
 
-        if (authStore.isPatient) {
-          return const MainPage();
-        }
-
-        if (authStore.isDoctor) {
-          return const DoctorMainPage();
-        }
-
-        if (authStore.isAdmin) {
-          return const _RolePlaceholderScreen(roleName: 'Admin');
-        }
-
-        return const LoginScreen();
+        // Unauthenticated users can browse as patients (with limited features)
+        // They'll be prompted to login when trying to book or make payments
+        return const MainPage();
       },
     );
   }

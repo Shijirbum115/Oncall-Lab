@@ -374,5 +374,6 @@
   "notifTestCompleted": "Шинжилгээ дууссан",
   "notifTestCompletedMsg": "Таны шинжилгээний үр дүн бэлэн боллоо.",
   "notifRequestCancelled": "Захиалга цуцлагдсан",
-  "notifRequestCancelledMsg": "Шинжилгээний захиалга цуцлагдсан байна."
+  "notifRequestCancelledMsg": "Шинжилгээний захиалга цуцлагдсан байна.",
+  "login": "Нэвтрэх"
 }
