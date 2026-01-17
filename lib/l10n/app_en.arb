@@ -424,5 +424,147 @@
   "notifTestCompletedMsg": "Your test results are now ready.",
   "notifRequestCancelled": "Request Cancelled",
   "notifRequestCancelledMsg": "The test request has been cancelled.",
-  "login": "Login"
+  "login": "Login",
+
+  "healthcareAtYourDoorstep": "Healthcare at your doorstep",
+  "appVersion": "v{version}",
+  "@appVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+
+  "joinAsDoctorLabTech": "Join as Doctor / Lab Technician",
+  "provideAccurateDetails": "Provide accurate details to pass verification.",
+  "profileStep": "Profile",
+  "professionalStep": "Professional",
+  "securityStep": "Security",
+  "submitApplication": "Submit Application",
+  "doctorApplicationSubmitted": "Doctor application submitted! We will verify your credentials soon.",
+  "firstNameRequired": "First name *",
+  "lastNameRequired": "Last name *",
+  "phoneNumberRequired": "Phone number *",
+  "professionRequired": "Profession *",
+  "licenseNumberRequired": "License number *",
+  "academicDegreeOptional": "Academic degree (optional)",
+  "yearsOfExperience": "Years of experience",
+  "professionalDevelopmentOptional": "Professional development (optional)",
+  "passwordRequired": "Password *",
+  "confirmPasswordRequired": "Confirm password *",
+  "alreadyRegisteredSignIn": "Already registered? Sign in",
+
+  "myDashboard": "My Dashboard",
+  "availableTab": "Available",
+  "myRequestsTab": "My Requests",
+  "completedTab": "Completed",
+  "noAvailableRequests": "No available requests",
+  "newRequestsWillAppear": "New requests will appear here",
+  "acceptRequestToStart": "Accept a request to get started",
+  "completedRequestsWillAppear": "Your completed requests will appear here",
+  "requestAcceptedSuccess": "Request accepted successfully!",
+  "accept": "Accept",
+  "scheduled": "Scheduled",
+  "priceMnt": "Price: {price} MNT",
+  "@priceMnt": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
+
+  "statusUpdatedTo": "Status updated to {status}",
+  "@statusUpdatedTo": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUpdateStatus": "Failed to update status",
+  "requestCancelled": "Request cancelled",
+  "collectSample": "Collect Sample",
+  "deliverToLab": "Deliver to Lab",
+  "completeRequest": "Complete Request",
+  "requestType": "Request Type",
+  "type": "Type",
+  "schedule": "Schedule",
+  "timeSlot": "Time Slot",
+  "location": "Location",
+  "provideCancellationReason": "Please provide a reason for cancellation:",
+  "enterReason": "Enter reason...",
+
+  "entrance": "Entrance",
+  "floor": "Floor",
+  "apartment": "Apartment",
+  "doorNumber": "Door",
+  "entranceLabel": "Entrance: {value}",
+  "@entranceLabel": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "floorLabel": "Floor: {value}",
+  "@floorLabel": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "apartmentLabel": "Apt: {value}",
+  "@apartmentLabel": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "doorLabel": "Door: {value}",
+  "@doorLabel": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "selectDoctorOrAnyAvailable": "Please select a doctor or choose \"Any Available Doctor\"",
+  "selectLocationOnMap": "Please select your location on the map",
+  "errorLoadingService": "Error loading service",
+  "firstAvailableDoctorWillAccept": "First available doctor will accept your request",
+  "orChooseSpecificDoctor": "Or choose a specific doctor:",
+  "noDoctorsAvailableForService": "No doctors available for this service",
+  "tapToOpenMapSelectAddress": "Tap to open map and select your address",
+  "specialInstructionsOrLandmarks": "Any special instructions or landmarks",
+
+  "locationPermissionsDenied": "Location permissions are denied",
+  "locationPermissionsPermanentlyDenied": "Location permissions are permanently denied",
+  "failedToGetLocation": "Failed to get current location",
+  "pleaseSelectLocationOnMap": "Please select a location on the map",
+  "pleaseEnterAnAddress": "Please enter an address",
+
+  "noNotificationsYet": "No notifications yet",
+  "justNow": "Just now",
+
+  "areYouSureLogout": "Are you sure you want to logout?",
+  "failedToUpdatePhotoError": "Failed to update photo: {error}",
+  "@failedToUpdatePhotoError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+
+  "completedVisits": "Completed visits",
+  "canceledVisits": "Canceled visits",
+  "noVisitsScheduled": "No visits scheduled",
+
+  "couldNotOpenMap": "Could not open map",
+  "errorOpeningMap": "Error opening map",
+  "openInMaps": "Open in Maps"
 }

@@ -375,5 +375,147 @@
   "notifTestCompletedMsg": "Таны шинжилгээний үр дүн бэлэн боллоо.",
   "notifRequestCancelled": "Захиалга цуцлагдсан",
   "notifRequestCancelledMsg": "Шинжилгээний захиалга цуцлагдсан байна.",
-  "login": "Нэвтрэх"
+  "login": "Нэвтрэх",
+
+  "healthcareAtYourDoorstep": "Эрүүл мэндийн үйлчилгээ таны хаалганд",
+  "appVersion": "v{version}",
+  "@appVersion": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+
+  "joinAsDoctorLabTech": "Эмч / Лаборантаар бүртгүүлэх",
+  "provideAccurateDetails": "Баталгаажуулалтын тулд үнэн мэдээлэл оруулна уу.",
+  "profileStep": "Профайл",
+  "professionalStep": "Мэргэжлийн",
+  "securityStep": "Нууцлал",
+  "submitApplication": "Өргөдөл илгээх",
+  "doctorApplicationSubmitted": "Эмчийн өргөдөл илгээгдлээ! Таны мэдээллийг удахгүй шалгах болно.",
+  "firstNameRequired": "Нэр *",
+  "lastNameRequired": "Овог *",
+  "phoneNumberRequired": "Утасны дугаар *",
+  "professionRequired": "Мэргэжил *",
+  "licenseNumberRequired": "Лицензийн дугаар *",
+  "academicDegreeOptional": "Боловсролын зэрэг (заавал биш)",
+  "yearsOfExperience": "Ажилласан жил",
+  "professionalDevelopmentOptional": "Мэргэжлийн хөгжил (заавал биш)",
+  "passwordRequired": "Нууц үг *",
+  "confirmPasswordRequired": "Нууц үг баталгаажуулах *",
+  "alreadyRegisteredSignIn": "Бүртгэлтэй юу? Нэвтрэх",
+
+  "myDashboard": "Миний самбар",
+  "availableTab": "Боломжтой",
+  "myRequestsTab": "Миний захиалга",
+  "completedTab": "Дууссан",
+  "noAvailableRequests": "Боломжтой захиалга алга",
+  "newRequestsWillAppear": "Шинэ захиалгууд энд харагдах болно",
+  "acceptRequestToStart": "Эхлэхийн тулд захиалга хүлээн авна уу",
+  "completedRequestsWillAppear": "Дууссан захиалгууд энд харагдах болно",
+  "requestAcceptedSuccess": "Захиалга амжилттай хүлээн авлаа!",
+  "accept": "Хүлээн авах",
+  "scheduled": "Товлосон",
+  "priceMnt": "Үнэ: {price} ₮",
+  "@priceMnt": {
+    "placeholders": {
+      "price": {
+        "type": "int"
+      }
+    }
+  },
+
+  "statusUpdatedTo": "Төлөв {status} болж шинэчлэгдлээ",
+  "@statusUpdatedTo": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToUpdateStatus": "Төлөв шинэчлэхэд алдаа гарлаа",
+  "requestCancelled": "Захиалга цуцлагдлаа",
+  "collectSample": "Дээж авах",
+  "deliverToLab": "Лаборатори руу хүргэх",
+  "completeRequest": "Захиалга дуусгах",
+  "requestType": "Захиалгын төрөл",
+  "type": "Төрөл",
+  "schedule": "Хуваарь",
+  "timeSlot": "Цагийн хуваарь",
+  "location": "Байршил",
+  "provideCancellationReason": "Цуцлах шалтгаанаа оруулна уу:",
+  "enterReason": "Шалтгаан оруулах...",
+
+  "entrance": "Орц",
+  "floor": "Давхар",
+  "apartment": "Байр",
+  "doorNumber": "Хаалга",
+  "entranceLabel": "Орц: {value}",
+  "@entranceLabel": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "floorLabel": "Давхар: {value}",
+  "@floorLabel": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "apartmentLabel": "Байр: {value}",
+  "@apartmentLabel": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "doorLabel": "Хаалга: {value}",
+  "@doorLabel": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "selectDoctorOrAnyAvailable": "Эмч сонгоно уу эсвэл \"Боломжтой аль ч эмч\" сонгоно у|",
+  "selectLocationOnMap": "Газрын зураг дээрээс байршлаа сонгоно уу",
+  "errorLoadingService": "Үйлчилгээг ачаалахад алдаа гарлаа",
+  "firstAvailableDoctorWillAccept": "Боломжтой эхний эмч таны захиалгыг хүлээн авна",
+  "orChooseSpecificDoctor": "Эсвэл тодорхой эмч сонгоно уу:",
+  "noDoctorsAvailableForService": "Энэ үйлчилгээнд боломжтой эмч алга",
+  "tapToOpenMapSelectAddress": "Газрын зураг нээж хаягаа сонгохын тулд дарна уу",
+  "specialInstructionsOrLandmarks": "Тусгай заавар эсвэл газрын тэмдэглэгээ",
+
+  "locationPermissionsDenied": "Байршлын зөвшөөрөл татгалзсан",
+  "locationPermissionsPermanentlyDenied": "Байршлын зөвшөөрөл бүрмөсөн татгалзсан",
+  "failedToGetLocation": "Одоогийн байршлыг авахад алдаа гарлаа",
+  "pleaseSelectLocationOnMap": "Газрын зураг дээрээс байршлаа сонгоно уу",
+  "pleaseEnterAnAddress": "Хаягаа оруулна уу",
+
+  "noNotificationsYet": "Одоогоор мэдэгдэл алга",
+  "justNow": "Дөнгөж сая",
+
+  "areYouSureLogout": "Та гарахдаа итгэлтэй байна уу?",
+  "failedToUpdatePhotoError": "Зураг шинэчлэхэд алдаа гарлаа: {error}",
+  "@failedToUpdatePhotoError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+
+  "completedVisits": "Дууссан уулзалтууд",
+  "canceledVisits": "Цуцлагдсан уулзалтууд",
+  "noVisitsScheduled": "Товлосон уулзалт алга",
+
+  "couldNotOpenMap": "Газрын зургийг нээх боломжгүй",
+  "errorOpeningMap": "Газрын зураг нээхэд алдаа гарлаа",
+  "openInMaps": "Газрын зураг дээр нээх"
 }

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:oncall_lab/core/constants/app_colors.dart';
+import 'package:oncall_lab/l10n/app_localizations.dart';
 
 class SplashWrapper extends StatefulWidget {
   const SplashWrapper({super.key, required this.child});
@@ -52,6 +53,8 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
@@ -93,7 +96,7 @@ class SplashScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Healthcare at your doorstep',
+                  l10n?.healthcareAtYourDoorstep ?? 'Эрүүл мэндийн үйлчилгээ таны хаалганд',
                   style: TextStyle(
                     fontSize: 16,
                     color: AppColors.grey.withValues(alpha: 0.8),
