@@ -22,8 +22,13 @@ import 'package:oncall_lab/ui/design_system/app_theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Load environment variables
-  await dotenv.load(fileName: '.env');
+  // Load environment variables (skip on web if file doesn't exist)
+  try {
+    await dotenv.load(fileName: '.env');
+  } catch (e) {
+    print('⚠️  .env file not found or could not be loaded: $e');
+    print('ℹ️  App will use default configuration');
+  }
 
   // Initialize Firebase (optional - required for push notifications)
   bool firebaseInitialized = false;
