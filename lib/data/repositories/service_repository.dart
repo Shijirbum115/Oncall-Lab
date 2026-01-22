@@ -1,10 +1,10 @@
 import 'dart:math' as math;
 
-import 'package:oncall_lab/core/services/supabase_service.dart';
-import 'package:oncall_lab/data/models/service_category_model.dart';
-import 'package:oncall_lab/data/models/service_model.dart';
-import 'package:oncall_lab/data/models/laboratory_service_model.dart';
-import 'package:oncall_lab/data/models/doctor_service_model.dart';
+import 'package:bugamed/core/services/supabase_service.dart';
+import 'package:bugamed/data/models/service_category_model.dart';
+import 'package:bugamed/data/models/service_model.dart';
+import 'package:bugamed/data/models/laboratory_service_model.dart';
+import 'package:bugamed/data/models/doctor_service_model.dart';
 
 class ServiceRepository {
   /// Get all service categories

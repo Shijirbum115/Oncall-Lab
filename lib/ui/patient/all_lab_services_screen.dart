@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/core/services/supabase_service.dart';
-import 'package:oncall_lab/ui/patient/laboratories_screen.dart';
-import 'package:oncall_lab/l10n/app_localizations.dart';
-import 'package:oncall_lab/ui/shared/widgets/app_card.dart';
-import 'package:oncall_lab/ui/design_system/widgets/app_text_field.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/core/services/supabase_service.dart';
+import 'package:bugamed/ui/patient/laboratories_screen.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
+import 'package:bugamed/ui/shared/widgets/app_card.dart';
+import 'package:bugamed/ui/design_system/widgets/app_text_field.dart';
 
 class AllLabServicesScreen extends StatefulWidget {
   const AllLabServicesScreen({super.key});

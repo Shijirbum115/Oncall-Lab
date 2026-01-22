@@ -2,9 +2,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:oncall_lab/core/utils/navigation_helper.dart';
-import 'package:oncall_lab/core/di/service_locator.dart';
-import 'package:oncall_lab/stores/notification_store.dart';
+import 'package:bugamed/core/utils/navigation_helper.dart';
+import 'package:bugamed/core/di/service_locator.dart';
+import 'package:bugamed/stores/notification_store.dart';
 
 /// Simple push notification service for Firebase Cloud Messaging
 class PushNotificationService {

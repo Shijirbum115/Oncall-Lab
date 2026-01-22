@@ -1,5 +1,5 @@
-import 'package:oncall_lab/core/services/supabase_service.dart';
-import 'package:oncall_lab/data/models/laboratory_technician_model.dart';
+import 'package:bugamed/core/services/supabase_service.dart';
+import 'package:bugamed/data/models/laboratory_technician_model.dart';
 
 class LaboratoryTechnicianRepository {
   /// Get all technicians for a specific laboratory

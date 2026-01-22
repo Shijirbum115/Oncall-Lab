@@ -3,9 +3,9 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart' as geo;
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/ui/shared/widgets/custom_text_field.dart';
-import 'package:oncall_lab/l10n/app_localizations.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/shared/widgets/custom_text_field.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
 
 class LocationPickerScreen extends StatefulWidget {
   final LatLng? initialLocation;
@@ -214,7 +214,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                   children: [
                     TileLayer(
                       urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      userAgentPackageName: 'com.oncall_lab.app',
+                      userAgentPackageName: 'com.bugamed.app',
                     ),
                     if (_selectedLocation != null)
                       MarkerLayer(

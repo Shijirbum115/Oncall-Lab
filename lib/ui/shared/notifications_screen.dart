@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
-import 'package:oncall_lab/data/models/notification_model.dart';
-import 'package:oncall_lab/stores/auth_store.dart';
-import 'package:oncall_lab/stores/notification_store.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/ui/shared/widgets/mascot_state_widget.dart';
-import 'package:oncall_lab/ui/shared/notification_detail_screen.dart';
+import 'package:bugamed/data/models/notification_model.dart';
+import 'package:bugamed/stores/auth_store.dart';
+import 'package:bugamed/stores/notification_store.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/shared/widgets/mascot_state_widget.dart';
+import 'package:bugamed/ui/shared/notification_detail_screen.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});

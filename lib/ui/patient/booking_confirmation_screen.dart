@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/l10n/app_localizations.dart';
-import 'package:oncall_lab/ui/shared/widgets/mascot_state_widget.dart';
-import 'package:oncall_lab/core/di/service_locator.dart';
-import 'package:oncall_lab/stores/test_request_store.dart';
-import 'package:oncall_lab/stores/auth_store.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
+import 'package:bugamed/ui/shared/widgets/mascot_state_widget.dart';
+import 'package:bugamed/core/di/service_locator.dart';
+import 'package:bugamed/stores/test_request_store.dart';
+import 'package:bugamed/stores/auth_store.dart';
 
 class BookingConfirmationScreen extends StatefulWidget {
   final Map<String, dynamic> bookingData;

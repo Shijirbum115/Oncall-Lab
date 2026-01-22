@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/ui/patient/models/schedule_ui.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/patient/models/schedule_ui.dart';
 
 class ScheduleItem extends StatelessWidget {
   const ScheduleItem({super.key, required this.schedule});

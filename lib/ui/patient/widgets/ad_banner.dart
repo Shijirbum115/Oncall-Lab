@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/ui/design_system/app_theme.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
 
 class AdBanner extends StatefulWidget {
   const AdBanner({super.key});
@@ -15,6 +15,9 @@ class _AdBannerState extends State<AdBanner> {
   late final PageController _pageController;
   Timer? _timer;
   int _currentPage = 0;
+
+  // Large multiplier for "infinite" scroll effect
+  static const int _infiniteMultiplier = 10000;
 
   final List<_AdContent> _ads = const [
     _AdContent(
@@ -37,13 +40,22 @@ class _AdBannerState extends State<AdBanner> {
     ),
   ];
 
+  int get _realIndex => _currentPage % _ads.length;
+
   @override
   void initState() {
     super.initState();
-    _pageController = PageController(viewportFraction: 0.86);
+    // Start at middle position for infinite scroll in both directions
+    final initialPage = (_infiniteMultiplier ~/ 2) * _ads.length;
+    _currentPage = initialPage;
+    _pageController = PageController(
+      viewportFraction: 1.0, // Full viewport - hide next/previous
+      initialPage: initialPage,
+    );
+
     _timer = Timer.periodic(const Duration(seconds: 8), (_) {
       if (_pageController.hasClients) {
-        _currentPage = (_currentPage + 1) % _ads.length;
+        _currentPage++;
         _pageController.animateToPage(
           _currentPage,
           duration: const Duration(milliseconds: 800),
@@ -68,13 +80,31 @@ class _AdBannerState extends State<AdBanner> {
           height: 150,
           child: PageView.builder(
             controller: _pageController,
-            itemCount: _ads.length,
+            // No itemCount = infinite pages
             onPageChanged: (index) => setState(() => _currentPage = index),
             itemBuilder: (context, index) {
-              final ad = _ads[index];
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 6),
-                child: _AdCard(content: ad),
+              final actualIndex = index % _ads.length;
+              final ad = _ads[actualIndex];
+
+              return AnimatedBuilder(
+                animation: _pageController,
+                builder: (context, child) {
+                  double opacity = 1.0;
+                  if (_pageController.position.haveDimensions) {
+                    final page = _pageController.page ?? _currentPage.toDouble();
+                    final distance = (page - index).abs();
+                    // Fade out as page slides away, fade in as it comes into view
+                    opacity = (1 - distance).clamp(0.0, 1.0);
+                  }
+                  return Opacity(
+                    opacity: opacity,
+                    child: child,
+                  );
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  child: _AdCard(content: ad),
+                ),
               );
             },
           ),
@@ -86,11 +116,11 @@ class _AdBannerState extends State<AdBanner> {
             _ads.length,
             (index) => AnimatedContainer(
               duration: const Duration(milliseconds: 300),
-              width: _currentPage == index ? 22 : 8,
+              width: _realIndex == index ? 22 : 8,
               height: 8,
               margin: const EdgeInsets.symmetric(horizontal: 4),
               decoration: BoxDecoration(
-                color: _currentPage == index
+                color: _realIndex == index
                     ? AppColors.primary
                     : AppColors.grey.withValues(alpha: 0.3),
                 borderRadius: BorderRadius.circular(20),

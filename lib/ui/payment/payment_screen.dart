@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/l10n/app_localizations.dart';
-import 'package:oncall_lab/ui/payment/payment_success_screen.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
+import 'package:bugamed/ui/payment/payment_success_screen.dart';
 
 class PaymentScreen extends StatefulWidget {
   final int amountMnt;

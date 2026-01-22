@@ -1,5 +1,5 @@
-import 'package:oncall_lab/core/services/supabase_service.dart';
-import 'package:oncall_lab/data/models/notification_model.dart';
+import 'package:bugamed/core/services/supabase_service.dart';
+import 'package:bugamed/data/models/notification_model.dart';
 
 class NotificationRepository {
   /// Get all notifications for current user

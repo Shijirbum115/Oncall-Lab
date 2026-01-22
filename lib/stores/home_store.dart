@@ -3,9 +3,9 @@ import 'dart:developer' as developer;
 
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
-import 'package:oncall_lab/core/services/supabase_service.dart';
-import 'package:oncall_lab/data/repositories/doctor_repository.dart';
-import 'package:oncall_lab/data/repositories/service_repository.dart';
+import 'package:bugamed/core/services/supabase_service.dart';
+import 'package:bugamed/data/repositories/doctor_repository.dart';
+import 'package:bugamed/data/repositories/service_repository.dart';
 
 part 'home_store.g.dart';
 

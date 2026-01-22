@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/l10n/app_localizations.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
 
 class TestTypesSection extends StatefulWidget {
   const TestTypesSection({
@@ -25,6 +25,10 @@ class _TestTypesSectionState extends State<TestTypesSection> {
 
   final ScrollController _scrollController = ScrollController();
   Timer? _autoScrollTimer;
+  int _currentIndex = 0;
+
+  // Total width of one card + spacing
+  double get _itemExtent => _cardWidth + _cardSpacing;
 
   @override
   void initState() {
@@ -53,13 +57,11 @@ class _TestTypesSectionState extends State<TestTypesSection> {
           !_scrollController.position.hasContentDimensions) {
         return;
       }
-      final maxScroll = _scrollController.position.maxScrollExtent;
-      final double currentOffset = _scrollController.offset;
-      final double targetOffset =
-          currentOffset + _cardWidth + _cardSpacing <= maxScroll
-              ? currentOffset + _cardWidth + _cardSpacing
-              : 0;
       if (!mounted) return;
+
+      _currentIndex++;
+      final targetOffset = _currentIndex * _itemExtent;
+
       await _scrollController.animateTo(
         targetOffset,
         duration: const Duration(milliseconds: 600),
@@ -124,86 +126,90 @@ class _TestTypesSectionState extends State<TestTypesSection> {
         SizedBox(
           height: 78,
           width: double.infinity,
-          child: ListView.separated(
+          child: ListView.builder(
             controller: _scrollController,
             padding: const EdgeInsets.symmetric(horizontal: 15),
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
+            // No itemCount = infinite scroll
             itemBuilder: (context, index) {
-              final test = widget.testTypes[index];
+              final actualIndex = index % widget.testTypes.length;
+              final test = widget.testTypes[actualIndex];
               final price = test['price_mnt'] as int?;
-              return SizedBox(
-                width: _cardWidth,
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: Border.all(
-                      color: AppColors.grey.withValues(alpha: 0.15),
+
+              return Padding(
+                padding: EdgeInsets.only(right: _cardSpacing),
+                child: SizedBox(
+                  width: _cardWidth,
+                  child: Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(
+                        color: AppColors.grey.withValues(alpha: 0.15),
+                      ),
+                      borderRadius: BorderRadius.circular(12),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.03),
+                          blurRadius: 8,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
                     ),
-                    borderRadius: BorderRadius.circular(12),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.03),
-                        blurRadius: 8,
-                        offset: const Offset(0, 3),
-                      ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: AppColors.primary.withValues(alpha: 0.12),
-                          shape: BoxShape.circle,
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withValues(alpha: 0.12),
+                            shape: BoxShape.circle,
+                          ),
+                          child: const Icon(
+                            Icons.bloodtype,
+                            size: 15,
+                            color: AppColors.primary,
+                          ),
                         ),
-                        child: const Icon(
-                          Icons.bloodtype,
-                          size: 15,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              l10n.localeName == 'mn' && test['name_mn'] != null
-                                  ? test['name_mn']
-                                  : test['name'],
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.black,
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                l10n.localeName == 'mn' && test['name_mn'] != null
+                                    ? test['name_mn']
+                                    : test['name'],
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.black,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                               ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              price != null
-                                  ? l10n.priceInMNT(price)
-                                  : '',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color:
-                                    AppColors.grey.withValues(alpha: 0.9),
+                              const SizedBox(height: 2),
+                              Text(
+                                price != null
+                                    ? l10n.priceInMNT(price)
+                                    : '',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color:
+                                      AppColors.grey.withValues(alpha: 0.9),
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               );
             },
-            separatorBuilder: (_, __) => const SizedBox(width: _cardSpacing),
-            itemCount: widget.testTypes.length,
           ),
         ),
       ],

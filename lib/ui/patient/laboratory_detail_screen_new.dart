@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/data/models/laboratory_service_model.dart';
-import 'package:oncall_lab/stores/service_store.dart';
-import 'package:oncall_lab/ui/patient/booking/lab_service_booking_screen.dart';
-import 'package:oncall_lab/l10n/app_localizations.dart';
-import 'package:oncall_lab/ui/design_system/widgets/app_text_field.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/data/models/laboratory_service_model.dart';
+import 'package:bugamed/stores/service_store.dart';
+import 'package:bugamed/ui/patient/booking/lab_service_booking_screen.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
+import 'package:bugamed/ui/design_system/widgets/app_text_field.dart';
 
 class LaboratoryDetailScreenNew extends StatefulWidget {
   final Map<String, dynamic> laboratory;

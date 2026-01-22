@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/stores/service_store.dart';
-import 'package:oncall_lab/ui/patient/booking/direct_service_booking_screen.dart';
-import 'package:oncall_lab/l10n/app_localizations.dart';
-import 'package:oncall_lab/ui/shared/widgets/app_card.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/stores/service_store.dart';
+import 'package:bugamed/ui/patient/booking/direct_service_booking_screen.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
+import 'package:bugamed/ui/shared/widgets/app_card.dart';
 
 class DirectServicesScreen extends StatefulWidget {
   const DirectServicesScreen({super.key});

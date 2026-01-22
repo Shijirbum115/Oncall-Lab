@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/ui/patient/models/schedule_ui.dart';
-import 'package:oncall_lab/ui/patient/sample_data/sample_schedules.dart';
-import 'package:oncall_lab/ui/patient/widgets/schedule_item.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/patient/models/schedule_ui.dart';
+import 'package:bugamed/ui/patient/sample_data/sample_schedules.dart';
+import 'package:bugamed/ui/patient/widgets/schedule_item.dart';
 
 class ScheduleScreen extends StatefulWidget {
   const ScheduleScreen({super.key});

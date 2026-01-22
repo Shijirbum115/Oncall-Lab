@@ -1,5 +1,5 @@
-import 'package:oncall_lab/core/services/supabase_service.dart';
-import 'package:oncall_lab/data/models/post_model.dart';
+import 'package:bugamed/core/services/supabase_service.dart';
+import 'package:bugamed/data/models/post_model.dart';
 
 class PostRepository {
   /// Get published posts with pagination

@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/core/utils/avatar_helper.dart';
-import 'package:oncall_lab/data/models/service_model.dart';
-import 'package:oncall_lab/stores/auth_store.dart';
-import 'package:oncall_lab/stores/service_store.dart';
-import 'package:oncall_lab/ui/patient/location/location_picker_screen.dart';
-import 'package:oncall_lab/ui/design_system/widgets/app_text_field.dart';
-import 'package:oncall_lab/ui/shared/widgets/app_card.dart';
-import 'package:oncall_lab/ui/payment/payment_screen.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/core/utils/avatar_helper.dart';
+import 'package:bugamed/data/models/service_model.dart';
+import 'package:bugamed/stores/auth_store.dart';
+import 'package:bugamed/stores/service_store.dart';
+import 'package:bugamed/ui/patient/location/location_picker_screen.dart';
+import 'package:bugamed/ui/design_system/widgets/app_text_field.dart';
+import 'package:bugamed/ui/shared/widgets/app_card.dart';
+import 'package:bugamed/ui/payment/payment_screen.dart';
 
 class DirectServiceBookingScreen extends StatefulWidget {
   final String serviceId;

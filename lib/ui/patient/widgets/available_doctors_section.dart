@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/stores/home_store.dart';
-import 'package:oncall_lab/ui/patient/models/doctor_profile_ui.dart';
-import 'package:oncall_lab/ui/patient/screens/doctor_detail_screen.dart';
-import 'package:oncall_lab/ui/patient/widgets/doctor_card_tile.dart';
-import 'package:oncall_lab/l10n/app_localizations.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/stores/home_store.dart';
+import 'package:bugamed/ui/patient/models/doctor_profile_ui.dart';
+import 'package:bugamed/ui/patient/screens/doctor_detail_screen.dart';
+import 'package:bugamed/ui/patient/widgets/doctor_card_tile.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
 
 class AvailableDoctorsSection extends StatelessWidget {
   const AvailableDoctorsSection({

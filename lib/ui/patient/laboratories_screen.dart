@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/core/services/supabase_service.dart';
-import 'package:oncall_lab/ui/patient/laboratory_detail_screen_new.dart';
-import 'package:oncall_lab/l10n/app_localizations.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/core/services/supabase_service.dart';
+import 'package:bugamed/ui/patient/laboratory_detail_screen_new.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
 
 class LaboratoriesScreen extends StatefulWidget {
   final String? preSelectedServiceId;

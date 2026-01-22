@@ -1042,4 +1042,259 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get login => 'Login';
+
+  @override
+  String get healthcareAtYourDoorstep => 'Healthcare at your doorstep';
+
+  @override
+  String appVersion(String version) {
+    return 'v$version';
+  }
+
+  @override
+  String get joinAsDoctorLabTech => 'Join as Doctor / Lab Technician';
+
+  @override
+  String get provideAccurateDetails =>
+      'Provide accurate details to pass verification.';
+
+  @override
+  String get profileStep => 'Profile';
+
+  @override
+  String get professionalStep => 'Professional';
+
+  @override
+  String get securityStep => 'Security';
+
+  @override
+  String get submitApplication => 'Submit Application';
+
+  @override
+  String get doctorApplicationSubmitted =>
+      'Doctor application submitted! We will verify your credentials soon.';
+
+  @override
+  String get firstNameRequired => 'First name *';
+
+  @override
+  String get lastNameRequired => 'Last name *';
+
+  @override
+  String get phoneNumberRequired => 'Phone number *';
+
+  @override
+  String get professionRequired => 'Profession *';
+
+  @override
+  String get licenseNumberRequired => 'License number *';
+
+  @override
+  String get academicDegreeOptional => 'Academic degree (optional)';
+
+  @override
+  String get yearsOfExperience => 'Years of experience';
+
+  @override
+  String get professionalDevelopmentOptional =>
+      'Professional development (optional)';
+
+  @override
+  String get passwordRequired => 'Password *';
+
+  @override
+  String get confirmPasswordRequired => 'Confirm password *';
+
+  @override
+  String get alreadyRegisteredSignIn => 'Already registered? Sign in';
+
+  @override
+  String get myDashboard => 'My Dashboard';
+
+  @override
+  String get availableTab => 'Available';
+
+  @override
+  String get myRequestsTab => 'My Requests';
+
+  @override
+  String get completedTab => 'Completed';
+
+  @override
+  String get noAvailableRequests => 'No available requests';
+
+  @override
+  String get newRequestsWillAppear => 'New requests will appear here';
+
+  @override
+  String get acceptRequestToStart => 'Accept a request to get started';
+
+  @override
+  String get completedRequestsWillAppear =>
+      'Your completed requests will appear here';
+
+  @override
+  String get requestAcceptedSuccess => 'Request accepted successfully!';
+
+  @override
+  String get accept => 'Accept';
+
+  @override
+  String get scheduled => 'Scheduled';
+
+  @override
+  String priceMnt(int price) {
+    return 'Price: $price MNT';
+  }
+
+  @override
+  String statusUpdatedTo(String status) {
+    return 'Status updated to $status';
+  }
+
+  @override
+  String get failedToUpdateStatus => 'Failed to update status';
+
+  @override
+  String get requestCancelled => 'Request cancelled';
+
+  @override
+  String get collectSample => 'Collect Sample';
+
+  @override
+  String get deliverToLab => 'Deliver to Lab';
+
+  @override
+  String get completeRequest => 'Complete Request';
+
+  @override
+  String get requestType => 'Request Type';
+
+  @override
+  String get type => 'Type';
+
+  @override
+  String get schedule => 'Schedule';
+
+  @override
+  String get timeSlot => 'Time Slot';
+
+  @override
+  String get location => 'Location';
+
+  @override
+  String get provideCancellationReason =>
+      'Please provide a reason for cancellation:';
+
+  @override
+  String get enterReason => 'Enter reason...';
+
+  @override
+  String get entrance => 'Entrance';
+
+  @override
+  String get floor => 'Floor';
+
+  @override
+  String get apartment => 'Apartment';
+
+  @override
+  String get doorNumber => 'Door';
+
+  @override
+  String entranceLabel(String value) {
+    return 'Entrance: $value';
+  }
+
+  @override
+  String floorLabel(String value) {
+    return 'Floor: $value';
+  }
+
+  @override
+  String apartmentLabel(String value) {
+    return 'Apt: $value';
+  }
+
+  @override
+  String doorLabel(String value) {
+    return 'Door: $value';
+  }
+
+  @override
+  String get selectDoctorOrAnyAvailable =>
+      'Please select a doctor or choose \"Any Available Doctor\"';
+
+  @override
+  String get selectLocationOnMap => 'Please select your location on the map';
+
+  @override
+  String get errorLoadingService => 'Error loading service';
+
+  @override
+  String get firstAvailableDoctorWillAccept =>
+      'First available doctor will accept your request';
+
+  @override
+  String get orChooseSpecificDoctor => 'Or choose a specific doctor:';
+
+  @override
+  String get noDoctorsAvailableForService =>
+      'No doctors available for this service';
+
+  @override
+  String get tapToOpenMapSelectAddress =>
+      'Tap to open map and select your address';
+
+  @override
+  String get specialInstructionsOrLandmarks =>
+      'Any special instructions or landmarks';
+
+  @override
+  String get locationPermissionsDenied => 'Location permissions are denied';
+
+  @override
+  String get locationPermissionsPermanentlyDenied =>
+      'Location permissions are permanently denied';
+
+  @override
+  String get failedToGetLocation => 'Failed to get current location';
+
+  @override
+  String get pleaseSelectLocationOnMap => 'Please select a location on the map';
+
+  @override
+  String get pleaseEnterAnAddress => 'Please enter an address';
+
+  @override
+  String get noNotificationsYet => 'No notifications yet';
+
+  @override
+  String get justNow => 'Just now';
+
+  @override
+  String get areYouSureLogout => 'Are you sure you want to logout?';
+
+  @override
+  String failedToUpdatePhotoError(String error) {
+    return 'Failed to update photo: $error';
+  }
+
+  @override
+  String get completedVisits => 'Completed visits';
+
+  @override
+  String get canceledVisits => 'Canceled visits';
+
+  @override
+  String get noVisitsScheduled => 'No visits scheduled';
+
+  @override
+  String get couldNotOpenMap => 'Could not open map';
+
+  @override
+  String get errorOpeningMap => 'Error opening map';
+
+  @override
+  String get openInMaps => 'Open in Maps';
 }

@@ -1,6 +1,6 @@
 // ignore_for_file: invalid_annotation_target
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:oncall_lab/core/utils/avatar_helper.dart';
+import 'package:bugamed/core/utils/avatar_helper.dart';
 
 part 'profile_model.freezed.dart';
 part 'profile_model.g.dart';

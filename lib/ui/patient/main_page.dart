@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/stores/auth_store.dart';
-import 'package:oncall_lab/ui/patient/home_screen.dart';
-import 'package:oncall_lab/ui/patient/laboratories_screen.dart';
-import 'package:oncall_lab/ui/patient/requests_screen.dart';
-import 'package:oncall_lab/ui/patient/profile_screen.dart';
-import 'package:oncall_lab/ui/auth/login_screen.dart';
-import 'package:oncall_lab/l10n/app_localizations.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/stores/auth_store.dart';
+import 'package:bugamed/ui/patient/home_screen.dart';
+import 'package:bugamed/ui/patient/laboratories_screen.dart';
+import 'package:bugamed/ui/patient/requests_screen.dart';
+import 'package:bugamed/ui/patient/profile_screen.dart';
+import 'package:bugamed/ui/auth/login_screen.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -26,100 +26,118 @@ class _MainPageState extends State<MainPage> {
       selectedIndex = index;
     });
   }
-  
+
   AuthStore get authStore => GetIt.I<AuthStore>();
 
   List<Widget> _getPagesForAuthenticated() => [
-    PatientHomeScreen(onNavigateToProfile: () => _onTabSwitch(3)),
-    const LaboratoriesScreen(),
-    const PatientRequestsScreen(),
-    const PatientProfileScreen(),
-  ];
+        PatientHomeScreen(onNavigateToProfile: () => _onTabSwitch(3)),
+        const LaboratoriesScreen(),
+        const PatientRequestsScreen(),
+        const PatientProfileScreen(),
+      ];
 
   List<Widget> _getPagesForGuest() => [
-    PatientHomeScreen(onNavigateToProfile: () => _onTabSwitch(2)),
-    const LaboratoriesScreen(),
-    LoginScreen(
-      onLoginSuccess: () {
-        setState(() {
-          selectedIndex = 0; // Reset to home after login
-        });
-      },
-    ),
-  ];
+        PatientHomeScreen(onNavigateToProfile: () => _onTabSwitch(2)),
+        const LaboratoriesScreen(),
+        LoginScreen(
+          onLoginSuccess: () {
+            setState(() {
+              selectedIndex = 0;
+            });
+          },
+        ),
+      ];
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
 
     return Observer(
       builder: (context) {
         final isAuthenticated = authStore.isAuthenticated;
-        final pages = isAuthenticated ? _getPagesForAuthenticated() : _getPagesForGuest();
-        
-        // Ensure selectedIndex is within bounds
+        final pages =
+            isAuthenticated ? _getPagesForAuthenticated() : _getPagesForGuest();
+
         if (selectedIndex >= pages.length) {
           selectedIndex = 0;
         }
+
+        final navItems = isAuthenticated
+            ? [
+                _NavItem(Iconsax.home_1, Iconsax.home_15, l10n.home),
+                _NavItem(Iconsax.microscope, Iconsax.microscope, l10n.laboratories),
+                _NavItem(Iconsax.calendar_1, Iconsax.calendar5, l10n.requests),
+                _NavItem(Iconsax.user, Iconsax.user, l10n.profile),
+              ]
+            : [
+                _NavItem(Iconsax.home_1, Iconsax.home_15, l10n.home),
+                _NavItem(Iconsax.microscope, Iconsax.microscope, l10n.laboratories),
+                _NavItem(Iconsax.login, Iconsax.login, l10n.login),
+              ];
 
         return Scaffold(
           backgroundColor: Colors.white,
           body: Stack(
             children: [
-              // Main content
-              IndexedStack(
-                index: selectedIndex,
-                children: pages,
+              // Main content with bottom padding for navbar
+              Positioned.fill(
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: 70 + bottomPadding),
+                  child: IndexedStack(
+                    index: selectedIndex,
+                    children: pages,
+                  ),
+                ),
               ),
 
-              // Floating Navigation Bar
+              // Custom Floating Navigation Bar
               Positioned(
-                left: 20,
-                right: 20,
-                bottom: 20,
+                left: 16,
+                right: 16,
+                bottom: 12 + bottomPadding,
                 child: Container(
-                  height: 65,
+                  height: 64,
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.1),
-                        blurRadius: 20,
-                        offset: const Offset(0, 5),
+                        color: Colors.black.withValues(alpha: 0.08),
+                        blurRadius: 24,
+                        offset: const Offset(0, 4),
+                        spreadRadius: 0,
+                      ),
+                      BoxShadow(
+                        color: AppColors.primary.withValues(alpha: 0.04),
+                        blurRadius: 12,
+                        offset: const Offset(0, 2),
                       ),
                     ],
                   ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(20),
-                    child: BottomNavigationBar(
-                      elevation: 0,
-                      backgroundColor: Colors.transparent,
-                      unselectedItemColor: AppColors.grey,
-                      selectedItemColor: AppColors.primary,
-                      type: BottomNavigationBarType.fixed,
-                      currentIndex: selectedIndex,
-                      selectedFontSize: 12,
-                      unselectedFontSize: 12,
-                      showUnselectedLabels: true,
-                      onTap: (value) {
-                        setState(() {
-                          selectedIndex = value;
-                        });
-                      },
-                      items: isAuthenticated
-                          ? [
-                              _buildNavItem(Iconsax.home5, Iconsax.home_15, l10n.home, 0),
-                              _buildNavItem(Iconsax.building, Iconsax.building5, l10n.laboratories, 1),
-                              _buildNavItem(Iconsax.calendar, Iconsax.calendar5, l10n.requests, 2),
-                              _buildNavItem(Icons.person_outline, Icons.person, l10n.profile, 3),
-                            ]
-                          : [
-                              _buildNavItem(Iconsax.home5, Iconsax.home_15, l10n.home, 0),
-                              _buildNavItem(Iconsax.building, Iconsax.building5, l10n.laboratories, 1),
-                              _buildNavItem(Icons.login_outlined, Icons.login, l10n.login, 2),
-                            ],
-                    ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: List.generate(navItems.length, (index) {
+                      final item = navItems[index];
+                      final isSelected = selectedIndex == index;
+
+                      return Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              selectedIndex = index;
+                            });
+                          },
+                          behavior: HitTestBehavior.opaque,
+                          child: _NavBarItem(
+                            icon: item.icon,
+                            activeIcon: item.activeIcon,
+                            label: item.label,
+                            isSelected: isSelected,
+                          ),
+                        ),
+                      );
+                    }),
                   ),
                 ),
               ),
@@ -129,19 +147,66 @@ class _MainPageState extends State<MainPage> {
       },
     );
   }
+}
 
-  BottomNavigationBarItem _buildNavItem(
-      IconData icon, IconData activeIcon, String label, int index) {
-    return BottomNavigationBarItem(
-      icon: Container(
-        padding: const EdgeInsets.only(bottom: 4),
-        child: Icon(icon),
-      ),
-      activeIcon: Container(
-        padding: const EdgeInsets.only(bottom: 4),
-        child: Icon(activeIcon),
-      ),
-      label: label,
+class _NavItem {
+  final IconData icon;
+  final IconData activeIcon;
+  final String label;
+
+  const _NavItem(this.icon, this.activeIcon, this.label);
+}
+
+class _NavBarItem extends StatelessWidget {
+  final IconData icon;
+  final IconData activeIcon;
+  final String label;
+  final bool isSelected;
+
+  const _NavBarItem({
+    required this.icon,
+    required this.activeIcon,
+    required this.label,
+    required this.isSelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOutCubic,
+          width: 48,
+          height: 34,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: isSelected
+                ? AppColors.primary.withValues(alpha: 0.12)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Icon(
+            isSelected ? activeIcon : icon,
+            size: 22,
+            color: isSelected ? AppColors.primary : AppColors.grey,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 10,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+            color: isSelected ? AppColors.primary : AppColors.grey,
+            letterSpacing: 0.2,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
     );
   }
 }

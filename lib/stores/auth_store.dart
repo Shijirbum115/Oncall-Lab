@@ -1,11 +1,11 @@
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:oncall_lab/data/repositories/auth_repository.dart';
-import 'package:oncall_lab/data/models/profile_model.dart';
-import 'package:oncall_lab/data/models/doctor_profile_model.dart';
-import 'package:oncall_lab/core/services/storage_service.dart';
-import 'package:oncall_lab/core/services/supabase_service.dart';
+import 'package:bugamed/data/repositories/auth_repository.dart';
+import 'package:bugamed/data/models/profile_model.dart';
+import 'package:bugamed/data/models/doctor_profile_model.dart';
+import 'package:bugamed/core/services/storage_service.dart';
+import 'package:bugamed/core/services/supabase_service.dart';
 
 part 'auth_store.g.dart';
 

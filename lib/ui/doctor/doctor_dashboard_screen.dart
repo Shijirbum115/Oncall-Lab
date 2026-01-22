@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/stores/auth_store.dart';
-import 'package:oncall_lab/stores/doctor_request_store.dart';
-import 'package:oncall_lab/data/models/test_request_model.dart';
-import 'package:oncall_lab/ui/doctor/doctor_request_detail_screen.dart';
-import 'package:oncall_lab/ui/shared/widgets/notification_bell.dart';
-import 'package:oncall_lab/l10n/app_localizations.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/stores/auth_store.dart';
+import 'package:bugamed/stores/doctor_request_store.dart';
+import 'package:bugamed/data/models/test_request_model.dart';
+import 'package:bugamed/ui/doctor/doctor_request_detail_screen.dart';
+import 'package:bugamed/ui/shared/widgets/notification_bell.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
 
 class DoctorDashboardScreen extends StatefulWidget {
   const DoctorDashboardScreen({super.key});

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:oncall_lab/data/models/notification_model.dart';
-import 'package:oncall_lab/ui/shared/notification_detail_screen.dart';
-import 'package:oncall_lab/ui/patient/requests_screen.dart';
+import 'package:bugamed/data/models/notification_model.dart';
+import 'package:bugamed/ui/shared/notification_detail_screen.dart';
+import 'package:bugamed/ui/patient/requests_screen.dart';
 
 /// Global navigator key for navigation from anywhere in the app
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();

@@ -1,5 +1,5 @@
-import 'package:oncall_lab/core/services/supabase_service.dart';
-import 'package:oncall_lab/data/models/post_comment_model.dart';
+import 'package:bugamed/core/services/supabase_service.dart';
+import 'package:bugamed/data/models/post_comment_model.dart';
 
 class PostCommentRepository {
   /// Get all approved comments for a post (with nested replies)

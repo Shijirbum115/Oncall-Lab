@@ -3,21 +3,21 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:oncall_lab/core/services/supabase_service.dart';
-import 'package:oncall_lab/core/services/push_notification_service.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/core/di/service_locator.dart';
-import 'package:oncall_lab/core/utils/navigation_helper.dart';
-import 'package:oncall_lab/stores/auth_store.dart';
-import 'package:oncall_lab/stores/locale_store.dart';
-import 'package:oncall_lab/stores/notification_store.dart';
+import 'package:bugamed/core/services/supabase_service.dart';
+import 'package:bugamed/core/services/push_notification_service.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/core/di/service_locator.dart';
+import 'package:bugamed/core/utils/navigation_helper.dart';
+import 'package:bugamed/stores/auth_store.dart';
+import 'package:bugamed/stores/locale_store.dart';
+import 'package:bugamed/stores/notification_store.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:oncall_lab/ui/auth/login_screen.dart';
-import 'package:oncall_lab/ui/patient/main_page.dart';
-import 'package:oncall_lab/ui/doctor/doctor_main_page.dart';
-import 'package:oncall_lab/ui/shared/splash_screen.dart';
-import 'package:oncall_lab/l10n/app_localizations.dart';
-import 'package:oncall_lab/ui/design_system/app_theme.dart';
+import 'package:bugamed/ui/auth/login_screen.dart';
+import 'package:bugamed/ui/patient/main_page.dart';
+import 'package:bugamed/ui/doctor/doctor_main_page.dart';
+import 'package:bugamed/ui/shared/splash_screen.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -64,11 +64,11 @@ void main() async {
     }
   }
 
-  runApp(const OnCallLabApp());
+  runApp(const BugamedApp());
 }
 
-class OnCallLabApp extends StatelessWidget {
-  const OnCallLabApp({super.key});
+class BugamedApp extends StatelessWidget {
+  const BugamedApp({super.key});
 
   @override
   Widget build(BuildContext context) {

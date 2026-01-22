@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/ui/shared/widgets/app_card.dart';
-import 'package:oncall_lab/l10n/app_localizations.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/shared/widgets/app_card.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
 
 class SavedAddressSelector extends StatelessWidget {
   const SavedAddressSelector({

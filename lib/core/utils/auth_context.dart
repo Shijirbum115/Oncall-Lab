@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:oncall_lab/stores/auth_store.dart';
-import 'package:oncall_lab/ui/auth/login_screen.dart';
+import 'package:bugamed/stores/auth_store.dart';
+import 'package:bugamed/ui/auth/login_screen.dart';
 
 /// Authentication context helper for optional authentication flow
 /// 

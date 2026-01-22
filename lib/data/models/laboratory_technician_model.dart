@@ -1,7 +1,7 @@
 // ignore_for_file: invalid_annotation_target
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:oncall_lab/data/models/doctor_profile_model.dart';
-import 'package:oncall_lab/data/models/profile_model.dart';
+import 'package:bugamed/data/models/doctor_profile_model.dart';
+import 'package:bugamed/data/models/profile_model.dart';
 
 part 'laboratory_technician_model.freezed.dart';
 part 'laboratory_technician_model.g.dart';

@@ -1,5 +1,5 @@
-import 'package:oncall_lab/core/services/supabase_service.dart';
-import 'package:oncall_lab/data/models/doctor_review_model.dart';
+import 'package:bugamed/core/services/supabase_service.dart';
+import 'package:bugamed/data/models/doctor_review_model.dart';
 
 class DoctorReviewRepository {
   /// Get all reviews for a specific doctor

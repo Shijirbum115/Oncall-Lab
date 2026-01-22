@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/ui/doctor/doctor_dashboard_screen.dart';
-import 'package:oncall_lab/ui/doctor/doctor_profile_screen.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/doctor/doctor_dashboard_screen.dart';
+import 'package:bugamed/ui/doctor/doctor_profile_screen.dart';
 
 class DoctorMainPage extends StatefulWidget {
   const DoctorMainPage({super.key});

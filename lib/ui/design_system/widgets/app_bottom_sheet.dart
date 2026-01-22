@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:oncall_lab/ui/design_system/app_theme.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
 
 class AppBottomSheet extends StatelessWidget {
   const AppBottomSheet({super.key, required this.child, this.title});

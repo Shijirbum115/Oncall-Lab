@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:oncall_lab/core/di/service_locator.dart';
-import 'package:oncall_lab/data/models/payment_model.dart';
-import 'package:oncall_lab/stores/payment_store.dart';
+import 'package:bugamed/core/di/service_locator.dart';
+import 'package:bugamed/data/models/payment_model.dart';
+import 'package:bugamed/stores/payment_store.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 

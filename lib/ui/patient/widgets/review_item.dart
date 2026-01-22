@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/ui/patient/models/review_ui.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/patient/models/review_ui.dart';
 
 class ReviewItem extends StatelessWidget {
   const ReviewItem({super.key, required this.review});

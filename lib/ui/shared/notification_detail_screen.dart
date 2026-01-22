@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/data/models/notification_model.dart';
-import 'package:oncall_lab/ui/shared/widgets/mascot_state_widget.dart';
-import 'package:oncall_lab/l10n/app_localizations.dart';
-import 'package:oncall_lab/ui/patient/requests_screen.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/data/models/notification_model.dart';
+import 'package:bugamed/ui/shared/widgets/mascot_state_widget.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
+import 'package:bugamed/ui/patient/requests_screen.dart';
 import 'package:animate_do/animate_do.dart';
 
 class NotificationDetailScreen extends StatelessWidget {

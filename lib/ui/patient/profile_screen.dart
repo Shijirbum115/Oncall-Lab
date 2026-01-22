@@ -2,17 +2,17 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/core/services/storage_service.dart';
-import 'package:oncall_lab/core/services/supabase_service.dart';
-import 'package:oncall_lab/data/models/profile_model.dart';
-import 'package:oncall_lab/stores/auth_store.dart';
-import 'package:oncall_lab/ui/shared/widgets/profile_avatar.dart';
-import 'package:oncall_lab/l10n/app_localizations.dart';
-import 'package:oncall_lab/ui/design_system/widgets/app_text_field.dart';
-import 'package:oncall_lab/ui/shared/widgets/language_switcher.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/core/services/storage_service.dart';
+import 'package:bugamed/core/services/supabase_service.dart';
+import 'package:bugamed/data/models/profile_model.dart';
+import 'package:bugamed/stores/auth_store.dart';
+import 'package:bugamed/ui/shared/widgets/profile_avatar.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
+import 'package:bugamed/ui/design_system/widgets/app_text_field.dart';
+import 'package:bugamed/ui/shared/widgets/language_switcher.dart';
 
-import 'package:oncall_lab/core/utils/notification_helper.dart'; // Import NotificationHelper
+import 'package:bugamed/core/utils/notification_helper.dart'; // Import NotificationHelper
 
 class PatientProfileScreen extends StatelessWidget {
   const PatientProfileScreen({super.key});

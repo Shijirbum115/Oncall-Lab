@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/core/utils/avatar_helper.dart';
-import 'package:oncall_lab/ui/patient/models/doctor_profile_ui.dart';
-import 'package:oncall_lab/l10n/app_localizations.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/core/utils/avatar_helper.dart';
+import 'package:bugamed/ui/patient/models/doctor_profile_ui.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
 
 class DoctorCardTile extends StatelessWidget {
   const DoctorCardTile({

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/core/utils/avatar_helper.dart';
-import 'package:oncall_lab/ui/patient/models/doctor_profile_ui.dart';
-import 'package:oncall_lab/data/repositories/doctor_repository.dart';
-import 'package:oncall_lab/l10n/app_localizations.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/core/utils/avatar_helper.dart';
+import 'package:bugamed/ui/patient/models/doctor_profile_ui.dart';
+import 'package:bugamed/data/repositories/doctor_repository.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
 
 class DoctorDetailScreen extends StatefulWidget {
   const DoctorDetailScreen({

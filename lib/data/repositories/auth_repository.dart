@@ -1,10 +1,10 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:oncall_lab/core/services/supabase_service.dart';
-import 'package:oncall_lab/data/models/profile_model.dart';
-import 'package:oncall_lab/data/models/doctor_profile_model.dart';
+import 'package:bugamed/core/services/supabase_service.dart';
+import 'package:bugamed/data/models/profile_model.dart';
+import 'package:bugamed/data/models/doctor_profile_model.dart';
 
 class AuthRepository {
-  static const String _phoneEmailDomain = 'oncalllab.dev';
+  static const String _phoneEmailDomain = 'bugamed.dev';
 
   String _buildEmailFromPhone(String phoneNumber) {
     var sanitized = phoneNumber.replaceAll(' ', '');
@@ -22,7 +22,7 @@ class AuthRepository {
     required String phoneNumber,
     required String password,
   }) async {
-    // Use email-based auth for web (phone@oncalllab.dev, e.g., 99123456@oncalllab.dev)
+    // Use email-based auth for web (phone@bugamed.dev, e.g., 99123456@bugamed.dev)
     final email = _buildEmailFromPhone(phoneNumber);
 
     final response = await supabase.auth.signUp(
