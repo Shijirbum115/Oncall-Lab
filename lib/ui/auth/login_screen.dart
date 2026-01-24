@@ -11,7 +11,17 @@ import 'package:oncall_lab/ui/design_system/widgets/app_text_field.dart';
 import 'package:oncall_lab/core/utils/notification_helper.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  const LoginScreen({
+    super.key,
+    this.message,
+    this.onLoginSuccess,
+  });
+
+  /// Optional message to display above the login form
+  final String? message;
+
+  /// Optional callback to execute after successful login
+  final VoidCallback? onLoginSuccess;
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -38,7 +48,15 @@ class _LoginScreenState extends State<LoginScreen> {
       password: _passwordController.text,
     );
 
-    if (!success && authStore.errorMessage != null && mounted) {
+    if (success) {
+      // Execute callback if provided
+      widget.onLoginSuccess?.call();
+      
+      // Pop with success result if this screen was pushed
+      if (mounted && Navigator.of(context).canPop()) {
+        Navigator.of(context).pop(true);
+      }
+    } else if (authStore.errorMessage != null && mounted) {
       NotificationHelper.showError(context, authStore.errorMessage!);
     }
   }
@@ -52,52 +70,85 @@ class _LoginScreenState extends State<LoginScreen> {
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 20),
+                const SizedBox(height: 8),
                 // Language switcher at the top
                 const Align(
                   alignment: Alignment.centerRight,
                   child: LanguageSwitcher(),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 12),
                 // Logo or app name
                 Center(
                   child: Container(
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
                       color: AppColors.primary.withValues(alpha: 0.1),
                       shape: BoxShape.circle,
                     ),
                     child: const Icon(
                       Icons.local_hospital,
-                      size: 60,
+                      size: 50,
                       color: AppColors.primary,
                     ),
                   ),
                 ),
-                const SizedBox(height: 30),
+                const SizedBox(height: 20),
                 Text(
                   l10n.welcomeBack,
                   style: const TextStyle(
-                    fontSize: 32,
+                    fontSize: 28,
                     fontWeight: FontWeight.bold,
                     color: AppColors.black,
                   ),
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
                 Text(
                   l10n.signInToContinue,
                   style: const TextStyle(
-                    fontSize: 16,
+                    fontSize: 15,
                     color: AppColors.grey,
                   ),
                 ),
-                const SizedBox(height: 40),
+                // Show custom message if provided
+                if (widget.message != null) ...[
+                  const SizedBox(height: 12),
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                        color: AppColors.primary.withValues(alpha: 0.3),
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(
+                          Icons.info_outline,
+                          color: AppColors.primary,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            widget.message!,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: AppColors.black,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 24),
                 // Phone number field
                 AppTextField(
                   controller: _phoneController,
@@ -114,7 +165,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: 16),
                 // Password field
                 Observer(
                   builder: (_) => AppTextField(
@@ -145,7 +196,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     },
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 // Forgot password
                 Align(
                   alignment: Alignment.centerRight,
@@ -156,7 +207,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Text(l10n.forgotPassword),
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
                 // Login button
                 Observer(
                   builder: (_) => SizedBox(
@@ -191,7 +242,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
                 // Divider
                 Row(
                   children: [
@@ -218,7 +269,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 16),
                 // Register as Patient button
                 SizedBox(
                   width: double.infinity,
@@ -243,7 +294,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
                 // Register as Doctor button
                 SizedBox(
                   width: double.infinity,
@@ -268,6 +319,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
+                const SizedBox(height: 16), // Bottom padding
               ],
             ),
           ),

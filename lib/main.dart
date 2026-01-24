@@ -12,7 +12,6 @@ import 'package:oncall_lab/stores/auth_store.dart';
 import 'package:oncall_lab/stores/locale_store.dart';
 import 'package:oncall_lab/stores/notification_store.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:oncall_lab/ui/auth/login_screen.dart';
 import 'package:oncall_lab/ui/patient/main_page.dart';
 import 'package:oncall_lab/ui/doctor/doctor_main_page.dart';
 import 'package:oncall_lab/ui/shared/splash_screen.dart';
@@ -22,8 +21,13 @@ import 'package:oncall_lab/ui/design_system/app_theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Load environment variables
-  await dotenv.load(fileName: '.env');
+  // Load environment variables (skip on web if file doesn't exist)
+  try {
+    await dotenv.load(fileName: '.env');
+  } catch (e) {
+    print('⚠️  .env file not found or could not be loaded: $e');
+    print('ℹ️  App will use default configuration');
+  }
 
   // Initialize Firebase (optional - required for push notifications)
   bool firebaseInitialized = false;
@@ -105,23 +109,27 @@ class AuthGate extends StatelessWidget {
   Widget build(BuildContext context) {
     return Observer(
       builder: (_) {
-        if (!authStore.isAuthenticated) {
-          return const LoginScreen();
+        // Allow unauthenticated users to browse the app
+        // Authentication is only required for payments and booking services
+        
+        if (authStore.isAuthenticated) {
+          // Authenticated users get role-specific experiences
+          if (authStore.isPatient) {
+            return const MainPage();
+          }
+
+          if (authStore.isDoctor) {
+            return const DoctorMainPage();
+          }
+
+          if (authStore.isAdmin) {
+            return const _RolePlaceholderScreen(roleName: 'Admin');
+          }
         }
 
-        if (authStore.isPatient) {
-          return const MainPage();
-        }
-
-        if (authStore.isDoctor) {
-          return const DoctorMainPage();
-        }
-
-        if (authStore.isAdmin) {
-          return const _RolePlaceholderScreen(roleName: 'Admin');
-        }
-
-        return const LoginScreen();
+        // Unauthenticated users can browse as patients (with limited features)
+        // They'll be prompted to login when trying to book or make payments
+        return const MainPage();
       },
     );
   }

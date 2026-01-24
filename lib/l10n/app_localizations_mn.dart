@@ -1040,4 +1040,7 @@ class AppLocalizationsMn extends AppLocalizations {
   @override
   String get notifRequestCancelledMsg =>
       'Шинжилгээний захиалга цуцлагдсан байна.';
+
+  @override
+  String get login => 'Нэвтрэх';
 }

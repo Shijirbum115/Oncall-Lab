@@ -4,6 +4,7 @@ import 'package:oncall_lab/core/di/service_locator.dart';
 import 'package:oncall_lab/data/models/payment_model.dart';
 import 'package:oncall_lab/stores/payment_store.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// Widget to display QPAY payment options
 ///
@@ -51,7 +52,7 @@ class _QPayPaymentWidgetState extends State<QPayPaymentWidget> {
       patientId: widget.userId,
       amountMnt: widget.amountMnt,
       description: widget.description,
-      testRequestId: widget.testRequestId!,
+      testRequestId: widget.testRequestId ?? '',
     );
     setState(() {
       _isInitialized = true;
@@ -85,21 +86,34 @@ class _QPayPaymentWidgetState extends State<QPayPaymentWidget> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.error, color: Colors.red, size: 48),
-                const SizedBox(height: 16),
+                const Icon(Icons.error, color: Colors.red, size: 40),
+                const SizedBox(height: 12),
                 Text(
                   'Алдаа гарлаа',
                   style: Theme.of(context).textTheme.titleLarge,
                 ),
-                const SizedBox(height: 8),
-                Text(
-                  _paymentStore.errorMessage!,
-                  textAlign: TextAlign.center,
+                const SizedBox(height: 6),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24),
+                  child: Text(
+                    _paymentStore.errorMessage!,
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-                const SizedBox(height: 16),
-                ElevatedButton(
-                  onPressed: _initializePayment,
-                  child: const Text('Дахин оролдох'),
+                const SizedBox(height: 12),
+                ElevatedButton.icon(
+                  onPressed: _paymentStore.isLoading ? null : _initializePayment,
+                  icon: _paymentStore.isLoading
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
+                      : const Icon(Icons.refresh),
+                  label: const Text('Дахин оролдох'),
                 ),
               ],
             ),
@@ -110,8 +124,41 @@ class _QPayPaymentWidgetState extends State<QPayPaymentWidget> {
         final invoice = _paymentStore.currentInvoice;
 
         if (payment == null || invoice == null) {
-          return const Center(
-            child: Text('Төлбөрийн мэдээлэл олдсонгүй'),
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.info_outline, color: Colors.orange, size: 48),
+                const SizedBox(height: 16),
+                const Text(
+                  'Төлбөрийн мэдээлэл олдсонгүй',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  widget.testRequestId == null 
+                    ? 'Захиалгын мэдээлэл дутуу байна'
+                    : 'Төлбөрийн мэдээлэл үүсгэж чадсангүй',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(color: Colors.grey),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton.icon(
+                  onPressed: _paymentStore.isLoading ? null : _initializePayment,
+                  icon: _paymentStore.isLoading
+                      ? const SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        )
+                      : const Icon(Icons.refresh),
+                  label: const Text('Дахин оролдох'),
+                ),
+              ],
+            ),
           );
         }
 
@@ -233,9 +280,17 @@ class _QPayPaymentWidgetState extends State<QPayPaymentWidget> {
                   title: Text(url.name),
                   subtitle: Text(url.description),
                   trailing: const Icon(Icons.arrow_forward),
-                  onTap: () {
-                    // Launch URL - requires url_launcher package
-                    // You can implement this using url_launcher
+                  onTap: () async {
+                    final uri = Uri.parse(url.link);
+                    if (await canLaunchUrl(uri)) {
+                      await launchUrl(uri, mode: LaunchMode.externalApplication);
+                    } else {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('${url.name} апп суулгагдаагүй байна')),
+                        );
+                      }
+                    }
                   },
                 ),
               )),

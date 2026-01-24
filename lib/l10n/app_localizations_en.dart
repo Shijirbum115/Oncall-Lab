@@ -1039,4 +1039,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notifRequestCancelledMsg => 'The test request has been cancelled.';
+
+  @override
+  String get login => 'Login';
 }
