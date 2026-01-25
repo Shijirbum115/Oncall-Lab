@@ -9,6 +9,7 @@ class PaymentSuccessScreen extends StatelessWidget {
   final String serviceName;
   final String? laboratoryName;
   final Map<String, dynamic> bookingData;
+  final bool isPendingBankTransfer;
 
   const PaymentSuccessScreen({
     super.key,
@@ -16,6 +17,7 @@ class PaymentSuccessScreen extends StatelessWidget {
     required this.serviceName,
     this.laboratoryName,
     required this.bookingData,
+    this.isPendingBankTransfer = false,
   });
 
   @override
@@ -70,7 +72,9 @@ class PaymentSuccessScreen extends StatelessWidget {
                 delay: const Duration(milliseconds: 400),
                 duration: const Duration(milliseconds: 600),
                 child: Text(
-                  l10n.paymentSuccessful,
+                  isPendingBankTransfer 
+                    ? 'Төлбөрийн мэдээлэл илгээгдлээ' 
+                    : l10n.paymentSuccessful,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontSize: 24,
@@ -87,7 +91,9 @@ class PaymentSuccessScreen extends StatelessWidget {
                 delay: const Duration(milliseconds: 500),
                 duration: const Duration(milliseconds: 600),
                 child: Text(
-                  l10n.bookingConfirmed,
+                  isPendingBankTransfer
+                    ? 'Таны төлбөр баталгаажсаны дараа захиалга идэвхжинэ.'
+                    : l10n.bookingConfirmed,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontSize: 16,

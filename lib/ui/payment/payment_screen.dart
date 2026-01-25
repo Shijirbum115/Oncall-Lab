@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/core/utils/auth_context.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
-import 'package:bugamed/ui/payment/payment_success_screen.dart';
+import 'package:bugamed/stores/auth_store.dart';
+import 'package:bugamed/ui/payment/payment_method_screen.dart';
 
 class PaymentScreen extends StatefulWidget {
   final int amountMnt;
@@ -24,27 +26,107 @@ class PaymentScreen extends StatefulWidget {
 
 class _PaymentScreenState extends State<PaymentScreen> {
   bool isProcessing = false;
+  String? _userId;
+  String? _testRequestId;
+
+  @override
+  void initState() {
+    super.initState();
+    if (mounted) {
+      _userId = authStore.currentUser?.id;
+    }
+  }
+
+  Future<void> _showLoginRequiredDialog() async {
+    final result = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false, // Force user to click the button
+      builder: (context) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Iconsax.lock, color: AppColors.primary, size: 24),
+            SizedBox(width: 12),
+            Text('Нэвтрэх шаардлагатай'),
+          ],
+        ),
+        content: const Text(
+          'Төлбөр төлөхийн тулд эхлээд системд нэвтэрнэ үү.',
+          style: TextStyle(fontSize: 16, height: 1.5),
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(context, true);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+            ),
+            child: const Text('Нэвтрэх'),
+          ),
+        ],
+      ),
+    );
+    
+    if (result == true && mounted) {
+      // Navigate to login with auth context
+      final authenticated = await AuthContext.requireAuth(
+        context,
+        reason: 'make a payment',
+      );
+      
+      // If authenticated, update userId and continue with payment
+      if (authenticated && mounted) {
+        setState(() {
+          _userId = authStore.currentUser?.id;
+        });
+      }
+    }
+  }
 
   Future<void> _processPayment() async {
+    if (!authStore.isAuthenticated) {
+      await _showLoginRequiredDialog();
+      
+      if (!authStore.isAuthenticated) {
+        return; // User cancelled login
+      }
+      
+      _userId = authStore.currentUser?.id;
+    }
+    
+    // Verify we have userId
+    if (_userId == null) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Хэрэглэгчийн мэдээлэл олдсонгүй. Дахин нэвтэрнэ үү.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      return;
+    }
+
     setState(() => isProcessing = true);
 
-    // Simulate payment processing
-    await Future.delayed(const Duration(milliseconds: 800));
-
-    if (!mounted) return;
-
-    // Navigate to success screen
-    Navigator.pushReplacement(
+    // Navigate to payment method selection screen
+    await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => PaymentSuccessScreen(
+        builder: (context) => PaymentMethodScreen(
+          userId: _userId!,
           amountMnt: widget.amountMnt,
           serviceName: widget.serviceName,
           laboratoryName: widget.laboratoryName,
           bookingData: widget.bookingData,
+          testRequestId: _testRequestId,
         ),
       ),
     );
+
+    setState(() => isProcessing = false);
   }
 
   @override
@@ -194,24 +276,24 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       width: double.infinity,
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
-                        color: AppColors.info.withValues(alpha: 0.06),
+                        color: AppColors.success.withValues(alpha: 0.06),
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: AppColors.info.withValues(alpha: 0.15),
+                          color: AppColors.success.withValues(alpha: 0.15),
                           width: 1,
                         ),
                       ),
                       child: Row(
                         children: [
                           const Icon(
-                            Iconsax.info_circle,
-                            color: AppColors.info,
+                            Iconsax.wallet_check,
+                            color: AppColors.success,
                             size: 20,
                           ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              l10n.qpayIntegrationComingSoon,
+                              'QPay-ээр төлбөр төлөх боломжтой. QR код эсвэл банкны апп ашиглан төлбөрөө хийнэ үү.',
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textSecondary,
