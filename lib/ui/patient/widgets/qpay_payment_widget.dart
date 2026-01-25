@@ -274,7 +274,7 @@ class _QPayPaymentWidgetState extends State<QPayPaymentWidget> {
                           url.logo,
                           width: 32,
                           height: 32,
-                          errorBuilder: (_, __, ___) => const Icon(Icons.account_balance),
+                          errorBuilder: (context, error, stackTrace) => const Icon(Icons.account_balance),
                         )
                       : const Icon(Icons.account_balance),
                   title: Text(url.name),

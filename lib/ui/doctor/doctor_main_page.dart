@@ -3,6 +3,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
 import 'package:bugamed/ui/doctor/doctor_dashboard_screen.dart';
 import 'package:bugamed/ui/doctor/doctor_profile_screen.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
 
 class DoctorMainPage extends StatefulWidget {
   const DoctorMainPage({super.key});
@@ -21,6 +22,8 @@ class _DoctorMainPageState extends State<DoctorMainPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.white,
       bottomNavigationBar: BottomNavigationBar(
@@ -35,14 +38,14 @@ class _DoctorMainPageState extends State<DoctorMainPage> {
             selectedIndex = value;
           });
         },
-        items: const [
+        items: [
           BottomNavigationBarItem(
-            icon: Icon(Iconsax.clipboard_text),
-            label: "Dashboard",
+            icon: const Icon(Iconsax.clipboard_text),
+            label: l10n.dashboard,
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: "Profile",
+            icon: const Icon(Icons.person),
+            label: l10n.profile,
           ),
         ],
       ),

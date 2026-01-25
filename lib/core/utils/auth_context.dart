@@ -83,7 +83,7 @@ class AuthContext {
       ),
     );
 
-    if (result == true) {
+    if (result == true && context.mounted) {
       return await requireAuth(context);
     }
 

@@ -17,7 +17,7 @@ void main() {
       ..currentUser = null
       ..currentProfile = null;
 
-    await tester.pumpWidget(const OnCallLabApp());
+    await tester.pumpWidget(const BugamedApp());
 
     expect(find.text('Welcome Back'), findsOneWidget);
     expect(find.text('Sign In'), findsOneWidget);

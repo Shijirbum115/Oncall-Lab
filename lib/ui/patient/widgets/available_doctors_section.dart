@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
 import 'package:bugamed/stores/home_store.dart';
 import 'package:bugamed/ui/patient/models/doctor_profile_ui.dart';
@@ -45,8 +46,8 @@ class AvailableDoctorsSection extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 15),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
-        crossAxisSpacing: 14,
-        mainAxisSpacing: 14,
+        crossAxisSpacing: AppSpacing.md,
+        mainAxisSpacing: AppSpacing.md,
         mainAxisExtent: 110,
       ),
       itemCount: displayDoctors.length,

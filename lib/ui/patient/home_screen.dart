@@ -5,6 +5,7 @@ import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
 import 'package:bugamed/stores/auth_store.dart';
 import 'package:bugamed/stores/home_store.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
 import 'package:bugamed/ui/patient/widgets/visit_options_section.dart';
 import 'package:bugamed/ui/patient/widgets/test_types_section.dart';
 import 'package:bugamed/ui/patient/widgets/available_doctors_section.dart';
@@ -114,9 +115,9 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.lg),
               _buildHeader(l10n),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.lg),
               Expanded(
                 child: RefreshIndicator(
                   color: AppColors.primary,
@@ -147,9 +148,9 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
                             );
                           },
                         ),
-                        const SizedBox(height: 30),
+                        const SizedBox(height: AppSpacing.xl),
                         const AdBanner(),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: AppSpacing.lg),
                         TestTypesSection(
                           testTypes: tests,
                           onSeeAllTap: () {
@@ -161,7 +162,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
                             );
                           },
                         ),
-                        const SizedBox(height: 35),
+                        const SizedBox(height: AppSpacing.xxl),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 15),
                           child: Row(
@@ -169,12 +170,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
                             children: [
                               Text(
                                 l10n.availableDoctors,
-                                style: const TextStyle(
-                                  fontSize: 22,
-                                  color: AppColors.black,
-                                  letterSpacing: -.5,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                                style: AppTypography.sectionHeader,
                               ),
                               TextButton(
                                 onPressed: () {
@@ -204,7 +200,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
                             ],
                           ),
                         ),
-                        const SizedBox(height: 15),
+                        const SizedBox(height: AppSpacing.md),
                         AvailableDoctorsSection(doctors: doctors),
                         const SizedBox(height: 110), // Extra padding for floating navbar
                       ],

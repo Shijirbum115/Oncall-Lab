@@ -1299,4 +1299,89 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get openInMaps => 'Газрын зураг дээр нээх';
+
+  @override
+  String minutesAgo(int minutes) {
+    return '$minutes мин өмнө';
+  }
+
+  @override
+  String hoursAgo(int hours) {
+    return '$hours цаг өмнө';
+  }
+
+  @override
+  String daysAgo(int days) {
+    return '$days өдрийн өмнө';
+  }
+
+  @override
+  String get notificationsUpdatesHere =>
+      'Таны захиалгын шинэчлэлүүд энд харагдана';
+
+  @override
+  String get selectLocation => 'Байршил сонгох';
+
+  @override
+  String get addressDetails => 'Хаягийн дэлгэрэнгүй';
+
+  @override
+  String get streetAddressRequired => 'Гудамжны хаяг *';
+
+  @override
+  String get streetAddressHint => 'Жишээ: Бага тойруу 17, Сүхбаатар дүүрэг';
+
+  @override
+  String get labelOptional => 'Шошго (заавал биш)';
+
+  @override
+  String get labelHint => 'Жишээ: Гэр, Ажил, Эцэг эхийн байр';
+
+  @override
+  String get buildingName => 'Барилгын нэр';
+
+  @override
+  String get buildingNameHint => 'Жишээ: Скайтел тауэр';
+
+  @override
+  String get entranceHint => 'Жишээ: А, Б, 1';
+
+  @override
+  String get apartmentNumberLabel => 'Байрны дугаар';
+
+  @override
+  String get apartmentNumberHint => 'Жишээ: 512';
+
+  @override
+  String get doorNumberHint => 'Жишээ: А';
+
+  @override
+  String get phone => 'Утас';
+
+  @override
+  String get professionalDetails => 'Мэргэжлийн мэдээлэл';
+
+  @override
+  String get logout => 'Гарах';
+
+  @override
+  String get patientLocation => 'Өвчтөний байршил';
+
+  @override
+  String get viewFullMap => 'Бүтэн газрын зураг';
+
+  @override
+  String get getDirections => 'Чиглэл авах';
+
+  @override
+  String get defaultDoctorBio =>
+      'Чанартай эмнэлгийн үйлчилгээ үзүүлэхэд зориулсан туршлагатай мэргэжилтэн.';
+
+  @override
+  String get defaultLocation => 'Улаанбаатар, Монгол';
+
+  @override
+  String durationMinutesShort(int minutes) {
+    return '~$minutes минут';
+  }
 }

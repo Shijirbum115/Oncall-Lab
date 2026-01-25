@@ -76,9 +76,27 @@ class AppTypography {
     color: AppColors.black,
   );
 
+  static const TextStyle sectionHeader = TextStyle(
+    fontSize: 22,
+    fontWeight: FontWeight.w600,
+    color: AppColors.black,
+    letterSpacing: -0.5,
+  );
+
   static const TextStyle bodyMedium = TextStyle(
     fontSize: 14,
     color: AppColors.textSecondary,
+  );
+
+  static const TextStyle bodySmall = TextStyle(
+    fontSize: 12,
+    color: AppColors.textSecondary,
+  );
+
+  static const TextStyle labelSmall = TextStyle(
+    fontSize: 10,
+    color: AppColors.grey,
+    fontWeight: FontWeight.w500,
   );
 }
 
@@ -88,4 +106,6 @@ class AppSpacing {
   static const double md = 16;
   static const double lg = 24;
   static const double xl = 32;
+  static const double xxl = 40;
+  static const double xxxl = 60;
 }

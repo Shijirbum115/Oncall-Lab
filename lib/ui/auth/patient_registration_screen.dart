@@ -139,14 +139,15 @@ class _PatientRegistrationScreenState extends State<PatientRegistrationScreen> {
         }
       }
 
-      if (context.mounted) {
-        final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.patientAccountCreated),
-          ),
-        );
-      }
+      if (!mounted) return;
+
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.patientAccountCreated),
+        ),
+      );
+      
       Navigator.of(context).pop();
     } else if (authStore.errorMessage != null && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -593,7 +594,7 @@ class _PatientRegistrationScreenState extends State<PatientRegistrationScreen> {
         SwitchListTile.adaptive(
           contentPadding: EdgeInsets.zero,
           title: Text(l10n.mongolianCitizen),
-          activeColor: AppColors.primary,
+          activeTrackColor: AppColors.primary,
           value: _isMongolianCitizen,
           onChanged: (value) {
             setState(() => _isMongolianCitizen = value);

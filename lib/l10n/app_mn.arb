@@ -517,5 +517,64 @@
 
   "couldNotOpenMap": "Газрын зургийг нээх боломжгүй",
   "errorOpeningMap": "Газрын зураг нээхэд алдаа гарлаа",
-  "openInMaps": "Газрын зураг дээр нээх"
+  "openInMaps": "Газрын зураг дээр нээх",
+
+  "minutesAgo": "{minutes} мин өмнө",
+  "@minutesAgo": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{hours} цаг өмнө",
+  "@hoursAgo": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "{days} өдрийн өмнө",
+  "@daysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationsUpdatesHere": "Таны захиалгын шинэчлэлүүд энд харагдана",
+
+  "selectLocation": "Байршил сонгох",
+  "addressDetails": "Хаягийн дэлгэрэнгүй",
+  "streetAddressRequired": "Гудамжны хаяг *",
+  "streetAddressHint": "Жишээ: Бага тойруу 17, Сүхбаатар дүүрэг",
+  "labelOptional": "Шошго (заавал биш)",
+  "labelHint": "Жишээ: Гэр, Ажил, Эцэг эхийн байр",
+  "buildingName": "Барилгын нэр",
+  "buildingNameHint": "Жишээ: Скайтел тауэр",
+  "entranceHint": "Жишээ: А, Б, 1",
+  "apartmentNumberLabel": "Байрны дугаар",
+  "apartmentNumberHint": "Жишээ: 512",
+  "doorNumberHint": "Жишээ: А",
+
+  "phone": "Утас",
+  "professionalDetails": "Мэргэжлийн мэдээлэл",
+  "logout": "Гарах",
+
+  "patientLocation": "Өвчтөний байршил",
+  "viewFullMap": "Бүтэн газрын зураг",
+  "getDirections": "Чиглэл авах",
+
+  "defaultDoctorBio": "Чанартай эмнэлгийн үйлчилгээ үзүүлэхэд зориулсан туршлагатай мэргэжилтэн.",
+  "defaultLocation": "Улаанбаатар, Монгол",
+
+  "durationMinutesShort": "~{minutes} минут",
+  "@durationMinutesShort": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  }
 }

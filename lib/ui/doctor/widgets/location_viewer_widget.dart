@@ -4,6 +4,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
 import 'package:bugamed/data/models/patient_address_model.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
 
 class LocationViewerWidget extends StatefulWidget {
   final PatientAddressModel address;
@@ -48,12 +49,12 @@ class _LocationViewerWidgetState extends State<LocationViewerWidget> {
         await launchUrl(osmUrl, mode: LaunchMode.externalApplication);
       } else {
         if (mounted) {
-          _showError('Could not open map');
+          _showError(AppLocalizations.of(context)!.couldNotOpenMap);
         }
       }
     } catch (e) {
       if (mounted) {
-        _showError('Error opening map: $e');
+        _showError(AppLocalizations.of(context)!.errorOpeningMap);
       }
     }
   }
@@ -85,17 +86,19 @@ class _LocationViewerWidgetState extends State<LocationViewerWidget> {
   }
 
   Widget _buildFullScreenView() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Patient Location'),
+        title: Text(l10n.patientLocation),
         backgroundColor: Colors.white,
         elevation: 0,
         actions: [
           IconButton(
             icon: const Icon(Icons.open_in_new),
             onPressed: _openInMaps,
-            tooltip: 'Open in Maps',
+            tooltip: l10n.openInMaps,
           ),
         ],
       ),
@@ -115,6 +118,8 @@ class _LocationViewerWidgetState extends State<LocationViewerWidget> {
   }
 
   Widget _buildCompactView() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Card(
       margin: EdgeInsets.zero,
       shape: RoundedRectangleBorder(
@@ -154,18 +159,18 @@ class _LocationViewerWidgetState extends State<LocationViewerWidget> {
                             ),
                           ],
                         ),
-                        child: const Row(
+                        child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.zoom_out_map,
                               size: 16,
                               color: AppColors.primary,
                             ),
-                            SizedBox(width: 4),
+                            const SizedBox(width: 4),
                             Text(
-                              'View Full Map',
-                              style: TextStyle(
+                              l10n.viewFullMap,
+                              style: const TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
                                 color: AppColors.primary,
@@ -211,7 +216,7 @@ class _LocationViewerWidgetState extends State<LocationViewerWidget> {
                   child: OutlinedButton.icon(
                     onPressed: _openInMaps,
                     icon: const Icon(Icons.directions, size: 18),
-                    label: const Text('Open in Maps'),
+                    label: Text(l10n.openInMaps),
                     style: OutlinedButton.styleFrom(
                       foregroundColor: AppColors.primary,
                       side: const BorderSide(color: AppColors.primary),
@@ -266,6 +271,8 @@ class _LocationViewerWidgetState extends State<LocationViewerWidget> {
   }
 
   Widget _buildAddressDetails() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: const BoxDecoration(
@@ -282,38 +289,38 @@ class _LocationViewerWidgetState extends State<LocationViewerWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Address Details',
-              style: TextStyle(
+            Text(
+              l10n.addressDetails,
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 16),
 
-            _buildDetailRow('Address', widget.address.addressLine),
+            _buildDetailRow(l10n.address, widget.address.addressLine),
 
             if (widget.address.label != null)
-              _buildDetailRow('Label', widget.address.label!),
+              _buildDetailRow(l10n.labelOptional.replaceAll(' (optional)', ''), widget.address.label!),
 
             if (widget.address.buildingName != null)
-              _buildDetailRow('Building', widget.address.buildingName!),
+              _buildDetailRow(l10n.buildingName, widget.address.buildingName!),
 
             if (widget.address.entrance != null)
-              _buildDetailRow('Entrance', widget.address.entrance!),
+              _buildDetailRow(l10n.entrance, widget.address.entrance!),
 
             if (widget.address.floor != null)
-              _buildDetailRow('Floor', widget.address.floor!),
+              _buildDetailRow(l10n.floor, widget.address.floor!),
 
             if (widget.address.apartmentNumber != null)
-              _buildDetailRow('Apartment', widget.address.apartmentNumber!),
+              _buildDetailRow(l10n.apartment, widget.address.apartmentNumber!),
 
             if (widget.address.doorNumber != null)
-              _buildDetailRow('Door', widget.address.doorNumber!),
+              _buildDetailRow(l10n.doorNumber, widget.address.doorNumber!),
 
             if (widget.address.additionalInfo != null)
               _buildDetailRow(
-                'Additional Info',
+                l10n.additionalInfo,
                 widget.address.additionalInfo!,
               ),
 
@@ -324,7 +331,7 @@ class _LocationViewerWidgetState extends State<LocationViewerWidget> {
               child: ElevatedButton.icon(
                 onPressed: _openInMaps,
                 icon: const Icon(Icons.navigation, size: 20),
-                label: const Text('Get Directions'),
+                label: Text(l10n.getDirections),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   foregroundColor: Colors.white,

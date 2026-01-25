@@ -74,7 +74,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
           if (!mounted) return;
-          _showError('Location permissions are denied');
+          _showError(AppLocalizations.of(context)!.locationPermissionsDenied);
           setState(() => _isLoadingLocation = false);
           return;
         }
@@ -82,7 +82,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
 
       if (permission == LocationPermission.deniedForever) {
         if (!mounted) return;
-        _showError('Location permissions are permanently denied');
+        _showError(AppLocalizations.of(context)!.locationPermissionsPermanentlyDenied);
         setState(() => _isLoadingLocation = false);
         return;
       }
@@ -103,7 +103,9 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
       await _getAddressFromLatLng(location);
     } catch (e) {
       setState(() => _isLoadingLocation = false);
-      _showError('Failed to get current location: $e');
+      if (mounted) {
+        _showError(AppLocalizations.of(context)!.failedToGetLocation);
+      }
     }
   }
 
@@ -150,13 +152,15 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
   }
 
   void _saveLocation() {
+    final l10n = AppLocalizations.of(context)!;
+
     if (_selectedLocation == null) {
-      _showError('Please select a location on the map');
+      _showError(l10n.pleaseSelectLocationOnMap);
       return;
     }
 
     if (_addressController.text.trim().isEmpty) {
-      _showError('Please enter an address');
+      _showError(l10n.pleaseEnterAnAddress);
       return;
     }
 
@@ -181,7 +185,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Select Location'),
+        title: Text(l10n.selectLocation),
         backgroundColor: Colors.white,
         elevation: 0,
         actions: [
@@ -289,9 +293,9 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                         ),
                       ),
 
-                    const Text(
-                      'Address Details',
-                      style: TextStyle(
+                    Text(
+                      l10n.addressDetails,
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -300,16 +304,16 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
 
                     CustomTextField(
                       controller: _addressController,
-                      label: 'Street Address *',
-                      hint: 'e.g., Baga toiruu 17, Sukhbaatar district',
+                      label: l10n.streetAddressRequired,
+                      hint: l10n.streetAddressHint,
                       maxLines: 2,
                     ),
                     const SizedBox(height: 12),
 
                     CustomTextField(
                       controller: _labelController,
-                      label: 'Label (optional)',
-                      hint: 'e.g., Home, Work, Parent\'s House',
+                      label: l10n.labelOptional,
+                      hint: l10n.labelHint,
                     ),
                     const SizedBox(height: 12),
 
@@ -318,16 +322,16 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                         Expanded(
                           child: CustomTextField(
                             controller: _buildingController,
-                            label: 'Building Name',
-                            hint: 'e.g., Skytel Tower',
+                            label: l10n.buildingName,
+                            hint: l10n.buildingNameHint,
                           ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: CustomTextField(
                             controller: _entranceController,
-                            label: 'Entrance',
-                            hint: 'e.g., A, B, 1',
+                            label: l10n.entrance,
+                            hint: l10n.entranceHint,
                           ),
                         ),
                       ],
@@ -339,7 +343,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                         Expanded(
                           child: CustomTextField(
                             controller: _floorController,
-                            label: 'Floor',
+                            label: l10n.floor,
                             hint: 'e.g., 5',
                             keyboardType: TextInputType.number,
                           ),
@@ -348,16 +352,16 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                         Expanded(
                           child: CustomTextField(
                             controller: _apartmentController,
-                            label: 'Apartment #',
-                            hint: 'e.g., 512',
+                            label: l10n.apartmentNumberLabel,
+                            hint: l10n.apartmentNumberHint,
                           ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: CustomTextField(
                             controller: _doorController,
-                            label: 'Door #',
-                            hint: 'e.g., A',
+                            label: l10n.doorNumber,
+                            hint: l10n.doorNumberHint,
                           ),
                         ),
                       ],
@@ -366,8 +370,8 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
 
                     CustomTextField(
                       controller: _additionalInfoController,
-                      label: 'Additional Information',
-                      hint: 'Any special instructions or landmarks',
+                      label: l10n.additionalInfo,
+                      hint: l10n.specialInstructionsOrLandmarks,
                       maxLines: 3,
                     ),
                     const SizedBox(height: 20),

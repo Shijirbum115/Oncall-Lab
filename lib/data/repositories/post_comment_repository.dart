@@ -1,5 +1,6 @@
 import 'package:bugamed/core/services/supabase_service.dart';
 import 'package:bugamed/data/models/post_comment_model.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PostCommentRepository {
   /// Get all approved comments for a post (with nested replies)
@@ -19,14 +20,14 @@ class PostCommentRepository {
           )
         ''')
         .eq('post_id', postId)
-        .is_('parent_comment_id', null) // Only get top-level comments
-        .order('created_at', ascending: false);
+        .filter('parent_comment_id', 'is', null); // Only get top-level comments
 
     if (onlyApproved) {
       query = query.eq('is_approved', true).eq('is_visible', true);
     }
 
-    final data = await query;
+    final data = await query.order('created_at', ascending: false);
+    
     final comments = (data as List)
         .map((json) => PostCommentModel.fromJson(json))
         .toList();
@@ -226,35 +227,35 @@ class PostCommentRepository {
     await supabase
         .from('post_comments')
         .update({'is_approved': true})
-        .in_('id', commentIds);
+        .filter('id', 'in', commentIds);
   }
 
   /// Bulk delete comments (Admin only)
   Future<void> bulkDeleteComments(List<String> commentIds) async {
-    await supabase.from('post_comments').delete().in_('id', commentIds);
+    await supabase.from('post_comments').delete().filter('id', 'in', commentIds);
   }
 
   /// Get comment count for a post
   Future<int> getCommentCount(String postId) async {
-    final data = await supabase
+    final count = await supabase
         .from('post_comments')
-        .select('id', const FetchOptions(count: CountOption.exact, head: true))
+        .count(CountOption.exact)
         .eq('post_id', postId)
         .eq('is_approved', true)
         .eq('is_visible', true);
 
-    return (data as List).length;
+    return count;
   }
 
   /// Get total comment count across all posts
   Future<int> getTotalCommentCount() async {
-    final data = await supabase
+    final count = await supabase
         .from('post_comments')
-        .select('id', const FetchOptions(count: CountOption.exact, head: true))
+        .count(CountOption.exact)
         .eq('is_approved', true)
         .eq('is_visible', true);
 
-    return (data as List).length;
+    return count;
   }
 
   /// Get recent comments (for admin dashboard)

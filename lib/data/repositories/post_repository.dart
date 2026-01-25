@@ -1,5 +1,6 @@
 import 'package:bugamed/core/services/supabase_service.dart';
 import 'package:bugamed/data/models/post_model.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class PostRepository {
   /// Get published posts with pagination
@@ -9,7 +10,7 @@ class PostRepository {
     int limit = 20,
     int offset = 0,
   }) async {
-    var query = supabase
+    PostgrestFilterBuilder query = supabase
         .from('posts')
         .select('''
           *,
@@ -27,10 +28,7 @@ class PostRepository {
           )
         ''')
         .eq('is_published', true)
-        .lte('published_at', DateTime.now().toIso8601String())
-        .order('is_featured', ascending: false)
-        .order('published_at', ascending: false)
-        .range(offset, offset + limit - 1);
+        .lte('published_at', DateTime.now().toIso8601String());
 
     if (categoryId != null) {
       query = query.eq('category_id', categoryId);
@@ -39,7 +37,10 @@ class PostRepository {
       query = query.eq('post_type', postType);
     }
 
-    final data = await query;
+    final data = await query
+        .order('is_featured', ascending: false)
+        .order('published_at', ascending: false)
+        .range(offset, offset + limit - 1);
 
     return (data as List).map((json) => PostModel.fromJson(json)).toList();
   }
@@ -147,7 +148,7 @@ class PostRepository {
     int limit = 20,
     int offset = 0,
   }) async {
-    var query = supabase
+    PostgrestFilterBuilder query = supabase
         .from('posts')
         .select('''
           *,
@@ -157,15 +158,15 @@ class PostRepository {
             name_mn
           )
         ''')
-        .eq('author_id', authorId)
-        .order('created_at', ascending: false)
-        .range(offset, offset + limit - 1);
+        .eq('author_id', authorId);
 
     if (onlyPublished) {
       query = query.eq('is_published', true);
     }
 
-    final data = await query;
+    final data = await query
+        .order('created_at', ascending: false)
+        .range(offset, offset + limit - 1);
 
     return (data as List).map((json) => PostModel.fromJson(json)).toList();
   }
@@ -176,7 +177,7 @@ class PostRepository {
     String? categoryId,
     int limit = 20,
   }) async {
-    var query = supabase
+    PostgrestFilterBuilder query = supabase
         .from('posts')
         .select('''
           *,
@@ -192,15 +193,15 @@ class PostRepository {
           )
         ''')
         .eq('is_published', true)
-        .or('title.ilike.%$searchTerm%,title_mn.ilike.%$searchTerm%,content.ilike.%$searchTerm%,content_mn.ilike.%$searchTerm%')
-        .order('published_at', ascending: false)
-        .limit(limit);
+        .or('title.ilike.%$searchTerm%,title_mn.ilike.%$searchTerm%,content.ilike.%$searchTerm%,content_mn.ilike.%$searchTerm%');
 
     if (categoryId != null) {
       query = query.eq('category_id', categoryId);
     }
 
-    final data = await query;
+    final data = await query
+        .order('published_at', ascending: false)
+        .limit(limit);
 
     return (data as List).map((json) => PostModel.fromJson(json)).toList();
   }

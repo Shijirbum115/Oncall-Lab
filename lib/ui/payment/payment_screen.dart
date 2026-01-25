@@ -89,6 +89,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
     if (!authStore.isAuthenticated) {
       await _showLoginRequiredDialog();
       
+      if (!mounted) return;
+
       if (!authStore.isAuthenticated) {
         return; // User cancelled login
       }
@@ -126,7 +128,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
       ),
     );
 
-    setState(() => isProcessing = false);
+    if (mounted) {
+      setState(() => isProcessing = false);
+    }
   }
 
   @override

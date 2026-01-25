@@ -149,6 +149,7 @@ class _DoctorRegistrationScreenState extends State<DoctorRegistrationScreen> {
         }
       }
 
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(l10n.doctorApplicationSubmitted),
@@ -156,6 +157,7 @@ class _DoctorRegistrationScreenState extends State<DoctorRegistrationScreen> {
       );
       Navigator.of(context).pop();
     } else if (authStore.errorMessage != null) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(authStore.errorMessage!),

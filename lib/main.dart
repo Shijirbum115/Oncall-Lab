@@ -12,7 +12,6 @@ import 'package:bugamed/stores/auth_store.dart';
 import 'package:bugamed/stores/locale_store.dart';
 import 'package:bugamed/stores/notification_store.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:bugamed/ui/auth/login_screen.dart';
 import 'package:bugamed/ui/patient/main_page.dart';
 import 'package:bugamed/ui/doctor/doctor_main_page.dart';
 import 'package:bugamed/ui/shared/splash_screen.dart';

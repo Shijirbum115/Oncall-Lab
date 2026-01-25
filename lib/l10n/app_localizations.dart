@@ -2545,6 +2545,156 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open in Maps'**
   String get openInMaps;
+
+  /// No description provided for @minutesAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes}m ago'**
+  String minutesAgo(int minutes);
+
+  /// No description provided for @hoursAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours}h ago'**
+  String hoursAgo(int hours);
+
+  /// No description provided for @daysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{days}d ago'**
+  String daysAgo(int days);
+
+  /// No description provided for @notificationsUpdatesHere.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ll see updates about your requests here'**
+  String get notificationsUpdatesHere;
+
+  /// No description provided for @selectLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Location'**
+  String get selectLocation;
+
+  /// No description provided for @addressDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Address Details'**
+  String get addressDetails;
+
+  /// No description provided for @streetAddressRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Street Address *'**
+  String get streetAddressRequired;
+
+  /// No description provided for @streetAddressHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., Baga toiruu 17, Sukhbaatar district'**
+  String get streetAddressHint;
+
+  /// No description provided for @labelOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Label (optional)'**
+  String get labelOptional;
+
+  /// No description provided for @labelHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., Home, Work, Parent\'s House'**
+  String get labelHint;
+
+  /// No description provided for @buildingName.
+  ///
+  /// In en, this message translates to:
+  /// **'Building Name'**
+  String get buildingName;
+
+  /// No description provided for @buildingNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., Skytel Tower'**
+  String get buildingNameHint;
+
+  /// No description provided for @entranceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., A, B, 1'**
+  String get entranceHint;
+
+  /// No description provided for @apartmentNumberLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Apartment #'**
+  String get apartmentNumberLabel;
+
+  /// No description provided for @apartmentNumberHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., 512'**
+  String get apartmentNumberHint;
+
+  /// No description provided for @doorNumberHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., A'**
+  String get doorNumberHint;
+
+  /// No description provided for @phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get phone;
+
+  /// No description provided for @professionalDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Professional Details'**
+  String get professionalDetails;
+
+  /// No description provided for @logout.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get logout;
+
+  /// No description provided for @patientLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient Location'**
+  String get patientLocation;
+
+  /// No description provided for @viewFullMap.
+  ///
+  /// In en, this message translates to:
+  /// **'View Full Map'**
+  String get viewFullMap;
+
+  /// No description provided for @getDirections.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Directions'**
+  String get getDirections;
+
+  /// No description provided for @defaultDoctorBio.
+  ///
+  /// In en, this message translates to:
+  /// **'An experienced healthcare specialist dedicated to providing quality care.'**
+  String get defaultDoctorBio;
+
+  /// No description provided for @defaultLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Ulaanbaatar, Mongolia'**
+  String get defaultLocation;
+
+  /// No description provided for @durationMinutesShort.
+  ///
+  /// In en, this message translates to:
+  /// **'~{minutes} minutes'**
+  String durationMinutesShort(int minutes);
 }
 
 class _AppLocalizationsDelegate

@@ -1297,4 +1297,89 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get openInMaps => 'Open in Maps';
+
+  @override
+  String minutesAgo(int minutes) {
+    return '${minutes}m ago';
+  }
+
+  @override
+  String hoursAgo(int hours) {
+    return '${hours}h ago';
+  }
+
+  @override
+  String daysAgo(int days) {
+    return '${days}d ago';
+  }
+
+  @override
+  String get notificationsUpdatesHere =>
+      'You\'ll see updates about your requests here';
+
+  @override
+  String get selectLocation => 'Select Location';
+
+  @override
+  String get addressDetails => 'Address Details';
+
+  @override
+  String get streetAddressRequired => 'Street Address *';
+
+  @override
+  String get streetAddressHint => 'e.g., Baga toiruu 17, Sukhbaatar district';
+
+  @override
+  String get labelOptional => 'Label (optional)';
+
+  @override
+  String get labelHint => 'e.g., Home, Work, Parent\'s House';
+
+  @override
+  String get buildingName => 'Building Name';
+
+  @override
+  String get buildingNameHint => 'e.g., Skytel Tower';
+
+  @override
+  String get entranceHint => 'e.g., A, B, 1';
+
+  @override
+  String get apartmentNumberLabel => 'Apartment #';
+
+  @override
+  String get apartmentNumberHint => 'e.g., 512';
+
+  @override
+  String get doorNumberHint => 'e.g., A';
+
+  @override
+  String get phone => 'Phone';
+
+  @override
+  String get professionalDetails => 'Professional Details';
+
+  @override
+  String get logout => 'Logout';
+
+  @override
+  String get patientLocation => 'Patient Location';
+
+  @override
+  String get viewFullMap => 'View Full Map';
+
+  @override
+  String get getDirections => 'Get Directions';
+
+  @override
+  String get defaultDoctorBio =>
+      'An experienced healthcare specialist dedicated to providing quality care.';
+
+  @override
+  String get defaultLocation => 'Ulaanbaatar, Mongolia';
+
+  @override
+  String durationMinutesShort(int minutes) {
+    return '~$minutes minutes';
+  }
 }

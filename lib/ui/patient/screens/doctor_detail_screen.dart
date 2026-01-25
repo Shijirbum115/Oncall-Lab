@@ -49,6 +49,8 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
     } catch (e, stackTrace) {
       debugPrint('❌ Error loading doctor details for ID ${widget.doctor.id}: $e');
       debugPrint('Stack trace: $stackTrace');
+      
+      if (!mounted) return;
       final l10n = AppLocalizations.of(context)!;
       setState(() {
         errorMessage = l10n.doctorProfileNotFound;

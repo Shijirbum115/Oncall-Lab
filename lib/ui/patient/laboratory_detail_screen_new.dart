@@ -228,7 +228,7 @@ class _LaboratoryDetailScreenNewState
       child: ListView.separated(
         padding: const EdgeInsets.all(16),
         itemCount: displayServices.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        separatorBuilder: (_, index) => const SizedBox(height: 12),
         itemBuilder: (context, index) {
           final labService = displayServices[index];
 

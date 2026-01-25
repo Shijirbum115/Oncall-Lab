@@ -566,5 +566,64 @@
 
   "couldNotOpenMap": "Could not open map",
   "errorOpeningMap": "Error opening map",
-  "openInMaps": "Open in Maps"
+  "openInMaps": "Open in Maps",
+
+  "minutesAgo": "{minutes}m ago",
+  "@minutesAgo": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "hoursAgo": "{hours}h ago",
+  "@hoursAgo": {
+    "placeholders": {
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "daysAgo": "{days}d ago",
+  "@daysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "notificationsUpdatesHere": "You'll see updates about your requests here",
+
+  "selectLocation": "Select Location",
+  "addressDetails": "Address Details",
+  "streetAddressRequired": "Street Address *",
+  "streetAddressHint": "e.g., Baga toiruu 17, Sukhbaatar district",
+  "labelOptional": "Label (optional)",
+  "labelHint": "e.g., Home, Work, Parent's House",
+  "buildingName": "Building Name",
+  "buildingNameHint": "e.g., Skytel Tower",
+  "entranceHint": "e.g., A, B, 1",
+  "apartmentNumberLabel": "Apartment #",
+  "apartmentNumberHint": "e.g., 512",
+  "doorNumberHint": "e.g., A",
+
+  "phone": "Phone",
+  "professionalDetails": "Professional Details",
+  "logout": "Logout",
+
+  "patientLocation": "Patient Location",
+  "viewFullMap": "View Full Map",
+  "getDirections": "Get Directions",
+
+  "defaultDoctorBio": "An experienced healthcare specialist dedicated to providing quality care.",
+  "defaultLocation": "Ulaanbaatar, Mongolia",
+
+  "durationMinutesShort": "~{minutes} minutes",
+  "@durationMinutesShort": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  }
 }

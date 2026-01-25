@@ -91,7 +91,7 @@ class _ScheduleList extends StatelessWidget {
       itemBuilder: (context, index) => ScheduleItem(
         schedule: items[index],
       ),
-      separatorBuilder: (_, __) => const SizedBox(height: 12),
+      separatorBuilder: (_, index) => const SizedBox(height: 12),
       itemCount: items.length,
     );
   }
