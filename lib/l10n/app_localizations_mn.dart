@@ -1384,4 +1384,28 @@ class AppLocalizationsMn extends AppLocalizations {
   String durationMinutesShort(int minutes) {
     return '~$minutes минут';
   }
+
+  @override
+  String get all => 'Бүгд';
+
+  @override
+  String get description => 'Тайлбар';
+
+  @override
+  String get selectLaboratory => 'Лаборатори сонгох';
+
+  @override
+  String get tapForDetails => 'Дэлгэрэнгүй харах';
+
+  @override
+  String get prep => 'Бэлтгэл';
+
+  @override
+  String get searchHome => 'Үйлчилгээ, лаборатори хайх...';
+
+  @override
+  String get popularServices => 'Эрэлттэй үйлчилгээ';
+
+  @override
+  String get allCategories => 'Бүх ангилал';
 }

@@ -1382,4 +1382,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String durationMinutesShort(int minutes) {
     return '~$minutes minutes';
   }
+
+  @override
+  String get all => 'All';
+
+  @override
+  String get description => 'Description';
+
+  @override
+  String get selectLaboratory => 'Select Laboratory';
+
+  @override
+  String get tapForDetails => 'Tap for details';
+
+  @override
+  String get prep => 'Prep';
+
+  @override
+  String get searchHome => 'Search services, laboratories...';
+
+  @override
+  String get popularServices => 'Popular Services';
+
+  @override
+  String get allCategories => 'All Categories';
 }

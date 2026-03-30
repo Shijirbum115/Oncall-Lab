@@ -576,5 +576,14 @@
         "type": "int"
       }
     }
-  }
+  },
+
+  "all": "Бүгд",
+  "description": "Тайлбар",
+  "selectLaboratory": "Лаборатори сонгох",
+  "tapForDetails": "Дэлгэрэнгүй харах",
+  "prep": "Бэлтгэл",
+  "searchHome": "Үйлчилгээ, лаборатори хайх...",
+  "popularServices": "Эрэлттэй үйлчилгээ",
+  "allCategories": "Бүх ангилал"
 }

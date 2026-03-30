@@ -2695,6 +2695,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'~{minutes} minutes'**
   String durationMinutesShort(int minutes);
+
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
+
+  /// No description provided for @description.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get description;
+
+  /// No description provided for @selectLaboratory.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Laboratory'**
+  String get selectLaboratory;
+
+  /// No description provided for @tapForDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap for details'**
+  String get tapForDetails;
+
+  /// No description provided for @prep.
+  ///
+  /// In en, this message translates to:
+  /// **'Prep'**
+  String get prep;
+
+  /// No description provided for @searchHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Search services, laboratories...'**
+  String get searchHome;
+
+  /// No description provided for @popularServices.
+  ///
+  /// In en, this message translates to:
+  /// **'Popular Services'**
+  String get popularServices;
+
+  /// No description provided for @allCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'All Categories'**
+  String get allCategories;
 }
 
 class _AppLocalizationsDelegate

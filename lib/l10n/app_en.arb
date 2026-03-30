@@ -625,5 +625,14 @@
         "type": "int"
       }
     }
-  }
+  },
+
+  "all": "All",
+  "description": "Description",
+  "selectLaboratory": "Select Laboratory",
+  "tapForDetails": "Tap for details",
+  "prep": "Prep",
+  "searchHome": "Search services, laboratories...",
+  "popularServices": "Popular Services",
+  "allCategories": "All Categories"
 }
