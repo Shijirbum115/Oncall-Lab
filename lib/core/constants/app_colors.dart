@@ -100,4 +100,23 @@ class AppColors {
   static Color getDoctorCardColor(int index) {
     return doctorCardColors[index % doctorCardColors.length];
   }
+
+  /// Colors for service category grid icons
+  static const List<Color> serviceCategoryColors = [
+    Color(0xFF338868), // primary teal
+    Color(0xFF42A5F5), // blue
+    Color(0xFF7E57C2), // purple
+    Color(0xFFFF7043), // deep orange
+    Color(0xFF26A69A), // teal
+    Color(0xFFEC407A), // pink
+    Color(0xFF5C6BC0), // indigo
+    Color(0xFF66BB6A), // green
+    Color(0xFFFFA726), // amber
+    Color(0xFF29B6F6), // light blue
+  ];
+
+  /// Get a category color by index, cycling through the palette
+  static Color getServiceCategoryColor(int index) {
+    return serviceCategoryColors[index % serviceCategoryColors.length];
+  }
 }

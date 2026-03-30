@@ -109,3 +109,20 @@ class AppSpacing {
   static const double xxl = 40;
   static const double xxxl = 60;
 }
+
+class AppRadius {
+  AppRadius._();
+  static const double xs = 8;
+  static const double sm = 12;
+  static const double md = 16;
+  static const double lg = 20;
+  static const double xl = 24;
+  static const double pill = 100;
+}
+
+class AppPadding {
+  AppPadding._();
+  static const double screen = 20;
+  static const EdgeInsets screenH = EdgeInsets.symmetric(horizontal: 20);
+  static const EdgeInsets screenAll = EdgeInsets.all(20);
+}
