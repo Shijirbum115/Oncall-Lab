@@ -98,6 +98,18 @@ class AppTypography {
     color: AppColors.grey,
     fontWeight: FontWeight.w500,
   );
+
+  static const TextStyle heading = TextStyle(
+    fontSize: 28,
+    fontWeight: FontWeight.w700,
+    color: AppColors.black,
+  );
+
+  static const TextStyle caption = TextStyle(
+    fontSize: 13,
+    fontWeight: FontWeight.w500,
+    color: AppColors.textSecondary,
+  );
 }
 
 class AppSpacing {
