@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -136,7 +137,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
       }
     } catch (e) {
       setState(() => _isLoadingAddress = false);
-      debugPrint('Error getting address: $e');
+      if (kDebugMode) debugPrint('Error getting address: $e');
     }
   }
 

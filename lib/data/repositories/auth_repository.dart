@@ -45,8 +45,8 @@ class AuthRepository {
   }) async {
     final email = _buildEmailFromPhone(phoneNumber);
 
-    debugPrint('🔐 [AUTH] Attempting login with phone: $phoneNumber');
-    debugPrint('🔐 [AUTH] Converted to email: $email');
+    if (kDebugMode) debugPrint('🔐 [AUTH] Attempting login with phone: $phoneNumber');
+    if (kDebugMode) debugPrint('🔐 [AUTH] Converted to email: $email');
 
     try {
       final response = await supabase.auth.signInWithPassword(
@@ -55,14 +55,14 @@ class AuthRepository {
       );
 
       if (response.user == null) {
-        debugPrint('❌ [AUTH] Login failed: No user returned');
+        if (kDebugMode) debugPrint('❌ [AUTH] Login failed: No user returned');
         throw Exception('Failed to sign in');
       }
 
-      debugPrint('✅ [AUTH] Login successful! User ID: ${response.user!.id}');
+      if (kDebugMode) debugPrint('✅ [AUTH] Login successful! User ID: ${response.user!.id}');
       return response.user!;
     } catch (e) {
-      debugPrint('❌ [AUTH] Login error: $e');
+      if (kDebugMode) debugPrint('❌ [AUTH] Login error: $e');
       rethrow;
     }
   }
@@ -176,11 +176,11 @@ class AuthRepository {
   Future<ProfileModel?> getCurrentProfile() async {
     final user = supabase.auth.currentUser;
     if (user == null) {
-      debugPrint('⚠️ [AUTH] No current user when fetching profile');
+      if (kDebugMode) debugPrint('⚠️ [AUTH] No current user when fetching profile');
       return null;
     }
 
-    debugPrint('👤 [AUTH] Fetching profile for user ID: ${user.id}');
+    if (kDebugMode) debugPrint('👤 [AUTH] Fetching profile for user ID: ${user.id}');
     try {
       final data = await supabase
           .from('profiles')
@@ -188,10 +188,10 @@ class AuthRepository {
           .eq('id', user.id)
           .single();
 
-      debugPrint('✅ [AUTH] Profile loaded successfully: ${data['full_name']}');
+      if (kDebugMode) debugPrint('✅ [AUTH] Profile loaded successfully: ${data['full_name']}');
       return ProfileModel.fromJson(data);
     } catch (e) {
-      debugPrint('❌ [AUTH] Failed to load profile: $e');
+      if (kDebugMode) debugPrint('❌ [AUTH] Failed to load profile: $e');
       return null;
     }
   }

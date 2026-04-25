@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -96,26 +97,26 @@ abstract class _AuthStore with Store {
     isLoading = true;
     errorMessage = null;
 
-    print('📱 [AUTH_STORE] Starting sign in process...');
+    if (kDebugMode) print('📱 [AUTH_STORE] Starting sign in process...');
     try {
       currentUser = await _repository.signIn(
         phoneNumber: phoneNumber,
         password: password,
       );
 
-      print('📱 [AUTH_STORE] User authenticated, loading profile...');
+      if (kDebugMode) print('📱 [AUTH_STORE] User authenticated, loading profile...');
       await loadCurrentProfile();
 
       if (currentProfile == null) {
-        print('❌ [AUTH_STORE] Profile is null after loading!');
+        if (kDebugMode) print('❌ [AUTH_STORE] Profile is null after loading!');
         throw Exception('Failed to load user profile');
       }
 
-      print('✅ [AUTH_STORE] Sign in complete! Role: ${currentProfile?.role}');
+      if (kDebugMode) print('✅ [AUTH_STORE] Sign in complete! Role: ${currentProfile?.role}');
       isLoading = false;
       return true;
     } catch (e) {
-      print('❌ [AUTH_STORE] Sign in failed: $e');
+      if (kDebugMode) print('❌ [AUTH_STORE] Sign in failed: $e');
       errorMessage = _getErrorMessage(e);
       isLoading = false;
       return false;

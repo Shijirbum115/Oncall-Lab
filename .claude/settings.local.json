@@ -10,7 +10,11 @@
       "mcp__supabase__get_advisors",
       "mcp__supabase__list_edge_functions",
       "mcp__supabase__execute_sql",
-      "Bash(test:*)"
+      "Bash(test:*)",
+      "mcp__supabase__list_migrations",
+      "Bash(flutter analyze:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ]
   },
   "enableAllProjectMcpServers": true,

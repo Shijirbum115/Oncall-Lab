@@ -23,7 +23,7 @@ class PushNotificationService {
         Firebase.app();
         _messaging = FirebaseMessaging.instance;
       } catch (e) {
-        debugPrint('⚠️ Firebase not initialized, push notifications disabled');
+        if (kDebugMode) debugPrint('⚠️ Firebase not initialized, push notifications disabled');
         return;
       }
 
@@ -35,19 +35,19 @@ class PushNotificationService {
       );
 
       if (settings.authorizationStatus == AuthorizationStatus.authorized) {
-        debugPrint('✅ Notification permission granted');
+        if (kDebugMode) debugPrint('✅ Notification permission granted');
 
         // Initialize local notifications for foreground
         await _initializeLocalNotifications();
 
         // Get FCM token
         _fcmToken = await _messaging!.getToken();
-        debugPrint('📱 FCM Token: $_fcmToken');
+        if (kDebugMode) debugPrint('📱 FCM Token: $_fcmToken');
 
         // Listen for token refresh
         _messaging!.onTokenRefresh.listen((token) {
           _fcmToken = token;
-          debugPrint('🔄 FCM Token refreshed: $token');
+          if (kDebugMode) debugPrint('🔄 FCM Token refreshed: $token');
         });
 
         // Handle foreground notifications
@@ -62,10 +62,10 @@ class PushNotificationService {
           _handleNotificationTap(initialMessage);
         }
       } else {
-        debugPrint('⚠️ Notification permission denied');
+        if (kDebugMode) debugPrint('⚠️ Notification permission denied');
       }
     } catch (e) {
-      debugPrint('❌ Error initializing push notifications: $e');
+      if (kDebugMode) debugPrint('❌ Error initializing push notifications: $e');
     }
   }
 
@@ -91,7 +91,7 @@ class PushNotificationService {
 
   /// Handle foreground notifications
   void _handleForegroundNotification(RemoteMessage message) {
-    debugPrint('📬 Foreground notification: ${message.notification?.title}');
+    if (kDebugMode) debugPrint('📬 Foreground notification: ${message.notification?.title}');
 
     final notification = message.notification;
     if (notification == null) return;
@@ -122,13 +122,13 @@ class PushNotificationService {
 
   /// Handle notification tap
   void _handleNotificationTap(RemoteMessage message) {
-    debugPrint('👆 Notification tapped: ${message.data}');
+    if (kDebugMode) debugPrint('👆 Notification tapped: ${message.data}');
     _navigateToNotification(message.data);
   }
 
   /// Handle local notification tap
   void _onNotificationTapped(NotificationResponse response) {
-    debugPrint('👆 Local notification tapped: ${response.payload}');
+    if (kDebugMode) debugPrint('👆 Local notification tapped: ${response.payload}');
     if (response.payload != null) {
       _navigateToNotification({'notification_id': response.payload});
     }
@@ -139,7 +139,7 @@ class PushNotificationService {
     try {
       final notificationId = data['notification_id'];
       if (notificationId == null) {
-        debugPrint('⚠️ No notification_id in data');
+        if (kDebugMode) debugPrint('⚠️ No notification_id in data');
         return;
       }
 
@@ -153,7 +153,7 @@ class PushNotificationService {
       // Navigate to notification detail screen with mascot
       NavigationHelper.handleNotificationNavigation(notification);
     } catch (e) {
-      debugPrint('❌ Error navigating to notification: $e');
+      if (kDebugMode) debugPrint('❌ Error navigating to notification: $e');
     }
   }
 
@@ -170,12 +170,12 @@ class PushNotificationService {
     if (_messaging == null) return;
     await _messaging!.deleteToken();
     _fcmToken = null;
-    debugPrint('🗑️ FCM token deleted');
+    if (kDebugMode) debugPrint('🗑️ FCM token deleted');
   }
 }
 
 /// Handle background messages (top-level function required by Firebase)
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  debugPrint('🔔 Background notification: ${message.notification?.title}');
+  if (kDebugMode) debugPrint('🔔 Background notification: ${message.notification?.title}');
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
@@ -92,7 +93,7 @@ class _BookingConfirmationScreenState extends State<BookingConfirmationScreen> {
         }
       }
     } catch (e) {
-      debugPrint('Error creating request: $e');
+      if (kDebugMode) debugPrint('Error creating request: $e');
     } finally {
       setState(() => isCreatingRequest = false);
     }

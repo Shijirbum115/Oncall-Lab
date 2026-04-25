@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
 import 'package:bugamed/stores/service_store.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
+import 'package:bugamed/ui/design_system/widgets/app_text_field.dart';
 import 'package:bugamed/ui/patient/booking/direct_service_booking_screen.dart';
+import 'package:bugamed/ui/patient/widgets/service_category_grid.dart';
+import 'package:bugamed/ui/shared/widgets/mascot_state_widget.dart';
+import 'package:bugamed/ui/shared/widgets/skeleton_loader.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
-import 'package:bugamed/ui/shared/widgets/app_card.dart';
 
 class DirectServicesScreen extends StatefulWidget {
   const DirectServicesScreen({super.key});
@@ -15,6 +19,10 @@ class DirectServicesScreen extends StatefulWidget {
 }
 
 class _DirectServicesScreenState extends State<DirectServicesScreen> {
+  String? selectedCategory;
+  final _searchController = TextEditingController();
+  String _searchQuery = '';
+
   @override
   void initState() {
     super.initState();
@@ -22,366 +30,254 @@ class _DirectServicesScreenState extends State<DirectServicesScreen> {
   }
 
   @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  List<Map<String, dynamic>> _getFilteredServices(
+      List<Map<String, dynamic>> services) {
+    var result = services;
+
+    if (selectedCategory != null) {
+      result = result
+          .where((s) => s['category_name'] == selectedCategory)
+          .toList();
+    }
+
+    if (_searchQuery.isNotEmpty) {
+      final lower = _searchQuery.toLowerCase();
+      result = result.where((s) {
+        final name = (s['service_name'] as String?)?.toLowerCase() ?? '';
+        final nameMn =
+            (s['service_name_mn'] as String?)?.toLowerCase() ?? '';
+        return name.contains(lower) || nameMn.contains(lower);
+      }).toList();
+    }
+
+    return result;
+  }
+
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.scaffoldBackground,
       appBar: AppBar(
         title: Text(l10n.directDoctorServices),
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.scaffoldBackground,
         elevation: 0,
       ),
       body: Observer(
         builder: (_) {
           if (serviceStore.isLoading) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppColors.primary),
-            );
+            return const SkeletonServiceGrid(itemCount: 9);
           }
 
           if (serviceStore.errorMessage != null) {
             return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.error_outline,
-                        size: 60, color: AppColors.error),
-                    const SizedBox(height: 16),
-                    Text(
-                      l10n.errorLoadingServices,
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      serviceStore.errorMessage!,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(color: AppColors.grey),
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () => serviceStore.loadDirectServices(),
-                      child: Text(l10n.retry),
-                    ),
-                  ],
-                ),
+              child: MascotStateWidget(
+                emotion: MascotEmotion.error,
+                title: l10n.errorLoadingServices,
+                subtitle: serviceStore.errorMessage ?? '',
+                actionText: l10n.retry,
+                onAction: () => serviceStore.loadDirectServices(),
               ),
             );
           }
 
           final services = serviceStore.directServices;
-
           if (services.isEmpty) {
             return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Iconsax.health, size: 60, color: AppColors.grey),
-                  const SizedBox(height: 16),
-                  Text(
-                    l10n.noServicesAvailable,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.grey,
-                    ),
-                  ),
-                ],
+              child: MascotStateWidget(
+                emotion: MascotEmotion.empty,
+                title: l10n.noServicesAvailable,
               ),
             );
           }
 
-          // Group services by category
-          final groupedServices = <String, List<Map<String, dynamic>>>{};
-          for (final service in services) {
-            final categoryName = service['category_name'] as String;
-            if (!groupedServices.containsKey(categoryName)) {
-              groupedServices[categoryName] = [];
-            }
-            groupedServices[categoryName]!.add(service);
+          final categories = <String>{};
+          for (final s in services) {
+            categories.add(s['category_name'] as String);
           }
 
-          return RefreshIndicator(
-            onRefresh: () => serviceStore.loadDirectServices(),
-            child: ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: groupedServices.length,
-              itemBuilder: (context, index) {
-                final categoryName = groupedServices.keys.elementAt(index);
-                final categoryServices = groupedServices[categoryName]!;
-                final categoryType = categoryServices.first['category_type'];
-                final categoryIcon = categoryServices.first['category_icon'];
+          final filtered = _getFilteredServices(services.toList());
 
-                return _CategorySection(
-                  categoryName: categoryName,
-                  categoryType: categoryType,
-                  categoryIcon: categoryIcon,
-                  services: categoryServices,
-                  l10n: l10n,
-                );
-              },
+          return CustomScrollView(
+            physics: const BouncingScrollPhysics(
+              parent: AlwaysScrollableScrollPhysics(),
             ),
+            slivers: [
+              SliverToBoxAdapter(
+                child: _buildCategoryTabs(
+                    categories.toList(), services.toList(), l10n),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 12, 20, 4),
+                  child: AppSearchField(
+                    controller: _searchController,
+                    hint: l10n.searchServices,
+                    onChanged: (query) {
+                      setState(() => _searchQuery = query);
+                    },
+                  ),
+                ),
+              ),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+                  child: Text(
+                    '${filtered.length} ${l10n.services.toLowerCase()}',
+                    style: AppTypography.bodySmall.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ),
+              ),
+              if (filtered.isEmpty)
+                SliverFillRemaining(
+                  child: Center(
+                    child: MascotStateWidget(
+                      emotion: MascotEmotion.searching,
+                      title: l10n.noServicesMatchSearch,
+                      subtitle: l10n.tryDifferentKeywords,
+                    ),
+                  ),
+                )
+              else
+                ServiceCategoryGrid(
+                  services: filtered,
+                  onServiceTap: (service) =>
+                      _navigateToBooking(service, l10n),
+                  selectedCategory: selectedCategory,
+                ),
+              const SliverToBoxAdapter(
+                child: SizedBox(height: 40),
+              ),
+            ],
           );
         },
       ),
     );
   }
-}
 
-class _CategorySection extends StatelessWidget {
-  final String categoryName;
-  final String categoryType;
-  final String? categoryIcon;
-  final List<Map<String, dynamic>> services;
-  final AppLocalizations l10n;
+  Widget _buildCategoryTabs(
+    List<String> categories,
+    List<Map<String, dynamic>> allServices,
+    AppLocalizations l10n,
+  ) {
+    return SizedBox(
+      height: 44,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        children: [
+          _CategoryChip(
+            label: l10n.all,
+            isSelected: selectedCategory == null,
+            color: AppColors.primary,
+            onTap: () => setState(() => selectedCategory = null),
+          ),
+          ...categories.map((category) {
+            final categoryServices =
+                allServices.where((s) => s['category_name'] == category);
+            final first =
+                categoryServices.isNotEmpty ? categoryServices.first : null;
+            final localizedName = _getLocalizedCategoryName(
+                category, first, l10n);
+            final colorIndex = categories.indexOf(category);
+            final color = AppColors.getServiceCategoryColor(colorIndex);
 
-  const _CategorySection({
-    required this.categoryName,
-    required this.categoryType,
-    required this.categoryIcon,
-    required this.services,
-    required this.l10n,
-  });
+            return _CategoryChip(
+              label: localizedName,
+              isSelected: selectedCategory == category,
+              color: color,
+              onTap: () => setState(() => selectedCategory = category),
+            );
+          }),
+        ],
+      ),
+    );
+  }
 
-  String _getLocalizedCategoryName() {
-    if (services.isEmpty) return categoryName;
-    final categoryNameMn = services.first['category_name_mn'] as String?;
+  String _getLocalizedCategoryName(
+    String categoryName,
+    Map<String, dynamic>? service,
+    AppLocalizations l10n,
+  ) {
+    if (service == null) return categoryName;
+    final categoryNameMn = service['category_name_mn'] as String?;
     if (l10n.localeName == 'mn' && categoryNameMn != null) {
       return categoryNameMn;
     }
     return categoryName;
   }
 
-  IconData _getCategoryIcon() {
-    switch (categoryIcon) {
-      case 'heart':
-        return Iconsax.heart;
-      case 'activity':
-        return Iconsax.activity;
-      case 'health':
-        return Iconsax.health;
-      default:
-        return Iconsax.hospital;
+  void _navigateToBooking(
+      Map<String, dynamic> service, AppLocalizations l10n) {
+    String serviceName = service['service_name'];
+    if (l10n.localeName == 'mn' && service['service_name_mn'] != null) {
+      serviceName = service['service_name_mn'];
     }
-  }
 
-  Color _getCategoryColor() {
-    switch (categoryType) {
-      case 'diagnostic_procedure':
-        return AppColors.info;
-      case 'nursing_care':
-        return AppColors.success;
-      default:
-        return AppColors.primary;
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final color = _getCategoryColor();
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // Category Header
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          margin: const EdgeInsets.only(bottom: 12),
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
-            children: [
-              Icon(_getCategoryIcon(), color: color, size: 24),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Text(
-                  _getLocalizedCategoryName(),
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                  ),
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  '${services.length}',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                    color: color,
-                  ),
-                ),
-              ),
-            ],
-          ),
+    Navigator.push(
+      context,
+      CupertinoPageRoute(
+        builder: (_) => DirectServiceBookingScreen(
+          serviceId: service['service_id'],
+          serviceName: serviceName,
         ),
-
-        // Services List
-        ...services.map((service) => _ServiceCard(
-              service: service,
-              categoryColor: color,
-              l10n: l10n,
-            )),
-
-        const SizedBox(height: 24),
-      ],
+      ),
     );
   }
 }
 
-class _ServiceCard extends StatelessWidget {
-  final Map<String, dynamic> service;
-  final Color categoryColor;
-  final AppLocalizations l10n;
+class _CategoryChip extends StatelessWidget {
+  final String label;
+  final bool isSelected;
+  final Color color;
+  final VoidCallback onTap;
 
-  const _ServiceCard({
-    required this.service,
-    required this.categoryColor,
-    required this.l10n,
+  const _CategoryChip({
+    required this.label,
+    required this.isSelected,
+    required this.color,
+    required this.onTap,
   });
-
-  String _getLocalizedServiceName() {
-    if (l10n.localeName == 'mn' && service['service_name_mn'] != null) {
-      return service['service_name_mn'];
-    }
-    return service['service_name'];
-  }
-
-  String? _getLocalizedServiceDescription() {
-    if (l10n.localeName == 'mn' && service['service_description_mn'] != null) {
-      return service['service_description_mn'];
-    }
-    return service['service_description'];
-  }
 
   @override
   Widget build(BuildContext context) {
-    final minPrice = service['min_price_mnt'] as int?;
-    final maxPrice = service['max_price_mnt'] as int?;
-    final doctorsCount = service['available_doctors_count'] as int? ?? 0;
-    final priceLabel = minPrice == null
-        ? null
-        : (maxPrice != null && minPrice != maxPrice
-            ? '${l10n.priceInMNT(minPrice)} - ${l10n.priceInMNT(maxPrice)}'
-            : l10n.priceInMNT(minPrice));
-
-    return AppCard(
-      margin: const EdgeInsets.only(bottom: 12),
-      borderRadius: 18,
-      borderColor: categoryColor.withValues(alpha: 0.15),
-      showShadow: false,
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (_) => DirectServiceBookingScreen(
-              serviceId: service['service_id'],
-              serviceName: _getLocalizedServiceName(),
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: Material(
+        color: isSelected ? color : Colors.white,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(AppRadius.lg),
+              border: Border.all(
+                color: isSelected
+                    ? color
+                    : AppColors.grey.withValues(alpha: 0.3),
+                width: 1.5,
+              ),
+            ),
+            child: Text(
+              label,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+                color: isSelected ? Colors.white : AppColors.textSecondary,
+              ),
             ),
           ),
-        );
-      },
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  _getLocalizedServiceName(),
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.black,
-                  ),
-                ),
-              ),
-              const Icon(
-                Iconsax.arrow_right_3,
-                size: 20,
-                color: AppColors.grey,
-              ),
-            ],
-          ),
-          if (_getLocalizedServiceDescription() != null) ...[
-            const SizedBox(height: 8),
-            Text(
-              _getLocalizedServiceDescription()!,
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.grey,
-                height: 1.4,
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              if (priceLabel != null) ...[
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: categoryColor.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    priceLabel,
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                      color: categoryColor,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-              ],
-              Row(
-                children: [
-                  Icon(Icons.person, size: 16, color: categoryColor),
-                  const SizedBox(width: 4),
-                  Text(
-                    '$doctorsCount ${doctorsCount == 1 ? l10n.doctor : l10n.doctors}',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: categoryColor,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ],
-              ),
-              if (service['estimated_duration_minutes'] != null) ...[
-                const SizedBox(width: 12),
-                Row(
-                  children: [
-                    const Icon(Icons.access_time,
-                        size: 16, color: AppColors.grey),
-                    const SizedBox(width: 4),
-                    Text(
-                      '~${l10n.durationMinutes(service['estimated_duration_minutes'] as int)}',
-                      style: const TextStyle(
-                        fontSize: 13,
-                        color: AppColors.grey,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ],
-          ),
-        ],
+        ),
       ),
     );
   }

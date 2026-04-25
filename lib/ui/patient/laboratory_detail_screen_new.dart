@@ -48,6 +48,29 @@ class _LaboratoryDetailScreenNewState
         services = data;
         isLoading = false;
       });
+
+      // FIX 2: If a service was pre-selected (patient came from test list),
+      // skip re-showing the service list and jump straight to booking.
+      if (widget.preSelectedServiceId != null && mounted) {
+        final match = data.firstWhere(
+          (s) => s.serviceId == widget.preSelectedServiceId,
+          orElse: () => data.first,
+        );
+        // Use pushReplacement so back-button goes to lab list, not here.
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (_) => LabServiceBookingScreen(
+                  laboratory: widget.laboratory,
+                  laboratoryService: match,
+                ),
+              ),
+            );
+          }
+        });
+      }
     } catch (e) {
       setState(() {
         errorMessage = e.toString();
@@ -77,6 +100,8 @@ class _LaboratoryDetailScreenNewState
       appBar: AppBar(
         title: Text(widget.laboratory['name']),
         backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
         elevation: 0,
       ),
       body: Column(

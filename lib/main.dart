@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -25,8 +26,10 @@ void main() async {
   try {
     await dotenv.load(fileName: '.env');
   } catch (e) {
-    print('⚠️  .env file not found or could not be loaded: $e');
-    print('ℹ️  App will use default configuration');
+    if (kDebugMode) {
+      print('⚠️  .env file not found or could not be loaded: $e');
+      print('ℹ️  App will use default configuration');
+    }
   }
 
   // Initialize Firebase (optional - required for push notifications)
@@ -37,11 +40,13 @@ void main() async {
 
     // Register background message handler
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
-    print('✅ Firebase initialized successfully');
+    if (kDebugMode) print('✅ Firebase initialized successfully');
   } catch (e) {
-    print('⚠️  Firebase initialization failed: $e');
-    print('📱 App will run without push notifications');
-    print('ℹ️  To enable push notifications, run: flutterfire configure');
+    if (kDebugMode) {
+      print('⚠️  Firebase initialization failed: $e');
+      print('📱 App will run without push notifications');
+      print('ℹ️  To enable push notifications, run: flutterfire configure');
+    }
   }
 
   await setupServiceLocator();
@@ -64,7 +69,7 @@ void main() async {
         await notificationStore.updateFcmToken(authStore.currentProfile!.id);
       }
     } catch (e) {
-      print('⚠️  Push notification setup failed: $e');
+      if (kDebugMode) print('⚠️  Push notification setup failed: $e');
     }
   }
 

@@ -297,7 +297,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              'QPay-ээр төлбөр төлөх боломжтой. QR код эсвэл банкны апп ашиглан төлбөрөө хийнэ үү.',
+                              'Одоогоор дансаар шилжүүлгийн төлбөрийн горим ажиллаж байна. Доорх алхмаар шилжүүлгээ хийнэ үү.',
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textSecondary,
