@@ -1,0 +1,11 @@
+/// Supabase Configuration for Admin Panel
+///
+/// Copy this file to `supabase_config.dart` and fill in your project values.
+/// `supabase_config.dart` is gitignored — never commit real keys.
+class SupabaseConfig {
+  /// Your Supabase project URL
+  static const String supabaseUrl = 'https://your-project.supabase.co';
+
+  /// Your Supabase anonymous (public) key
+  static const String supabaseAnonKey = 'your-supabase-anon-key-here';
+}
