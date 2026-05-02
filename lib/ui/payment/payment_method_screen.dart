@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/data/repositories/test_request_repository.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
 import 'package:bugamed/ui/payment/payment_success_screen.dart';
+import 'package:bugamed/ui/payment/qpay_invoice_screen.dart';
 
 class PaymentMethodScreen extends StatefulWidget {
   final String userId;
@@ -30,6 +32,79 @@ class PaymentMethodScreen extends StatefulWidget {
 class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
   String selectedMethod = 'bank';
   bool isProcessing = false;
+  bool _isPreparingQpay = false;
+
+  Future<String?> _ensureTestRequestId() async {
+    if (widget.testRequestId != null) return widget.testRequestId;
+
+    final data = widget.bookingData;
+    final repo = TestRequestRepository();
+    try {
+      if (data['laboratoryId'] != null) {
+        final created = await repo.createLabServiceRequest(
+          patientId: widget.userId,
+          laboratoryId: data['laboratoryId'] as String,
+          laboratoryServiceId: data['laboratoryServiceId'] as String,
+          serviceId: data['serviceId'] as String,
+          scheduledDate: data['scheduledDate'] as String,
+          scheduledTimeSlot: data['scheduledTimeSlot'] as String,
+          patientAddress: data['patientAddress'] as String? ?? '',
+          priceMnt: widget.amountMnt,
+          patientLatitude: (data['patientLatitude'] as num?)?.toDouble(),
+          patientLongitude: (data['patientLongitude'] as num?)?.toDouble(),
+          patientNotes: data['patientNotes'] as String?,
+        );
+        return created.id;
+      }
+      final created = await repo.createDirectServiceRequest(
+        patientId: widget.userId,
+        serviceId: data['serviceId'] as String,
+        scheduledDate: data['scheduledDate'] as String,
+        scheduledTimeSlot: data['scheduledTimeSlot'] as String,
+        patientAddress: data['patientAddress'] as String? ?? '',
+        priceMnt: widget.amountMnt,
+        doctorId: data['doctorId'] as String?,
+        doctorServiceId: data['doctorServiceId'] as String?,
+        patientLatitude: (data['patientLatitude'] as num?)?.toDouble(),
+        patientLongitude: (data['patientLongitude'] as num?)?.toDouble(),
+        patientNotes: data['patientNotes'] as String?,
+      );
+      return created.id;
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Захиалга үүсгэхэд алдаа гарлаа: $e'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+      return null;
+    }
+  }
+
+  Future<void> _startQpayFlow() async {
+    if (_isPreparingQpay) return;
+    setState(() => _isPreparingQpay = true);
+    try {
+      final requestId = await _ensureTestRequestId();
+      if (requestId == null || !mounted) return;
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => QpayInvoiceScreen(
+            testRequestId: requestId,
+            amountMnt: widget.amountMnt,
+            serviceName: widget.serviceName,
+            laboratoryName: widget.laboratoryName,
+            bookingData: widget.bookingData,
+          ),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isPreparingQpay = false);
+    }
+  }
 
   void _copyToClipboard(String text, String label) {
     Clipboard.setData(ClipboardData(text: text));
@@ -126,6 +201,87 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                   color: AppColors.black,
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              // QPay Option
+              GestureDetector(
+                onTap: _isPreparingQpay ? null : _startQpayFlow,
+                child: Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: AppColors.primary.withValues(alpha: 0.3),
+                      width: 1,
+                    ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.04),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: AppColors.primary.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(
+                          Iconsax.scan_barcode,
+                          color: AppColors.primary,
+                          size: 28,
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'QPay (QR код)',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.black,
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Бүх банкны апп ба wallet-аар уншуулна',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: AppColors.grey.withValues(alpha: 0.8),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      _isPreparingQpay
+                          ? const SizedBox(
+                              width: 18,
+                              height: 18,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                valueColor: AlwaysStoppedAnimation<Color>(
+                                  AppColors.primary,
+                                ),
+                              ),
+                            )
+                          : const Icon(
+                              Icons.arrow_forward_ios,
+                              color: AppColors.primary,
+                              size: 18,
+                            ),
+                    ],
+                  ),
                 ),
               ),
 
