@@ -354,10 +354,10 @@ flutter run -d chrome
 
 - `README.md`: Project overview, setup instructions (Mongolian)
 - `CLAUDE.md`: Development commands, architecture patterns
-- `docs/BACKEND_ARCHITECTURE.md`: Complete database schema, RLS policies, functions
-- `docs/FLUTTER_INTEGRATION.md`: Flutter-Supabase integration examples
-- `FILE_STRUCTURE_GUIDE.md`: File organization guide
-- `ADMIN_PANEL_SETUP.md`: Admin panel features and setup
+- `docs/BACKEND_SETUP.md`: Backend setup, schema, RLS policies, functions
+- `docs/FILE_STRUCTURE_GUIDE.md`: File organization guide
+- `docs/ADMIN_PANEL_SETUP.md`: Admin panel features and setup
+- `docs/QPAY_READY.md`: QPay payment integration
 
 ## Critical Security Notes
 

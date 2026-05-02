@@ -39,7 +39,7 @@ Notes:
 
 4) Integration & external dependencies (what to watch for)
 - Supabase: requires project URL and anon key (usually provided via `.env` / `lib/core/constants/supabase_config.dart` locally).
-  - SQL schema & migrations in `supabase/migrations/` and setup docs in `README_BACKEND_SETUP.md` and `docs/`.
+  - SQL schema & migrations in `supabase/migrations/` and setup docs in `docs/BACKEND_SETUP.md` and `docs/`.
 - Firebase (optional): used only for push notifications. `main.dart` attempts to initialize Firebase and falls back gracefully if it fails.
 - Push tokens: `profiles.fcm_token` on Supabase – push flows are implemented server-side; frontend needs FCM config to fully enable push.
 

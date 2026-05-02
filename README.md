@@ -1,6 +1,6 @@
-# 🧪 OnCall Lab – Гэрийн лабораторийн үйлчилгээний апп
+# 🧪 CallCare – Гэрийн лабораторийн үйлчилгээний апп
 
-**Bugamed** нь Улаанбаатар хотын хэрэглэгчдэд лабораторийн шинжилгээ болон эмчийн гэрийн үзлэгийг **гар утаснаасаа захиалах** боломж олгох Flutter + Supabase дээр суурилсан систем юм.
+**Callcare** нь Улаанбаатар хотын хэрэглэгчдэд лабораторийн шинжилгээ болон эмчийн гэрийн үзлэгийг **гар утаснаасаа захиалах** боломж олгох Flutter + Supabase дээр суурилсан систем юм.
 
 - 👩‍⚕️ **Patient апп** – хэрэглэгч лаборатори, үйлчилгээ сонгох, цаг захиалах, өөрийн хүсэлтүүдээ хянах
 - 👨‍⚕️ **Doctor апп** – эмч/лаборант шинээр ирсэн хүсэлт, өөрийн идэвхтэй болон дууссан захиалгуудыг хянах
@@ -52,7 +52,7 @@
 
 ### 🗄 Backend (Supabase)
 
-Дэлгэрэнгүйг: `docs/BACKEND_ARCHITECTURE.md` файлаас харна уу.
+Дэлгэрэнгүйг: `docs/BACKEND_SETUP.md` файлаас харна уу.
 
 Гол хүснэгтүүд:
 
@@ -81,7 +81,7 @@ Realtime:
 ## 🛠 Хөгжүүлэлтийн орчин тохируулах
 
 Доорх алхмууд Windows-д зориулсан, Mac дээр ч ерөнхийдөө ижил.
-Дэлгэрэнгүй: `docs/DEV_ENVIRONMENT_SETUP.md`, `docs/WINDOWS_SETUP.md`.
+Дэлгэрэнгүй: `CONTRIBUTING.md`.
 
 ### 1. Шаардлагатай зүйлс
 
@@ -122,7 +122,7 @@ class SupabaseConfig {
 
 3. Supabase SQL редактор дээр `supabase/migrations/*.sql` файлуудыг ажиллуулж schema-г тохируулна (ялангуяа `fix_profiles_rls` migration).
 
-Backend-ийн бүрэн тайлбар: `README_BACKEND_SETUP.md`, `docs/BACKEND_ARCHITECTURE.md`.
+Backend-ийн бүрэн тайлбар: `docs/BACKEND_SETUP.md`.
 
 ---
 
@@ -186,11 +186,15 @@ flutter run
 
 ## 📂 Гол файлууд / баримтууд
 
-- `README_BACKEND_SETUP.md` – Supabase backend-ийг анхнаасаа хэрхэн босгосон, project URL, seed data
-- `docs/BACKEND_ARCHITECTURE.md` – database schema, RLS, functions, triggers
-- `docs/FLUTTER_INTEGRATION.md` – Flutter-оос Supabase-тэй хэрхэн холбогдож, models, repositories, stores ашиглаж байгаа тайлбар
-- `docs/UI_TEMPLATE_INTEGRATION.md` – UI template-ийг яаж adapt хийснийг тайлбарласан
-- `docs/DEV_ENVIRONMENT_SETUP.md`, `docs/WINDOWS_SETUP.md` – хөгжүүлэлтийн орчин
+- `CONTRIBUTING.md` – хөгжүүлэлтийн орчин тохируулах, branch workflow, commit стандарт
+- `CLAUDE.md` – Claude Code (AI assistant) ашиглах заавар
+- `docs/BACKEND_SETUP.md` – Supabase backend-ийг анхнаасаа хэрхэн босгосон, project URL, seed data
+- `docs/ADMIN_PANEL_SETUP.md` – web admin panel-ийн тайлбар
+- `docs/FILE_STRUCTURE_GUIDE.md` – файлын бүтэц, директор зохион байгуулалт
+- `docs/LOCALIZATION_GUIDE.md` – mn/en хэлний орчуулга
+- `docs/REALTIME_IMPLEMENTATION_GUIDE.md`, `docs/MOBILE_APP_REALTIME.md` – Supabase realtime
+- `docs/QPAY_READY.md` – QPay payment integration
+- `docs/STORAGE_SETUP_GUIDE.md` – Supabase Storage (bucket-ууд, RLS)
 
 ---
 
