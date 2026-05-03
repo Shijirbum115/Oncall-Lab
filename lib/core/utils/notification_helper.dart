@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:oncall_lab/ui/shared/widgets/top_notification.dart';
+import 'package:bugamed/ui/shared/widgets/top_notification.dart';
 
 class NotificationHelper {
   static void show(

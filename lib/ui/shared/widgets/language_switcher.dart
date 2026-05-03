@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/stores/locale_store.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/stores/locale_store.dart';
 
 /// Simple circular flag-style language toggle
 class LanguageSwitcher extends StatelessWidget {

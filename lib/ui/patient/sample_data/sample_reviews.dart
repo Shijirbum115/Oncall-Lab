@@ -1,4 +1,4 @@
-import 'package:oncall_lab/ui/patient/models/review_ui.dart';
+import 'package:bugamed/ui/patient/models/review_ui.dart';
 
 const _comments = [
   'Doctor was attentive and explained everything clearly.',

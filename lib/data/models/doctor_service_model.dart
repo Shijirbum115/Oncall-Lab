@@ -1,6 +1,6 @@
 // ignore_for_file: invalid_annotation_target
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:oncall_lab/data/models/service_model.dart';
+import 'package:bugamed/data/models/service_model.dart';
 
 part 'doctor_service_model.freezed.dart';
 part 'doctor_service_model.g.dart';

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:oncall_lab/core/constants/qpay_config.dart';
-import 'package:oncall_lab/data/models/payment_model.dart';
+import 'package:bugamed/core/constants/qpay_config.dart';
+import 'package:bugamed/data/models/payment_model.dart';
 
 /// QPAY API Service for payment processing
 ///

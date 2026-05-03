@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/stores/auth_store.dart';
-import 'package:oncall_lab/stores/doctor_request_store.dart';
-import 'package:oncall_lab/data/models/test_request_model.dart';
-import 'package:oncall_lab/ui/doctor/doctor_request_detail_screen.dart';
-import 'package:oncall_lab/ui/shared/widgets/notification_bell.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/stores/auth_store.dart';
+import 'package:bugamed/stores/doctor_request_store.dart';
+import 'package:bugamed/data/models/test_request_model.dart';
+import 'package:bugamed/ui/doctor/doctor_request_detail_screen.dart';
+import 'package:bugamed/ui/shared/widgets/notification_bell.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
 
 class DoctorDashboardScreen extends StatefulWidget {
   const DoctorDashboardScreen({super.key});
@@ -44,6 +45,8 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Observer(
       builder: (_) {
         if (doctorRequestStore.isLoading &&
@@ -63,9 +66,9 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text(
-                      "My Dashboard",
-                      style: TextStyle(
+                    Text(
+                      l10n.myDashboard,
+                      style: const TextStyle(
                         fontSize: 28,
                         color: Colors.black,
                         fontWeight: FontWeight.bold,
@@ -107,15 +110,15 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                                 tabs: [
                                   SizedBox(
                                     width: tabWidth,
-                                    child: const Tab(text: 'Available'),
+                                    child: Tab(text: l10n.availableTab),
                                   ),
                                   SizedBox(
                                     width: tabWidth,
-                                    child: const Tab(text: 'My Requests'),
+                                    child: Tab(text: l10n.myRequestsTab),
                                   ),
                                   SizedBox(
                                     width: tabWidth,
-                                    child: const Tab(text: 'Completed'),
+                                    child: Tab(text: l10n.completedTab),
                                   ),
                                 ],
                               );
@@ -127,9 +130,9 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                       Expanded(
                         child: TabBarView(
                           children: [
-                            _buildAvailableRequestsList(),
-                            _buildMyRequestsList(),
-                            _buildCompletedRequestsList(),
+                            _buildAvailableRequestsList(l10n),
+                            _buildMyRequestsList(l10n),
+                            _buildCompletedRequestsList(l10n),
                           ],
                         ),
                       ),
@@ -144,7 +147,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
     );
   }
 
-  Widget _buildAvailableRequestsList() {
+  Widget _buildAvailableRequestsList(AppLocalizations l10n) {
     return Observer(
       builder: (_) {
         if (doctorRequestStore.availableRequests.isEmpty) {
@@ -160,19 +163,19 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                     color: AppColors.grey.withValues(alpha: 0.5),
                   ),
                   const SizedBox(height: 20),
-                  const Text(
-                    'No available requests',
-                    style: TextStyle(
+                  Text(
+                    l10n.noAvailableRequests,
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: AppColors.grey,
                     ),
                   ),
                   const SizedBox(height: 10),
-                  const Text(
-                    'New requests will appear here',
+                  Text(
+                    l10n.newRequestsWillAppear,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: AppColors.grey,
                     ),
                   ),
@@ -194,6 +197,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                 request: request,
                 showAcceptButton: true,
                 onTap: () => _navigateToDetail(request),
+                l10n: l10n,
               );
             },
           ),
@@ -202,7 +206,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
     );
   }
 
-  Widget _buildMyRequestsList() {
+  Widget _buildMyRequestsList(AppLocalizations l10n) {
     return Observer(
       builder: (_) {
         if (doctorRequestStore.myActiveRequests.isEmpty) {
@@ -218,19 +222,19 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                     color: AppColors.grey.withValues(alpha: 0.5),
                   ),
                   const SizedBox(height: 20),
-                  const Text(
-                    'No active requests',
-                    style: TextStyle(
+                  Text(
+                    l10n.noActiveRequests,
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: AppColors.grey,
                     ),
                   ),
                   const SizedBox(height: 10),
-                  const Text(
-                    'Accept a request to get started',
+                  Text(
+                    l10n.acceptRequestToStart,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: AppColors.grey,
                     ),
                   ),
@@ -252,6 +256,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
               return _RequestCard(
                 request: request,
                 onTap: () => _navigateToDetail(request),
+                l10n: l10n,
               );
             },
           ),
@@ -260,7 +265,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
     );
   }
 
-  Widget _buildCompletedRequestsList() {
+  Widget _buildCompletedRequestsList(AppLocalizations l10n) {
     return Observer(
       builder: (_) {
         if (doctorRequestStore.myCompletedRequests.isEmpty) {
@@ -276,19 +281,19 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                     color: AppColors.grey.withValues(alpha: 0.5),
                   ),
                   const SizedBox(height: 20),
-                  const Text(
-                    'No completed requests',
-                    style: TextStyle(
+                  Text(
+                    l10n.noCompletedRequests,
+                    style: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: AppColors.grey,
                     ),
                   ),
                   const SizedBox(height: 10),
-                  const Text(
-                    'Your completed requests will appear here',
+                  Text(
+                    l10n.completedRequestsWillAppear,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: AppColors.grey,
                     ),
                   ),
@@ -310,6 +315,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
               return _RequestCard(
                 request: request,
                 onTap: () => _navigateToDetail(request),
+                l10n: l10n,
               );
             },
           ),
@@ -332,10 +338,12 @@ class _RequestCard extends StatelessWidget {
   final TestRequestModel request;
   final VoidCallback onTap;
   final bool showAcceptButton;
+  final AppLocalizations l10n;
 
   const _RequestCard({
     required this.request,
     required this.onTap,
+    required this.l10n,
     this.showAcceptButton = false,
   });
 
@@ -405,8 +413,8 @@ class _RequestCard extends StatelessWidget {
                           ),
                           child: Text(
                             request.requestType == RequestType.labService
-                                ? 'Lab Test Service'
-                                : 'Direct Home Service',
+                                ? l10n.labTestServiceLabel
+                                : l10n.directHomeServiceLabel,
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
@@ -443,7 +451,7 @@ class _RequestCard extends StatelessWidget {
                   const Icon(Icons.calendar_today, size: 14, color: AppColors.grey),
                   const SizedBox(width: 5),
                   Text(
-                    'Scheduled: ${request.scheduledDate} ${request.scheduledTimeSlot ?? ''}',
+                    '${l10n.scheduled}: ${request.scheduledDate} ${request.scheduledTimeSlot ?? ''}',
                     style: const TextStyle(
                       fontSize: 14,
                       color: AppColors.grey,
@@ -474,7 +482,7 @@ class _RequestCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    'Price: ${request.priceMnt} MNT',
+                    l10n.priceMnt(request.priceMnt),
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -493,8 +501,8 @@ class _RequestCard extends StatelessWidget {
 
                           if (result != null && context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Request accepted successfully!'),
+                              SnackBar(
+                                content: Text(l10n.requestAcceptedSuccess),
                                 backgroundColor: AppColors.success,
                               ),
                             );
@@ -509,7 +517,7 @@ class _RequestCard extends StatelessWidget {
                           vertical: 8,
                         ),
                       ),
-                      child: const Text('Accept'),
+                      child: Text(l10n.accept),
                     ),
                 ],
               ),

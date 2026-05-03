@@ -1043,4 +1043,369 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get login => 'Нэвтрэх';
+
+  @override
+  String get healthcareAtYourDoorstep =>
+      'Эрүүл мэндийн үйлчилгээ таны хаалганд';
+
+  @override
+  String appVersion(String version) {
+    return 'v$version';
+  }
+
+  @override
+  String get joinAsDoctorLabTech => 'Эмч / Лаборантаар бүртгүүлэх';
+
+  @override
+  String get provideAccurateDetails =>
+      'Баталгаажуулалтын тулд үнэн мэдээлэл оруулна уу.';
+
+  @override
+  String get profileStep => 'Профайл';
+
+  @override
+  String get professionalStep => 'Мэргэжлийн';
+
+  @override
+  String get securityStep => 'Нууцлал';
+
+  @override
+  String get submitApplication => 'Өргөдөл илгээх';
+
+  @override
+  String get doctorApplicationSubmitted =>
+      'Эмчийн өргөдөл илгээгдлээ! Таны мэдээллийг удахгүй шалгах болно.';
+
+  @override
+  String get firstNameRequired => 'Нэр *';
+
+  @override
+  String get lastNameRequired => 'Овог *';
+
+  @override
+  String get phoneNumberRequired => 'Утасны дугаар *';
+
+  @override
+  String get professionRequired => 'Мэргэжил *';
+
+  @override
+  String get licenseNumberRequired => 'Лицензийн дугаар *';
+
+  @override
+  String get academicDegreeOptional => 'Боловсролын зэрэг (заавал биш)';
+
+  @override
+  String get yearsOfExperience => 'Ажилласан жил';
+
+  @override
+  String get professionalDevelopmentOptional =>
+      'Мэргэжлийн хөгжил (заавал биш)';
+
+  @override
+  String get passwordRequired => 'Нууц үг *';
+
+  @override
+  String get confirmPasswordRequired => 'Нууц үг баталгаажуулах *';
+
+  @override
+  String get alreadyRegisteredSignIn => 'Бүртгэлтэй юу? Нэвтрэх';
+
+  @override
+  String get myDashboard => 'Миний самбар';
+
+  @override
+  String get availableTab => 'Боломжтой';
+
+  @override
+  String get myRequestsTab => 'Миний захиалга';
+
+  @override
+  String get completedTab => 'Дууссан';
+
+  @override
+  String get noAvailableRequests => 'Боломжтой захиалга алга';
+
+  @override
+  String get newRequestsWillAppear => 'Шинэ захиалгууд энд харагдах болно';
+
+  @override
+  String get acceptRequestToStart => 'Эхлэхийн тулд захиалга хүлээн авна уу';
+
+  @override
+  String get completedRequestsWillAppear =>
+      'Дууссан захиалгууд энд харагдах болно';
+
+  @override
+  String get requestAcceptedSuccess => 'Захиалга амжилттай хүлээн авлаа!';
+
+  @override
+  String get accept => 'Хүлээн авах';
+
+  @override
+  String get scheduled => 'Товлосон';
+
+  @override
+  String priceMnt(int price) {
+    return 'Үнэ: $price ₮';
+  }
+
+  @override
+  String statusUpdatedTo(String status) {
+    return 'Төлөв $status болж шинэчлэгдлээ';
+  }
+
+  @override
+  String get failedToUpdateStatus => 'Төлөв шинэчлэхэд алдаа гарлаа';
+
+  @override
+  String get requestCancelled => 'Захиалга цуцлагдлаа';
+
+  @override
+  String get collectSample => 'Дээж авах';
+
+  @override
+  String get deliverToLab => 'Лаборатори руу хүргэх';
+
+  @override
+  String get completeRequest => 'Захиалга дуусгах';
+
+  @override
+  String get requestType => 'Захиалгын төрөл';
+
+  @override
+  String get type => 'Төрөл';
+
+  @override
+  String get schedule => 'Хуваарь';
+
+  @override
+  String get timeSlot => 'Цагийн хуваарь';
+
+  @override
+  String get location => 'Байршил';
+
+  @override
+  String get provideCancellationReason => 'Цуцлах шалтгаанаа оруулна уу:';
+
+  @override
+  String get enterReason => 'Шалтгаан оруулах...';
+
+  @override
+  String get entrance => 'Орц';
+
+  @override
+  String get floor => 'Давхар';
+
+  @override
+  String get apartment => 'Байр';
+
+  @override
+  String get doorNumber => 'Хаалга';
+
+  @override
+  String entranceLabel(String value) {
+    return 'Орц: $value';
+  }
+
+  @override
+  String floorLabel(String value) {
+    return 'Давхар: $value';
+  }
+
+  @override
+  String apartmentLabel(String value) {
+    return 'Байр: $value';
+  }
+
+  @override
+  String doorLabel(String value) {
+    return 'Хаалга: $value';
+  }
+
+  @override
+  String get selectDoctorOrAnyAvailable =>
+      'Эмч сонгоно уу эсвэл \"Боломжтой аль ч эмч\" сонгоно у|';
+
+  @override
+  String get selectLocationOnMap => 'Газрын зураг дээрээс байршлаа сонгоно уу';
+
+  @override
+  String get errorLoadingService => 'Үйлчилгээг ачаалахад алдаа гарлаа';
+
+  @override
+  String get firstAvailableDoctorWillAccept =>
+      'Боломжтой эхний эмч таны захиалгыг хүлээн авна';
+
+  @override
+  String get orChooseSpecificDoctor => 'Эсвэл тодорхой эмч сонгоно уу:';
+
+  @override
+  String get noDoctorsAvailableForService =>
+      'Энэ үйлчилгээнд боломжтой эмч алга';
+
+  @override
+  String get tapToOpenMapSelectAddress =>
+      'Газрын зураг нээж хаягаа сонгохын тулд дарна уу';
+
+  @override
+  String get specialInstructionsOrLandmarks =>
+      'Тусгай заавар эсвэл газрын тэмдэглэгээ';
+
+  @override
+  String get locationPermissionsDenied => 'Байршлын зөвшөөрөл татгалзсан';
+
+  @override
+  String get locationPermissionsPermanentlyDenied =>
+      'Байршлын зөвшөөрөл бүрмөсөн татгалзсан';
+
+  @override
+  String get failedToGetLocation => 'Одоогийн байршлыг авахад алдаа гарлаа';
+
+  @override
+  String get pleaseSelectLocationOnMap =>
+      'Газрын зураг дээрээс байршлаа сонгоно уу';
+
+  @override
+  String get pleaseEnterAnAddress => 'Хаягаа оруулна уу';
+
+  @override
+  String get noNotificationsYet => 'Одоогоор мэдэгдэл алга';
+
+  @override
+  String get justNow => 'Дөнгөж сая';
+
+  @override
+  String get areYouSureLogout => 'Та гарахдаа итгэлтэй байна уу?';
+
+  @override
+  String failedToUpdatePhotoError(String error) {
+    return 'Зураг шинэчлэхэд алдаа гарлаа: $error';
+  }
+
+  @override
+  String get completedVisits => 'Дууссан уулзалтууд';
+
+  @override
+  String get canceledVisits => 'Цуцлагдсан уулзалтууд';
+
+  @override
+  String get noVisitsScheduled => 'Товлосон уулзалт алга';
+
+  @override
+  String get couldNotOpenMap => 'Газрын зургийг нээх боломжгүй';
+
+  @override
+  String get errorOpeningMap => 'Газрын зураг нээхэд алдаа гарлаа';
+
+  @override
+  String get openInMaps => 'Газрын зураг дээр нээх';
+
+  @override
+  String minutesAgo(int minutes) {
+    return '$minutes мин өмнө';
+  }
+
+  @override
+  String hoursAgo(int hours) {
+    return '$hours цаг өмнө';
+  }
+
+  @override
+  String daysAgo(int days) {
+    return '$days өдрийн өмнө';
+  }
+
+  @override
+  String get notificationsUpdatesHere =>
+      'Таны захиалгын шинэчлэлүүд энд харагдана';
+
+  @override
+  String get selectLocation => 'Байршил сонгох';
+
+  @override
+  String get addressDetails => 'Хаягийн дэлгэрэнгүй';
+
+  @override
+  String get streetAddressRequired => 'Гудамжны хаяг *';
+
+  @override
+  String get streetAddressHint => 'Жишээ: Бага тойруу 17, Сүхбаатар дүүрэг';
+
+  @override
+  String get labelOptional => 'Шошго (заавал биш)';
+
+  @override
+  String get labelHint => 'Жишээ: Гэр, Ажил, Эцэг эхийн байр';
+
+  @override
+  String get buildingName => 'Барилгын нэр';
+
+  @override
+  String get buildingNameHint => 'Жишээ: Скайтел тауэр';
+
+  @override
+  String get entranceHint => 'Жишээ: А, Б, 1';
+
+  @override
+  String get apartmentNumberLabel => 'Байрны дугаар';
+
+  @override
+  String get apartmentNumberHint => 'Жишээ: 512';
+
+  @override
+  String get doorNumberHint => 'Жишээ: А';
+
+  @override
+  String get phone => 'Утас';
+
+  @override
+  String get professionalDetails => 'Мэргэжлийн мэдээлэл';
+
+  @override
+  String get logout => 'Гарах';
+
+  @override
+  String get patientLocation => 'Өвчтөний байршил';
+
+  @override
+  String get viewFullMap => 'Бүтэн газрын зураг';
+
+  @override
+  String get getDirections => 'Чиглэл авах';
+
+  @override
+  String get defaultDoctorBio =>
+      'Чанартай эмнэлгийн үйлчилгээ үзүүлэхэд зориулсан туршлагатай мэргэжилтэн.';
+
+  @override
+  String get defaultLocation => 'Улаанбаатар, Монгол';
+
+  @override
+  String durationMinutesShort(int minutes) {
+    return '~$minutes минут';
+  }
+
+  @override
+  String get all => 'Бүгд';
+
+  @override
+  String get description => 'Тайлбар';
+
+  @override
+  String get selectLaboratory => 'Лаборатори сонгох';
+
+  @override
+  String get tapForDetails => 'Дэлгэрэнгүй харах';
+
+  @override
+  String get prep => 'Бэлтгэл';
+
+  @override
+  String get searchHome => 'Үйлчилгээ, лаборатори хайх...';
+
+  @override
+  String get popularServices => 'Эрэлттэй үйлчилгээ';
+
+  @override
+  String get allCategories => 'Бүх ангилал';
 }

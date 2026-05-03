@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
 
 enum MascotEmotion {
   loading,

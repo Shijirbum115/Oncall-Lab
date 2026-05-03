@@ -2,12 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/core/services/storage_service.dart';
-import 'package:oncall_lab/core/services/supabase_service.dart';
-import 'package:oncall_lab/stores/auth_store.dart';
-import 'package:oncall_lab/ui/auth/widgets/step_progress_bar.dart';
-import 'package:oncall_lab/l10n/app_localizations.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/core/services/storage_service.dart';
+import 'package:bugamed/core/services/supabase_service.dart';
+import 'package:bugamed/stores/auth_store.dart';
+import 'package:bugamed/ui/auth/widgets/step_progress_bar.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
 
 class PatientRegistrationScreen extends StatefulWidget {
   const PatientRegistrationScreen({super.key});
@@ -139,14 +139,15 @@ class _PatientRegistrationScreenState extends State<PatientRegistrationScreen> {
         }
       }
 
-      if (context.mounted) {
-        final l10n = AppLocalizations.of(context)!;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.patientAccountCreated),
-          ),
-        );
-      }
+      if (!mounted) return;
+
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.patientAccountCreated),
+        ),
+      );
+      
       Navigator.of(context).pop();
     } else if (authStore.errorMessage != null && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -161,6 +162,7 @@ class _PatientRegistrationScreenState extends State<PatientRegistrationScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
     final stepLabels = [
       l10n.basics,
       l10n.security,
@@ -169,116 +171,145 @@ class _PatientRegistrationScreenState extends State<PatientRegistrationScreen> {
 
     return Scaffold(
       backgroundColor: Colors.white,
+      resizeToAvoidBottomInset: false, // Keyboard overlays instead of pushing
       appBar: AppBar(
         title: Text(l10n.patientRegistration),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                l10n.createPatientAccount,
-                style: const TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.black,
-                ),
-              ),
-              const SizedBox(height: 6),
-              Text(
-                l10n.stepByStepOnboarding,
-                style: const TextStyle(color: AppColors.grey),
-              ),
-              const SizedBox(height: 24),
-              StepProgressBar(
-                totalSteps: _totalSteps,
-                currentStep: _currentStep,
-                icons: _stepIcons,
-                labels: stepLabels,
-              ),
-              const SizedBox(height: 12),
-              Expanded(
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  transitionBuilder: (child, animation) =>
-                      FadeTransition(opacity: animation, child: child),
-                  child: Form(
-                    key: _stepFormKeys[_currentStep],
-                    child: SingleChildScrollView(
-                      key: ValueKey(_currentStep),
-                      physics: const BouncingScrollPhysics(),
-                      child: _buildStepContent(_currentStep, l10n),
+      body: Stack(
+        children: [
+          // Scrollable content area
+          Positioned.fill(
+            bottom: 120 + bottomPadding, // Space for bottom buttons
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+              physics: const BouncingScrollPhysics(),
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.createPatientAccount,
+                    style: const TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.black,
                     ),
                   ),
-                ),
+                  const SizedBox(height: 6),
+                  Text(
+                    l10n.stepByStepOnboarding,
+                    style: const TextStyle(color: AppColors.grey),
+                  ),
+                  const SizedBox(height: 24),
+                  StepProgressBar(
+                    totalSteps: _totalSteps,
+                    currentStep: _currentStep,
+                    icons: _stepIcons,
+                    labels: stepLabels,
+                  ),
+                  const SizedBox(height: 12),
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    transitionBuilder: (child, animation) =>
+                        FadeTransition(opacity: animation, child: child),
+                    child: Form(
+                      key: _stepFormKeys[_currentStep],
+                      child: KeyedSubtree(
+                        key: ValueKey(_currentStep),
+                        child: _buildStepContent(_currentStep, l10n),
+                      ),
+                    ),
+                  ),
+                  // Extra padding for keyboard
+                  SizedBox(height: MediaQuery.of(context).viewInsets.bottom > 0 ? 200 : 0),
+                ],
               ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  if (_currentStep > 0)
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed:
-                            authStore.isLoading ? null : _goToPreviousStep,
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.primary,
-                          side: const BorderSide(color: AppColors.primary),
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                        ),
-                        child: Text(l10n.back),
-                      ),
-                    ),
-                  if (_currentStep > 0) const SizedBox(width: 12),
-                  Expanded(
-                    child: Observer(
-                      builder: (_) => ElevatedButton(
-                        onPressed: authStore.isLoading ? null : _goToNextStep,
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: authStore.isLoading
-                            ? const SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor:
-                                      AlwaysStoppedAnimation<Color>(Colors.white),
-                                ),
-                              )
-                            : Text(
-                                _currentStep == _totalSteps - 1
-                                    ? l10n.createAccount
-                                    : l10n.continue_,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                      ),
-                    ),
+            ),
+          ),
+          // Fixed bottom buttons
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              padding: EdgeInsets.fromLTRB(24, 16, 24, 16 + bottomPadding),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, -5),
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
-              Center(
-                child: TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: Text(l10n.alreadyHaveAccountSignIn),
-                ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      if (_currentStep > 0)
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed:
+                                authStore.isLoading ? null : _goToPreviousStep,
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: AppColors.primary,
+                              side: const BorderSide(color: AppColors.primary),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                            ),
+                            child: Text(l10n.back),
+                          ),
+                        ),
+                      if (_currentStep > 0) const SizedBox(width: 12),
+                      Expanded(
+                        child: Observer(
+                          builder: (_) => ElevatedButton(
+                            onPressed: authStore.isLoading ? null : _goToNextStep,
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: authStore.isLoading
+                                ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor:
+                                          AlwaysStoppedAnimation<Color>(Colors.white),
+                                    ),
+                                  )
+                                : Text(
+                                    _currentStep == _totalSteps - 1
+                                        ? l10n.createAccount
+                                        : l10n.continue_,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(l10n.alreadyHaveAccountSignIn),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
@@ -563,7 +594,7 @@ class _PatientRegistrationScreenState extends State<PatientRegistrationScreen> {
         SwitchListTile.adaptive(
           contentPadding: EdgeInsets.zero,
           title: Text(l10n.mongolianCitizen),
-          activeColor: AppColors.primary,
+          activeTrackColor: AppColors.primary,
           value: _isMongolianCitizen,
           onChanged: (value) {
             setState(() => _isMongolianCitizen = value);

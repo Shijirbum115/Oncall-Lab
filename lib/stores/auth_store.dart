@@ -1,11 +1,12 @@
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:oncall_lab/data/repositories/auth_repository.dart';
-import 'package:oncall_lab/data/models/profile_model.dart';
-import 'package:oncall_lab/data/models/doctor_profile_model.dart';
-import 'package:oncall_lab/core/services/storage_service.dart';
-import 'package:oncall_lab/core/services/supabase_service.dart';
+import 'package:bugamed/data/repositories/auth_repository.dart';
+import 'package:bugamed/data/models/profile_model.dart';
+import 'package:bugamed/data/models/doctor_profile_model.dart';
+import 'package:bugamed/core/services/storage_service.dart';
+import 'package:bugamed/core/services/supabase_service.dart';
 
 part 'auth_store.g.dart';
 
@@ -96,26 +97,26 @@ abstract class _AuthStore with Store {
     isLoading = true;
     errorMessage = null;
 
-    print('📱 [AUTH_STORE] Starting sign in process...');
+    if (kDebugMode) print('📱 [AUTH_STORE] Starting sign in process...');
     try {
       currentUser = await _repository.signIn(
         phoneNumber: phoneNumber,
         password: password,
       );
 
-      print('📱 [AUTH_STORE] User authenticated, loading profile...');
+      if (kDebugMode) print('📱 [AUTH_STORE] User authenticated, loading profile...');
       await loadCurrentProfile();
 
       if (currentProfile == null) {
-        print('❌ [AUTH_STORE] Profile is null after loading!');
+        if (kDebugMode) print('❌ [AUTH_STORE] Profile is null after loading!');
         throw Exception('Failed to load user profile');
       }
 
-      print('✅ [AUTH_STORE] Sign in complete! Role: ${currentProfile?.role}');
+      if (kDebugMode) print('✅ [AUTH_STORE] Sign in complete! Role: ${currentProfile?.role}');
       isLoading = false;
       return true;
     } catch (e) {
-      print('❌ [AUTH_STORE] Sign in failed: $e');
+      if (kDebugMode) print('❌ [AUTH_STORE] Sign in failed: $e');
       errorMessage = _getErrorMessage(e);
       isLoading = false;
       return false;

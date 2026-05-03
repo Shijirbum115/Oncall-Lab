@@ -1,6 +1,6 @@
 {
-    "name": "oncall_lab",
-    "short_name": "oncall_lab",
+    "name": "Bugamed",
+    "short_name": "Bugamed",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

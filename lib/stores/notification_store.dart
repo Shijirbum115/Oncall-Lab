@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:mobx/mobx.dart';
-import 'package:oncall_lab/data/models/notification_model.dart';
-import 'package:oncall_lab/data/repositories/notification_repository.dart';
-import 'package:oncall_lab/core/services/push_notification_service.dart';
+import 'package:bugamed/data/models/notification_model.dart';
+import 'package:bugamed/data/repositories/notification_repository.dart';
+import 'package:bugamed/core/services/push_notification_service.dart';
 
 part 'notification_store.g.dart';
 

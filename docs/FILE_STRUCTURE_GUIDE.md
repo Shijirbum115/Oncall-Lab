@@ -27,12 +27,15 @@ oncall_lab/
 │       ├── laboratory_detail_screen.dart ✅ Detailed view for a selected laboratory
 │       ├── requests_screen.dart    ✅ My requests screen
 │       └── profile_screen.dart     ✅ Profile and sign-out screen
-├── docs/
-│   ├── BACKEND_ARCHITECTURE.md    ✅ Complete backend docs
-│   ├── FLUTTER_INTEGRATION.md     ✅ Integration examples
-│   ├── WINDOWS_SETUP.md           ✅ Environment setup
-│   └── UI_TEMPLATE_INTEGRATION.md ✅ This integration guide
-└── README_BACKEND_SETUP.md        ✅ Quick start guide
+└── docs/
+    ├── BACKEND_SETUP.md              ✅ Backend setup & quick start
+    ├── ADMIN_PANEL_SETUP.md          ✅ Admin panel
+    ├── FILE_STRUCTURE_GUIDE.md       ✅ This file
+    ├── LOCALIZATION_GUIDE.md         ✅ mn/en localization
+    ├── QPAY_READY.md                 ✅ QPay payment integration
+    ├── REALTIME_IMPLEMENTATION_GUIDE.md  ✅ Realtime implementation
+    ├── MOBILE_APP_REALTIME.md        ✅ Mobile realtime usage
+    └── STORAGE_SETUP_GUIDE.md        ✅ Supabase Storage setup
 ```
 
 ## 🔨 Files to Create

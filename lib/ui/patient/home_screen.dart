@@ -2,19 +2,20 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/stores/auth_store.dart';
-import 'package:oncall_lab/stores/home_store.dart';
-import 'package:oncall_lab/ui/patient/widgets/visit_options_section.dart';
-import 'package:oncall_lab/ui/patient/widgets/test_types_section.dart';
-import 'package:oncall_lab/ui/patient/widgets/available_doctors_section.dart';
-import 'package:oncall_lab/ui/patient/all_lab_services_screen.dart';
-import 'package:oncall_lab/ui/patient/direct_services_screen.dart';
-import 'package:oncall_lab/ui/shared/widgets/profile_avatar.dart';
-import 'package:oncall_lab/ui/shared/widgets/notification_bell.dart';
-import 'package:oncall_lab/ui/shared/widgets/mascot_state_widget.dart';
-import 'package:oncall_lab/l10n/app_localizations.dart';
-import 'package:oncall_lab/ui/patient/widgets/ad_banner.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/stores/auth_store.dart';
+import 'package:bugamed/stores/home_store.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
+import 'package:bugamed/ui/patient/widgets/visit_options_section.dart';
+import 'package:bugamed/ui/patient/widgets/test_types_section.dart';
+import 'package:bugamed/ui/patient/widgets/available_doctors_section.dart';
+import 'package:bugamed/ui/patient/all_lab_services_screen.dart';
+import 'package:bugamed/ui/patient/direct_services_screen.dart';
+import 'package:bugamed/ui/shared/widgets/profile_avatar.dart';
+import 'package:bugamed/ui/shared/widgets/notification_bell.dart';
+import 'package:bugamed/ui/shared/widgets/mascot_state_widget.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
+import 'package:bugamed/ui/patient/widgets/ad_banner.dart';
 
 class PatientHomeScreen extends StatefulWidget {
   final VoidCallback onNavigateToProfile;
@@ -114,9 +115,9 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.lg),
               _buildHeader(l10n),
-              const SizedBox(height: 20),
+              const SizedBox(height: AppSpacing.lg),
               Expanded(
                 child: RefreshIndicator(
                   color: AppColors.primary,
@@ -147,9 +148,9 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
                             );
                           },
                         ),
-                        const SizedBox(height: 30),
+                        const SizedBox(height: AppSpacing.xl),
                         const AdBanner(),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: AppSpacing.lg),
                         TestTypesSection(
                           testTypes: tests,
                           onSeeAllTap: () {
@@ -161,7 +162,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
                             );
                           },
                         ),
-                        const SizedBox(height: 35),
+                        const SizedBox(height: AppSpacing.xxl),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 15),
                           child: Row(
@@ -169,12 +170,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
                             children: [
                               Text(
                                 l10n.availableDoctors,
-                                style: const TextStyle(
-                                  fontSize: 22,
-                                  color: AppColors.black,
-                                  letterSpacing: -.5,
-                                  fontWeight: FontWeight.w600,
-                                ),
+                                style: AppTypography.sectionHeader,
                               ),
                               TextButton(
                                 onPressed: () {
@@ -204,7 +200,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
                             ],
                           ),
                         ),
-                        const SizedBox(height: 15),
+                        const SizedBox(height: AppSpacing.md),
                         AvailableDoctorsSection(doctors: doctors),
                         const SizedBox(height: 110), // Extra padding for floating navbar
                       ],

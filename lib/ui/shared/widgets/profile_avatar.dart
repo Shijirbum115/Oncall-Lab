@@ -1,6 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/core/utils/avatar_helper.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/core/utils/avatar_helper.dart';
 
 /// A widget that displays a user's profile avatar
 /// Handles both network images (custom avatars) and asset images (default avatars)
@@ -50,7 +51,7 @@ class ProfileAvatar extends StatelessWidget {
           : NetworkImage(avatarUrl!),
       onBackgroundImageError: (exception, stackTrace) {
         // If image fails to load, we'll show initials instead
-        debugPrint('Error loading avatar: $exception');
+        if (kDebugMode) debugPrint('Error loading avatar: $exception');
       },
       child: null, // Don't show initials if we have an image
     );

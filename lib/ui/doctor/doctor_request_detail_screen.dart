@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/data/models/test_request_model.dart';
-import 'package:oncall_lab/stores/auth_store.dart';
-import 'package:oncall_lab/stores/doctor_request_store.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/data/models/test_request_model.dart';
+import 'package:bugamed/stores/auth_store.dart';
+import 'package:bugamed/stores/doctor_request_store.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
 
 class DoctorRequestDetailScreen extends StatefulWidget {
   final TestRequestModel request;
@@ -28,6 +29,7 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
   }
 
   Future<void> _updateStatus(RequestStatus newStatus) async {
+    final l10n = AppLocalizations.of(context)!;
     setState(() => isUpdating = true);
 
     final result = await doctorRequestStore.updateRequestStatus(
@@ -44,7 +46,7 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Status updated to ${_getStatusDisplayName(newStatus)}'),
+            content: Text(l10n.statusUpdatedTo(_getStatusDisplayName(newStatus, l10n))),
             backgroundColor: AppColors.success,
           ),
         );
@@ -58,8 +60,8 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
       setState(() => isUpdating = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to update status'),
+          SnackBar(
+            content: Text(l10n.failedToUpdateStatus),
             backgroundColor: AppColors.error,
           ),
         );
@@ -68,9 +70,10 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
   }
 
   Future<void> _cancelRequest() async {
+    final l10n = AppLocalizations.of(context)!;
     final reason = await showDialog<String>(
       context: context,
-      builder: (context) => _CancelRequestDialog(),
+      builder: (context) => _CancelRequestDialog(l10n: l10n),
     );
 
     if (reason != null) {
@@ -86,8 +89,8 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
 
       if (result != null && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Request cancelled'),
+          SnackBar(
+            content: Text(l10n.requestCancelled),
             backgroundColor: AppColors.warning,
           ),
         );
@@ -96,33 +99,33 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
     }
   }
 
-  String _getStatusDisplayName(RequestStatus status) {
+  String _getStatusDisplayName(RequestStatus status, AppLocalizations l10n) {
     switch (status) {
       case RequestStatus.pending:
-        return 'Pending';
+        return l10n.pending;
       case RequestStatus.accepted:
-        return 'Accepted';
+        return l10n.accepted;
       case RequestStatus.onTheWay:
-        return 'On the Way';
+        return l10n.onTheWay;
       case RequestStatus.sampleCollected:
-        return 'Sample Collected';
+        return l10n.sampleCollected;
       case RequestStatus.deliveredToLab:
-        return 'Delivered to Lab';
+        return l10n.deliveredToLab;
       case RequestStatus.completed:
-        return 'Completed';
+        return l10n.completed;
       case RequestStatus.cancelled:
-        return 'Cancelled';
+        return l10n.cancelled;
     }
   }
 
-  List<Widget> _buildActionButtons() {
+  List<Widget> _buildActionButtons(AppLocalizations l10n) {
     final buttons = <Widget>[];
 
     switch (currentRequest.status) {
       case RequestStatus.accepted:
         buttons.add(
           _ActionButton(
-            label: 'On the Way',
+            label: l10n.onTheWay,
             icon: Iconsax.car,
             color: Colors.blue,
             onPressed: () => _updateStatus(RequestStatus.onTheWay),
@@ -133,7 +136,7 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
       case RequestStatus.onTheWay:
         buttons.add(
           _ActionButton(
-            label: 'Collect Sample',
+            label: l10n.collectSample,
             icon: Iconsax.health,
             color: Colors.orange,
             onPressed: () => _updateStatus(RequestStatus.sampleCollected),
@@ -145,7 +148,7 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
         if (currentRequest.requestType == RequestType.labService) {
           buttons.add(
             _ActionButton(
-              label: 'Deliver to Lab',
+              label: l10n.deliverToLab,
               icon: Iconsax.building,
               color: Colors.purple,
               onPressed: () => _updateStatus(RequestStatus.deliveredToLab),
@@ -155,7 +158,7 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
           // For direct service, skip to completed
           buttons.add(
             _ActionButton(
-              label: 'Complete Request',
+              label: l10n.completeRequest,
               icon: Iconsax.tick_circle,
               color: AppColors.success,
               onPressed: () => _updateStatus(RequestStatus.completed),
@@ -167,7 +170,7 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
       case RequestStatus.deliveredToLab:
         buttons.add(
           _ActionButton(
-            label: 'Complete Request',
+            label: l10n.completeRequest,
             icon: Iconsax.tick_circle,
             color: AppColors.success,
             onPressed: () => _updateStatus(RequestStatus.completed),
@@ -184,12 +187,13 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     final statusStr = _getStatusString();
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Request Details'),
+        title: Text(l10n.requestDetails),
         backgroundColor: Colors.white,
         elevation: 0,
         actions: [
@@ -198,7 +202,7 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
             IconButton(
               icon: const Icon(Icons.cancel_outlined, color: AppColors.error),
               onPressed: _cancelRequest,
-              tooltip: 'Cancel Request',
+              tooltip: l10n.cancelRequest,
             ),
         ],
       ),
@@ -232,14 +236,14 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
 
               // Request Type
               _InfoCard(
-                title: 'Request Type',
+                title: l10n.requestType,
                 icon: Iconsax.clipboard_text,
                 children: [
                   _InfoRow(
-                    label: 'Type',
+                    label: l10n.type,
                     value: currentRequest.requestType == RequestType.labService
-                        ? 'Lab Test Service'
-                        : 'Direct Home Service',
+                        ? l10n.labTestServiceLabel
+                        : l10n.directHomeServiceLabel,
                   ),
                 ],
               ),
@@ -248,16 +252,16 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
 
               // Schedule Info
               _InfoCard(
-                title: 'Schedule',
+                title: l10n.schedule,
                 icon: Iconsax.calendar,
                 children: [
                   _InfoRow(
-                    label: 'Date',
+                    label: l10n.date,
                     value: currentRequest.scheduledDate,
                   ),
                   if (currentRequest.scheduledTimeSlot != null)
                     _InfoRow(
-                      label: 'Time Slot',
+                      label: l10n.timeSlot,
                       value: currentRequest.scheduledTimeSlot!,
                     ),
                 ],
@@ -267,11 +271,11 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
 
               // Location Info
               _InfoCard(
-                title: 'Location',
+                title: l10n.location,
                 icon: Iconsax.location,
                 children: [
                   _InfoRow(
-                    label: 'Address',
+                    label: l10n.address,
                     value: currentRequest.patientAddress,
                   ),
                 ],
@@ -281,12 +285,12 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
 
               // Payment Info
               _InfoCard(
-                title: 'Payment',
+                title: l10n.payment,
                 icon: Iconsax.wallet,
                 children: [
                   _InfoRow(
-                    label: 'Total Amount',
-                    value: '${currentRequest.priceMnt} MNT',
+                    label: l10n.totalAmount,
+                    value: l10n.priceInMNT(currentRequest.priceMnt),
                     valueStyle: const TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
@@ -302,7 +306,7 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
               if (currentRequest.patientNotes != null &&
                   currentRequest.patientNotes!.isNotEmpty)
                 _InfoCard(
-                  title: 'Patient Notes',
+                  title: l10n.patientNotes,
                   icon: Iconsax.note,
                   children: [
                     Text(
@@ -342,7 +346,7 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    ..._buildActionButtons(),
+                    ..._buildActionButtons(l10n),
                   ],
                 ),
               ),
@@ -514,6 +518,10 @@ class _ActionButton extends StatelessWidget {
 }
 
 class _CancelRequestDialog extends StatefulWidget {
+  final AppLocalizations l10n;
+
+  const _CancelRequestDialog({required this.l10n});
+
   @override
   State<_CancelRequestDialog> createState() => _CancelRequestDialogState();
 }
@@ -529,22 +537,24 @@ class _CancelRequestDialogState extends State<_CancelRequestDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = widget.l10n;
+
     return AlertDialog(
-      title: const Text('Cancel Request'),
+      title: Text(l10n.cancelRequest),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Please provide a reason for cancellation:',
-            style: TextStyle(fontSize: 14),
+          Text(
+            l10n.provideCancellationReason,
+            style: const TextStyle(fontSize: 14),
           ),
           const SizedBox(height: 12),
           TextField(
             controller: _reasonController,
             maxLines: 3,
             decoration: InputDecoration(
-              hintText: 'Enter reason...',
+              hintText: l10n.enterReason,
             ),
           ),
         ],
@@ -552,7 +562,7 @@ class _CancelRequestDialogState extends State<_CancelRequestDialog> {
       actions: [
         TextButton(
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
+          child: Text(l10n.cancel),
         ),
         ElevatedButton(
           onPressed: () {
@@ -564,7 +574,7 @@ class _CancelRequestDialogState extends State<_CancelRequestDialog> {
             backgroundColor: AppColors.error,
             foregroundColor: Colors.white,
           ),
-          child: const Text('Confirm'),
+          child: Text(l10n.confirm),
         ),
       ],
     );

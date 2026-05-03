@@ -2,10 +2,11 @@
   "mcpServers": {
     "supabase": {
       "type": "http",
-      "url": "https://mcp.supabase.com/mcp?project_ref=zrwtugcgimaocrhjdtob",
-      "headers": {
-        "Authorization": "Bearer sbp_757d87d12c753e7c92b4745ba91eec2162254fe1"
-      }
+      "url": "https://mcp.supabase.com/mcp?project_ref=zrwtugcgimaocrhjdtob"
+    },
+    "sequential-thinking": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
     }
   }
 }

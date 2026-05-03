@@ -1,4 +1,4 @@
-import 'package:oncall_lab/core/services/supabase_service.dart';
+import 'package:bugamed/core/services/supabase_service.dart';
 
 class DoctorRepository {
   /// Get full doctor details including profile and services

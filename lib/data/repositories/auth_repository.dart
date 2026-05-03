@@ -1,10 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:oncall_lab/core/services/supabase_service.dart';
-import 'package:oncall_lab/data/models/profile_model.dart';
-import 'package:oncall_lab/data/models/doctor_profile_model.dart';
+import 'package:bugamed/core/services/supabase_service.dart';
+import 'package:bugamed/data/models/profile_model.dart';
+import 'package:bugamed/data/models/doctor_profile_model.dart';
 
 class AuthRepository {
-  static const String _phoneEmailDomain = 'oncalllab.dev';
+  static const String _phoneEmailDomain = 'bugamed.dev';
 
   String _buildEmailFromPhone(String phoneNumber) {
     var sanitized = phoneNumber.replaceAll(' ', '');
@@ -22,7 +23,7 @@ class AuthRepository {
     required String phoneNumber,
     required String password,
   }) async {
-    // Use email-based auth for web (phone@oncalllab.dev, e.g., 99123456@oncalllab.dev)
+    // Use email-based auth for web (phone@bugamed.dev, e.g., 99123456@bugamed.dev)
     final email = _buildEmailFromPhone(phoneNumber);
 
     final response = await supabase.auth.signUp(
@@ -44,8 +45,8 @@ class AuthRepository {
   }) async {
     final email = _buildEmailFromPhone(phoneNumber);
 
-    print('🔐 [AUTH] Attempting login with phone: $phoneNumber');
-    print('🔐 [AUTH] Converted to email: $email');
+    if (kDebugMode) debugPrint('🔐 [AUTH] Attempting login with phone: $phoneNumber');
+    if (kDebugMode) debugPrint('🔐 [AUTH] Converted to email: $email');
 
     try {
       final response = await supabase.auth.signInWithPassword(
@@ -54,14 +55,14 @@ class AuthRepository {
       );
 
       if (response.user == null) {
-        print('❌ [AUTH] Login failed: No user returned');
+        if (kDebugMode) debugPrint('❌ [AUTH] Login failed: No user returned');
         throw Exception('Failed to sign in');
       }
 
-      print('✅ [AUTH] Login successful! User ID: ${response.user!.id}');
+      if (kDebugMode) debugPrint('✅ [AUTH] Login successful! User ID: ${response.user!.id}');
       return response.user!;
     } catch (e) {
-      print('❌ [AUTH] Login error: $e');
+      if (kDebugMode) debugPrint('❌ [AUTH] Login error: $e');
       rethrow;
     }
   }
@@ -175,11 +176,11 @@ class AuthRepository {
   Future<ProfileModel?> getCurrentProfile() async {
     final user = supabase.auth.currentUser;
     if (user == null) {
-      print('⚠️ [AUTH] No current user when fetching profile');
+      if (kDebugMode) debugPrint('⚠️ [AUTH] No current user when fetching profile');
       return null;
     }
 
-    print('👤 [AUTH] Fetching profile for user ID: ${user.id}');
+    if (kDebugMode) debugPrint('👤 [AUTH] Fetching profile for user ID: ${user.id}');
     try {
       final data = await supabase
           .from('profiles')
@@ -187,10 +188,10 @@ class AuthRepository {
           .eq('id', user.id)
           .single();
 
-      print('✅ [AUTH] Profile loaded successfully: ${data['full_name']}');
+      if (kDebugMode) debugPrint('✅ [AUTH] Profile loaded successfully: ${data['full_name']}');
       return ProfileModel.fromJson(data);
     } catch (e) {
-      print('❌ [AUTH] Failed to load profile: $e');
+      if (kDebugMode) debugPrint('❌ [AUTH] Failed to load profile: $e');
       return null;
     }
   }

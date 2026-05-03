@@ -1,4 +1,4 @@
-name: oncall_lab
+name: bugamed
 description: "BUGAMED - Гэрээс лабораторийн шинжилгээ"
 publish_to: 'none'
 
@@ -82,10 +82,10 @@ flutter:
 
   # Assets
   assets:
+    - .env
     - assets/images/
     - assets/images/mascot/
     - assets/avatars/
-    - .env
 
   # fonts:
   #   - family: SFPro

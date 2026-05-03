@@ -7,8 +7,8 @@
 
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:oncall_lab/main.dart';
-import 'package:oncall_lab/stores/auth_store.dart';
+import 'package:bugamed/main.dart';
+import 'package:bugamed/stores/auth_store.dart';
 
 void main() {
   testWidgets('Shows login screen when not authenticated', (tester) async {
@@ -17,7 +17,7 @@ void main() {
       ..currentUser = null
       ..currentProfile = null;
 
-    await tester.pumpWidget(const OnCallLabApp());
+    await tester.pumpWidget(const BugamedApp());
 
     expect(find.text('Welcome Back'), findsOneWidget);
     expect(find.text('Sign In'), findsOneWidget);

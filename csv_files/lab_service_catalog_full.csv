@@ -1,0 +1,118 @@
+name,name_mn,description,description_mn,sample_type,preparation_instructions,preparation_instructions_mn,estimated_duration_minutes,price_mnt
+Total Bilirubin,Билирубин/нийт/,Measures total bilirubin to evaluate liver function.,Билирубин/нийт/ тодорхойлох лабораторийн шинжилгээ.,blood,Fast for 8-12 hours,Өмнө нь 8-12 цаг хоол идэхгүй байх,30,5000
+Direct Bilirubin,Билирубин/шууд/,Measures direct bilirubin to evaluate liver function.,Билирубин/шууд/ тодорхойлох лабораторийн шинжилгээ.,blood,Fast for 8-12 hours,Өмнө нь 8-12 цаг хоол идэхгүй байх,30,5000
+AST (GOT),ГОТ,Enzyme test for liver and heart health.,ГОТ тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation,Тусгай бэлтгэл шаардлагагүй,30,8000
+ALT (GPT),ГПТ,Primary enzyme test for liver damage.,ГПТ тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation,Тусгай бэлтгэл шаардлагагүй,30,8000
+Total Protein,Нийт уураг,Measures total amount of albumin and globulin.,Нийт уураг тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation,Тусгай бэлтгэл шаардлагагүй,30,5000
+Albumin,Альбумин,Protein made by the liver; measures liver and kidney function.,Альбумин тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation,Тусгай бэлтгэл шаардлагагүй,30,5000
+GGT,ГГТрансфераз,Measures GGT enzyme to detect liver or bile duct damage.,ГГТрансфераз тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation,Тусгай бэлтгэл шаардлагагүй,30,5000
+Alkaline Phosphatase,Шүлтлэгфосфотаз,Enzyme related to liver and bone health.,Шүлтлэгфосфотаз тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation,Тусгай бэлтгэл шаардлагагүй,30,5000
+LDH,ЛДГ,Enzyme that rises with tissue damage.,ЛДГ тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation,Тусгай бэлтгэл шаардлагагүй,30,5000
+Total Cholesterol,Холестерол,Measures total cholesterol levels.,Холестерол тодорхойлох лабораторийн шинжилгээ.,blood,Fast for 9-12 hours,Өмнө нь 8-12 цаг хоол идэхгүй байх,30,5000
+Triglycerides,Триглицерид,Measures type of fat in blood.,Триглицерид тодорхойлох лабораторийн шинжилгээ.,blood,Fast for 9-12 hours,Өмнө нь 8-12 цаг хоол идэхгүй байх,30,5000
+Сахар,Сахар,Laboratory diagnostic test for Сахар.,Сахар тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,6000
+Билирубин /шууд бус/,Билирубин /шууд бус/,Laboratory diagnostic test for Билирубин /шууд бус/.,Билирубин /шууд бус/ тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,5000
+Complete Blood Count (CBC),Цусны дэлгэрэнгүй ш-гээ,"Measures RBC, WBC, and platelets.",Цусны дэлгэрэнгүй ш-гээ тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation,Тусгай бэлтгэл шаардлагагүй,30,35000
+Blood Grouping,Цусны бүлэг,"Determines blood type (A, B, AB, O and Rh).",Цусны бүлэг тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation,Тусгай бэлтгэл шаардлагагүй,30,5000
+Цусны резусфактор,Цусны резусфактор,Laboratory diagnostic test for Цусны резусфактор.,Цусны резусфактор тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,3000
+Гемисиндром,Гемисиндром,Laboratory diagnostic test for Гемисиндром.,Гемисиндром тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,3000
+Ретикулоцит тоолох,Ретикулоцит тоолох,Laboratory diagnostic test for Ретикулоцит тоолох.,Ретикулоцит тоолох тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,5000
+Ферритин,Ферритин,Laboratory diagnostic test for Ферритин.,Ферритин тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,35000
+СОЭ,СОЭ,Laboratory diagnostic test for СОЭ.,СОЭ тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,3000
+Шээсний дэлгэрэнгүй ш-гээ,Шээсний дэлгэрэнгүй ш-гээ,Laboratory diagnostic test for Шээсний дэлгэрэнгүй ш-гээ.,Шээсний дэлгэрэнгүй ш-гээ тодорхойлох лабораторийн шинжилгээ.,urine,No special preparation required,Дунд хэсгийн шээс цуглуулах,30,20000
+Нейчипоренко,Нейчипоренко,Laboratory diagnostic test for Нейчипоренко.,Нейчипоренко тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,20000
+Амбурж Зимницскийн сорил,Амбурж Зимницскийн сорил,Laboratory diagnostic test for Амбурж Зимницскийн сорил.,Амбурж Зимницскийн сорил тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,20000
+Креатинин,Креатинин,Laboratory diagnostic test for Креатинин.,Креатинин тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,8000
+Мочевин,Мочевин,Laboratory diagnostic test for Мочевин.,Мочевин тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,7000
+Үлдэгдэл азот,Үлдэгдэл азот,Laboratory diagnostic test for Үлдэгдэл азот.,Үлдэгдэл азот тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,5000
+Шээсэнд проферин үзэх,Шээсэнд проферин үзэх,Laboratory diagnostic test for Шээсэнд проферин үзэх.,Шээсэнд проферин үзэх тодорхойлох лабораторийн шинжилгээ.,urine,No special preparation required,Дунд хэсгийн шээс цуглуулах,30,20000
+"Наалдац /эр,эм/","Наалдац /эр,эм/","Laboratory diagnostic test for Наалдац /эр,эм/.","Наалдац /эр,эм/ тодорхойлох лабораторийн шинжилгээ.",blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,25000
+Sodium (Na),Натри,Essential electrolyte for fluid balance.,Натри тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation,Тусгай бэлтгэл шаардлагагүй,30,13000
+Potassium (K),Кали,Essential electrolyte for heart function.,Кали тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation,Тусгай бэлтгэл шаардлагагүй,30,13000
+Calcium (Ca),Кальц,"Mineral essential for bones, heart, and nerves.",Кальц тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation,Тусгай бэлтгэл шаардлагагүй,30,10000
+Iron (Fe),Төмөр,Measures iron levels in the blood.,Төмөр тодорхойлох лабораторийн шинжилгээ.,blood,Fast for 8-12 hours recommended,Өмнө нь 8-12 цаг хоол идэхгүй байх,30,10000
+Magnesium (Mg),Магни,Mineral essential for muscle and nerve function.,Магни тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation,Тусгай бэлтгэл шаардлагагүй,30,10000
+Фосфор,Фосфор,Laboratory diagnostic test for Фосфор.,Фосфор тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,10000
+Хлор,Хлор,Laboratory diagnostic test for Хлор.,Хлор тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,10000
+Зэс,Зэс,Laboratory diagnostic test for Зэс.,Зэс тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,12000
+Цайр,Цайр,Laboratory diagnostic test for Цайр.,Цайр тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,12000
+"Амилаза /цус,шээсэнд/","Амилаза /цус,шээсэнд/","Laboratory diagnostic test for Амилаза /цус,шээсэнд/.","Амилаза /цус,шээсэнд/ тодорхойлох лабораторийн шинжилгээ.",urine,No special preparation required,Дунд хэсгийн шээс цуглуулах,30,15000
+Липаза фермент,Липаза фермент,Laboratory diagnostic test for Липаза фермент.,Липаза фермент тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,30000
+АСЛО   /тоогоор/,АСЛО   /тоогоор/,Laboratory diagnostic test for АСЛО   /тоогоор/.,АСЛО   /тоогоор/ тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,15000
+СРБ     /тоогоор/,СРБ     /тоогоор/,Laboratory diagnostic test for СРБ     /тоогоор/.,СРБ     /тоогоор/ тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,20000
+РФ      /тоогоор/,РФ      /тоогоор/,Laboratory diagnostic test for РФ      /тоогоор/.,РФ      /тоогоор/ тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,15000
+Шээсний хүчил,Шээсний хүчил,Laboratory diagnostic test for Шээсний хүчил.,Шээсний хүчил тодорхойлох лабораторийн шинжилгээ.,urine,No special preparation required,Дунд хэсгийн шээс цуглуулах,30,10000
+Anti -CCP,Anti -CCP,Laboratory diagnostic test for Anti -CCP.,Anti -CCP тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,60000
+Фолийн хүчил,Фолийн хүчил,Laboratory diagnostic test for Фолийн хүчил.,Фолийн хүчил тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,40000
+"В,С вирусын маркер","В,С вирусын маркер","Laboratory diagnostic test for В,С вирусын маркер.","В,С вирусын маркер тодорхойлох лабораторийн шинжилгээ.",blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,35000
+Сүрьеэ/ анти- тел,Сүрьеэ/ анти- тел,Laboratory diagnostic test for Сүрьеэ/ анти- тел.,Сүрьеэ/ анти- тел тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,20000
+Хеликобактер      /өтгөнд/,Хеликобактер      /өтгөнд/,Laboratory diagnostic test for Хеликобактер      /өтгөнд/.,Хеликобактер      /өтгөнд/ тодорхойлох лабораторийн шинжилгээ.,stool,No special preparation required,Цэвэр саванд сорьц цуглуулах,30,35000
+Хеликобактер      /цусаар/,Хеликобактер      /цусаар/,Laboratory diagnostic test for Хеликобактер      /цусаар/.,Хеликобактер      /цусаар/ тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,35000
+ANA,ANA,Laboratory diagnostic test for ANA.,ANA тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,25000
+Аnti DNA,Аnti DNA,Laboratory diagnostic test for Аnti DNA.,Аnti DNA тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,30000
+"Иммуноглобулин   А
+М G E","Иммуноглобулин   А
+М G E","Laboratory diagnostic test for Иммуноглобулин   А
+М G E.","Иммуноглобулин   А
+М G E тодорхойлох лабораторийн шинжилгээ.",blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,30000300003000030000
+ЛЕ-эс тоолох,ЛЕ-эс тоолох,Laboratory diagnostic test for ЛЕ-эс тоолох.,ЛЕ-эс тоолох тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,50000
+Вит Д,Вит Д,Laboratory diagnostic test for Вит Д.,Вит Д тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,45000
+ВИТ В-12,ВИТ В-12,Laboratory diagnostic test for ВИТ В-12.,ВИТ В-12 тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,40000
+Коагулограмма,Коагулограмма,Laboratory diagnostic test for Коагулограмма.,Коагулограмма тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,25000
+Протомбины хугацаа,Протомбины хугацаа,Laboratory diagnostic test for Протомбины хугацаа.,Протомбины хугацаа тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,6500
+Заримдаг ИТПХ,Заримдаг ИТПХ,Laboratory diagnostic test for Заримдаг ИТПХ.,Заримдаг ИТПХ тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,6000
+Фибриноген,Фибриноген,Laboratory diagnostic test for Фибриноген.,Фибриноген тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,6500
+Тромбины хугацаа,Тромбины хугацаа,Laboratory diagnostic test for Тромбины хугацаа.,Тромбины хугацаа тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,6000
+"ИНЛП,БНЛП","ИНЛП,БНЛП","Laboratory diagnostic test for ИНЛП,БНЛП.","ИНЛП,БНЛП тодорхойлох лабораторийн шинжилгээ.",blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,35000
+АСЛО,АСЛО,Laboratory diagnostic test for АСЛО.,АСЛО тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,15000
+Тропонин -I,Тропонин -I,Laboratory diagnostic test for Тропонин -I.,Тропонин -I тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,40000
+Эстрадиол,Эстрадиол,Laboratory diagnostic test for Эстрадиол.,Эстрадиол тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,25000
+Пролактин,Пролактин,Laboratory diagnostic test for Пролактин.,Пролактин тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,25000
+Прогестрон,Прогестрон,Laboratory diagnostic test for Прогестрон.,Прогестрон тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,25000
+ФСГормон,ФСГормон,Laboratory diagnostic test for ФСГормон.,ФСГормон тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,25000
+ЛГ,ЛГ,Laboratory diagnostic test for ЛГ.,ЛГ тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,25000
+Тестостерон,Тестостерон,Laboratory diagnostic test for Тестостерон.,Тестостерон тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,50000
+ХГГормон,ХГГормон,Laboratory diagnostic test for ХГГормон.,ХГГормон тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,35000
+Элэгний хавдар /AFP/,Элэгний хавдар /AFP/,Laboratory diagnostic test for Элэгний хавдар /AFP/.,Элэгний хавдар /AFP/ тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,45000
+Ходоод нойр/бул /СА-19-9/,Ходоод нойр/бул /СА-19-9/,Laboratory diagnostic test for Ходоод нойр/бул /СА-19-9/.,Ходоод нойр/бул /СА-19-9/ тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,60000
+CA-125,Өндгөвчний хавдар /СА-125/,Tumor marker for ovarian cancer.,Өндгөвчний хавдар /СА-125/ тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation,Тусгай бэлтгэл шаардлагагүй,30,50000
+CA-153,Хөхний хавдар /СА-153/,Tumor marker for breast cancer.,Хөхний хавдар /СА-153/ тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation,Тусгай бэлтгэл шаардлагагүй,30,40000
+PSA,Түрүү булчирхайн/хав /РSA/,Prostate-specific antigen tumor marker.,Түрүү булчирхайн/хав /РSA/ тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation,Тусгай бэлтгэл шаардлагагүй,30,45000
+CEA,Үр хөврөлийн хавдар /СЕА/,Carcinoembryonic antigen tumor marker.,Үр хөврөлийн хавдар /СЕА/ тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation,Тусгай бэлтгэл шаардлагагүй,30,50000
+CA-72-4,Ходоодны хавдар / СА-72-4/,Tumor marker for gastric cancer.,Ходоодны хавдар / СА-72-4/ тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation,Тусгай бэлтгэл шаардлагагүй,30,70000
+Эхо оношилгоо,Эхо оношилгоо,Laboratory diagnostic test for Эхо оношилгоо.,Эхо оношилгоо тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,50000
+Ходоодны уян дуран,Ходоодны уян дуран,Laboratory diagnostic test for Ходоодны уян дуран.,Ходоодны уян дуран тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,100000
+Рентген зураг / уушиг/,Рентген зураг / уушиг/,Laboratory diagnostic test for Рентген зураг / уушиг/.,Рентген зураг / уушиг/ тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,45000
+Рентген  /бусад/,Рентген  /бусад/,Laboratory diagnostic test for Рентген  /бусад/.,Рентген  /бусад/ тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,50000
+Зүрхний доплерт эхо,Зүрхний доплерт эхо,Laboratory diagnostic test for Зүрхний доплерт эхо.,Зүрхний доплерт эхо тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,80000
+Зурхний бичлэг,Зурхний бичлэг,Laboratory diagnostic test for Зурхний бичлэг.,Зурхний бичлэг тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,15000
+TORCH халдвар / тоогоор/,TORCH халдвар / тоогоор/,Laboratory diagnostic test for TORCH халдвар / тоогоор/.,TORCH халдвар / тоогоор/ тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,150000
+Демотекс үзэх,Демотекс үзэх,Laboratory diagnostic test for Демотекс үзэх.,Демотекс үзэх тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,15000
+"TORCH халдвар /эерэг,сөрөг/","TORCH халдвар /эерэг,сөрөг/","Laboratory diagnostic test for TORCH халдвар /эерэг,сөрөг/.","TORCH халдвар /эерэг,сөрөг/ тодорхойлох лабораторийн шинжилгээ.",blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,100000
+Blood Glucose (Fasting),Сахар /өлөн үеийн/,Measures blood sugar levels after fasting.,Сахар /өлөн үеийн/ тодорхойлох лабораторийн шинжилгээ.,blood,Fast for 8-12 hours,Өмнө нь 8-12 цаг хоол идэхгүй байх,30,6000
+Сахарын ачаалалт сорил,Сахарын ачаалалт сорил,Laboratory diagnostic test for Сахарын ачаалалт сорил.,Сахарын ачаалалт сорил тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,20000
+HbA1c,Гликохемоглобин НВА-1с,Measures average blood sugar over 2-3 months.,Гликохемоглобин НВА-1с тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation,Тусгай бэлтгэл шаардлагагүй,30,35000
+Insulin,Инсулин,Hormone that regulates blood sugar.,Инсулин тодорхойлох лабораторийн шинжилгээ.,blood,Fast for 8-12 hours,Өмнө нь 8-12 цаг хоол идэхгүй байх,30,30000
+С пептид,С пептид,Laboratory diagnostic test for С пептид.,С пептид тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,30000
+Микроальбумин,Микроальбумин,Laboratory diagnostic test for Микроальбумин.,Микроальбумин тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,30000
+ДОХ,ДОХ,Laboratory diagnostic test for ДОХ.,ДОХ тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,15000
+Тэмбүү,Тэмбүү,Laboratory diagnostic test for Тэмбүү.,Тэмбүү тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,20000
+Заг хүйтэн,Заг хүйтэн,Laboratory diagnostic test for Заг хүйтэн.,Заг хүйтэн тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,15000
+PCR-  БЗХӨ12 үзүүлэлтээр,PCR-  БЗХӨ12 үзүүлэлтээр,Laboratory diagnostic test for PCR-  БЗХӨ12 үзүүлэлтээр.,PCR-  БЗХӨ12 үзүүлэлтээр тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,200000
+PCT  үжлийн маркер,PCT  үжлийн маркер,Laboratory diagnostic test for PCT  үжлийн маркер.,PCT  үжлийн маркер тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,60000
+Т-3,Т-3,Laboratory diagnostic test for Т-3.,Т-3 тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,20000
+Т-4,Т-4,Laboratory diagnostic test for Т-4.,Т-4 тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,20000
+ТSH,ТSH,Laboratory diagnostic test for ТSH.,ТSH тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,35000
+TPO эсрэг бие тодорхойлох,TPO эсрэг бие тодорхойлох,Laboratory diagnostic test for TPO эсрэг бие тодорхойлох.,TPO эсрэг бие тодорхойлох тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,35000
+TG Ig G эсрэг бие тодорхойлох,TG Ig G эсрэг бие тодорхойлох,Laboratory diagnostic test for TG Ig G эсрэг бие тодорхойлох.,TG Ig G эсрэг бие тодорхойлох тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,35000
+TSH-R-ab /бамбайн хордлого,TSH-R-ab /бамбайн хордлого,Laboratory diagnostic test for TSH-R-ab /бамбайн хордлого.,TSH-R-ab /бамбайн хордлого тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,65000
+Тироглобулин /бамбайн хавдар,Тироглобулин /бамбайн хавдар,Laboratory diagnostic test for Тироглобулин /бамбайн хавдар.,Тироглобулин /бамбайн хавдар тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,50000
+Хялгасан хорхой,Хялгасан хорхой,Laboratory diagnostic test for Хялгасан хорхой.,Хялгасан хорхой тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,10000
+Шээсний ариун чанар,Шээсний ариун чанар,Laboratory diagnostic test for Шээсний ариун чанар.,Шээсний ариун чанар тодорхойлох лабораторийн шинжилгээ.,urine,No special preparation required,Дунд хэсгийн шээс цуглуулах,30,45000
+Хоолойны арчдас,Хоолойны арчдас,Laboratory diagnostic test for Хоолойны арчдас.,Хоолойны арчдас тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,50000
+Цэрний бактериологи,Цэрний бактериологи,Laboratory diagnostic test for Цэрний бактериологи.,Цэрний бактериологи тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,50000
+Шархны арчдас,Шархны арчдас,Laboratory diagnostic test for Шархны арчдас.,Шархны арчдас тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,50000
+Үтрээний  бактериологи,Үтрээний  бактериологи,Laboratory diagnostic test for Үтрээний  бактериологи.,Үтрээний  бактериологи тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,50000
+MRSA,MRSA,Laboratory diagnostic test for MRSA.,MRSA тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,40000
+Өтгөн /бацилл илрүүлэх/,Өтгөн /бацилл илрүүлэх/,Laboratory diagnostic test for Өтгөн /бацилл илрүүлэх/.,Өтгөн /бацилл илрүүлэх/ тодорхойлох лабораторийн шинжилгээ.,stool,No special preparation required,Цэвэр саванд сорьц цуглуулах,30,20000
+Хэвлийн шингэн /плевр/,Хэвлийн шингэн /плевр/,Laboratory diagnostic test for Хэвлийн шингэн /плевр/.,Хэвлийн шингэн /плевр/ тодорхойлох лабораторийн шинжилгээ.,blood,No special preparation required,Тусгай бэлтгэл шаардлагагүй,30,60000

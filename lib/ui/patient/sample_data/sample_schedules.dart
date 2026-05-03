@@ -1,4 +1,4 @@
-import 'package:oncall_lab/ui/patient/models/schedule_ui.dart';
+import 'package:bugamed/ui/patient/models/schedule_ui.dart';
 
 final sampleSchedules = <ScheduleUI>[
   ScheduleUI(

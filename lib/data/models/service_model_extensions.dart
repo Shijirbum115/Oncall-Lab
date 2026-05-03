@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
-import 'package:oncall_lab/data/models/service_model.dart';
-import 'package:oncall_lab/l10n/app_localizations.dart';
+import 'package:bugamed/data/models/service_model.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
 
 extension ServiceModelExtension on ServiceModel {
   String getLocalizedName(BuildContext context) {

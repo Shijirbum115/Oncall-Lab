@@ -1,5 +1,5 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:oncall_lab/core/constants/supabase_config.dart';
+import 'package:bugamed/core/constants/supabase_config.dart';
 
 class SupabaseService {
   static Future<void> initialize() async {

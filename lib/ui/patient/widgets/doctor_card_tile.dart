@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/core/utils/avatar_helper.dart';
-import 'package:oncall_lab/ui/patient/models/doctor_profile_ui.dart';
-import 'package:oncall_lab/l10n/app_localizations.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/core/utils/avatar_helper.dart';
+import 'package:bugamed/ui/patient/models/doctor_profile_ui.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
 
 class DoctorCardTile extends StatelessWidget {
   const DoctorCardTile({
@@ -67,8 +68,7 @@ class DoctorCardTile extends StatelessWidget {
                     children: [
                       Text(
                         doctor.name,
-                        style: const TextStyle(
-                          fontSize: 13.5,
+                        style: AppTypography.bodyMedium.copyWith(
                           fontWeight: FontWeight.w700,
                           color: AppColors.black,
                         ),
@@ -78,10 +78,7 @@ class DoctorCardTile extends StatelessWidget {
                       const SizedBox(height: 2),
                       Text(
                         doctor.specialization,
-                        style: const TextStyle(
-                          color: Colors.black45,
-                          fontSize: 11,
-                        ),
+                        style: AppTypography.bodySmall,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -107,18 +104,15 @@ class DoctorCardTile extends StatelessWidget {
                       const SizedBox(width: 4),
                       Text(
                         doctor.rating.toStringAsFixed(1),
-                        style: const TextStyle(
+                        style: AppTypography.bodySmall.copyWith(
                           fontWeight: FontWeight.bold,
-                          fontSize: 12,
+                          color: AppColors.black, // Ensure color is visible
                         ),
                       ),
                       const SizedBox(width: 3),
                       Text(
                         '(${l10n.reviewsCount(doctor.totalReviews)})',
-                        style: const TextStyle(
-                          color: AppColors.grey,
-                          fontSize: 10.5,
-                        ),
+                        style: AppTypography.labelSmall,
                       ),
                     ],
                   ),

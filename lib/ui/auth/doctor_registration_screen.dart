@@ -2,11 +2,12 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/core/services/storage_service.dart';
-import 'package:oncall_lab/core/services/supabase_service.dart';
-import 'package:oncall_lab/stores/auth_store.dart';
-import 'package:oncall_lab/ui/auth/widgets/step_progress_bar.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/core/services/storage_service.dart';
+import 'package:bugamed/core/services/supabase_service.dart';
+import 'package:bugamed/stores/auth_store.dart';
+import 'package:bugamed/ui/auth/widgets/step_progress_bar.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
 
 class DoctorRegistrationScreen extends StatefulWidget {
   const DoctorRegistrationScreen({super.key});
@@ -26,11 +27,12 @@ class _DoctorRegistrationScreenState extends State<DoctorRegistrationScreen> {
     Icons.medical_information_outlined,
     Icons.lock_outline,
   ];
-  final List<String> _stepLabels = const [
-    'Profile',
-    'Professional',
-    'Security',
-  ];
+
+  List<String> _getStepLabels(AppLocalizations l10n) => [
+        l10n.profileStep,
+        l10n.professionalStep,
+        l10n.securityStep,
+      ];
 
   // Controllers
   final _firstNameController = TextEditingController();
@@ -86,6 +88,7 @@ class _DoctorRegistrationScreenState extends State<DoctorRegistrationScreen> {
   }
 
   Future<void> _handleRegister() async {
+    final l10n = AppLocalizations.of(context)!;
     final success = await authStore.registerDoctor(
       phoneNumber: _phoneController.text.trim(),
       password: _passwordController.text,
@@ -146,15 +149,15 @@ class _DoctorRegistrationScreenState extends State<DoctorRegistrationScreen> {
         }
       }
 
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Doctor application submitted! We will verify your credentials soon.',
-          ),
+        SnackBar(
+          content: Text(l10n.doctorApplicationSubmitted),
         ),
       );
       Navigator.of(context).pop();
     } else if (authStore.errorMessage != null) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(authStore.errorMessage!),
@@ -166,135 +169,167 @@ class _DoctorRegistrationScreenState extends State<DoctorRegistrationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
+
     return Scaffold(
       backgroundColor: Colors.white,
+      resizeToAvoidBottomInset: false, // Keyboard overlays instead of pushing
       appBar: AppBar(
-        title: const Text('Doctor Registration'),
+        title: Text(l10n.doctorRegistration),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Join as Doctor / Lab Technician',
-                style: TextStyle(
-                  fontSize: 26,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.black,
-                ),
-              ),
-              const SizedBox(height: 6),
-              const Text(
-                'Provide accurate details to pass verification.',
-                style: TextStyle(color: AppColors.grey),
-              ),
-              const SizedBox(height: 24),
-              StepProgressBar(
-                totalSteps: _totalSteps,
-                currentStep: _currentStep,
-                icons: _stepIcons,
-                labels: _stepLabels,
-              ),
-              const SizedBox(height: 12),
-              Expanded(
-                child: AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  transitionBuilder: (child, animation) =>
-                      FadeTransition(opacity: animation, child: child),
-                  child: Form(
-                    key: _stepFormKeys[_currentStep],
-                    child: SingleChildScrollView(
-                      key: ValueKey(_currentStep),
-                      physics: const BouncingScrollPhysics(),
-                      child: _buildStepContent(_currentStep),
+      body: Stack(
+        children: [
+          // Scrollable content area
+          Positioned.fill(
+            bottom: 120 + bottomPadding, // Space for bottom buttons
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+              physics: const BouncingScrollPhysics(),
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    l10n.joinAsDoctorLabTech,
+                    style: const TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.black,
                     ),
                   ),
-                ),
+                  const SizedBox(height: 6),
+                  Text(
+                    l10n.provideAccurateDetails,
+                    style: const TextStyle(color: AppColors.grey),
+                  ),
+                  const SizedBox(height: 24),
+                  StepProgressBar(
+                    totalSteps: _totalSteps,
+                    currentStep: _currentStep,
+                    icons: _stepIcons,
+                    labels: _getStepLabels(l10n),
+                  ),
+                  const SizedBox(height: 12),
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    transitionBuilder: (child, animation) =>
+                        FadeTransition(opacity: animation, child: child),
+                    child: Form(
+                      key: _stepFormKeys[_currentStep],
+                      child: KeyedSubtree(
+                        key: ValueKey(_currentStep),
+                        child: _buildStepContent(_currentStep, l10n),
+                      ),
+                    ),
+                  ),
+                  // Extra padding for keyboard
+                  SizedBox(height: MediaQuery.of(context).viewInsets.bottom > 0 ? 200 : 0),
+                ],
               ),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  if (_currentStep > 0)
-                    Expanded(
-                      child: OutlinedButton(
-                        onPressed:
-                            authStore.isLoading ? null : _goToPreviousStep,
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.primary,
-                          side: const BorderSide(color: AppColors.primary),
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                        ),
-                        child: const Text('Back'),
-                      ),
-                    ),
-                  if (_currentStep > 0) const SizedBox(width: 12),
-                  Expanded(
-                    child: Observer(
-                      builder: (_) => ElevatedButton(
-                        onPressed: authStore.isLoading ? null : _goToNextStep,
-                        style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: authStore.isLoading
-                            ? const SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor:
-                                      AlwaysStoppedAnimation<Color>(Colors.white),
-                                ),
-                              )
-                            : Text(
-                                _currentStep == _totalSteps - 1
-                                    ? 'Submit Application'
-                                    : 'Continue',
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                      ),
-                    ),
+            ),
+          ),
+          // Fixed bottom buttons
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: Container(
+              padding: EdgeInsets.fromLTRB(24, 16, 24, 16 + bottomPadding),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withValues(alpha: 0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, -5),
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
-              Center(
-                child: TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Already registered? Sign in'),
-                ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    children: [
+                      if (_currentStep > 0)
+                        Expanded(
+                          child: OutlinedButton(
+                            onPressed:
+                                authStore.isLoading ? null : _goToPreviousStep,
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: AppColors.primary,
+                              side: const BorderSide(color: AppColors.primary),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                            ),
+                            child: Text(l10n.back),
+                          ),
+                        ),
+                      if (_currentStep > 0) const SizedBox(width: 12),
+                      Expanded(
+                        child: Observer(
+                          builder: (_) => ElevatedButton(
+                            onPressed: authStore.isLoading ? null : _goToNextStep,
+                            style: ElevatedButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              backgroundColor: AppColors.primary,
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            child: authStore.isLoading
+                                ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                      valueColor:
+                                          AlwaysStoppedAnimation<Color>(Colors.white),
+                                    ),
+                                  )
+                                : Text(
+                                    _currentStep == _totalSteps - 1
+                                        ? l10n.submitApplication
+                                        : l10n.continue_,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: Text(l10n.alreadyRegisteredSignIn),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
-        ),
+        ],
       ),
     );
   }
 
-  Widget _buildStepContent(int step) {
+  Widget _buildStepContent(int step, AppLocalizations l10n) {
     switch (step) {
       case 0:
-        return _buildIdentityStep();
+        return _buildIdentityStep(l10n);
       case 1:
-        return _buildProfessionalStep();
+        return _buildProfessionalStep(l10n);
       case 2:
       default:
-        return _buildSecurityStep();
+        return _buildSecurityStep(l10n);
     }
   }
 
-  Widget _buildIdentityStep() {
+  Widget _buildIdentityStep(AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -305,11 +340,11 @@ class _DoctorRegistrationScreenState extends State<DoctorRegistrationScreen> {
               child: TextFormField(
                 controller: _firstNameController,
                 decoration: _buildInputDecoration(
-                  'First name *',
+                  l10n.firstNameRequired,
                   Icons.person_outline,
                 ),
                 validator: (value) =>
-                    value == null || value.trim().isEmpty ? 'Required' : null,
+                    value == null || value.trim().isEmpty ? l10n.required : null,
               ),
             ),
             const SizedBox(width: 12),
@@ -317,11 +352,11 @@ class _DoctorRegistrationScreenState extends State<DoctorRegistrationScreen> {
               child: TextFormField(
                 controller: _lastNameController,
                 decoration: _buildInputDecoration(
-                  'Last name *',
+                  l10n.lastNameRequired,
                   Icons.person_outline,
                 ),
                 validator: (value) =>
-                    value == null || value.trim().isEmpty ? 'Required' : null,
+                    value == null || value.trim().isEmpty ? l10n.required : null,
               ),
             ),
           ],
@@ -331,15 +366,15 @@ class _DoctorRegistrationScreenState extends State<DoctorRegistrationScreen> {
           controller: _phoneController,
           keyboardType: TextInputType.phone,
           decoration: _buildInputDecoration(
-            'Phone number *',
+            l10n.phoneNumberRequired,
             Icons.phone_outlined,
             hint: '99123456',
           ),
           validator: (value) {
             final v = value?.trim() ?? '';
-            if (v.isEmpty) return 'Required';
+            if (v.isEmpty) return l10n.required;
             if (v.length != 8 || int.tryParse(v) == null) {
-              return 'Enter 8 digit number (e.g. 99123456)';
+              return l10n.enterValidPhoneNumber;
             }
             return null;
           },
@@ -349,7 +384,7 @@ class _DoctorRegistrationScreenState extends State<DoctorRegistrationScreen> {
           controller: _emailController,
           keyboardType: TextInputType.emailAddress,
           decoration: _buildInputDecoration(
-            'Email (optional)',
+            l10n.emailOptional,
             Icons.email_outlined,
           ),
         ),
@@ -357,7 +392,7 @@ class _DoctorRegistrationScreenState extends State<DoctorRegistrationScreen> {
     );
   }
 
-  Widget _buildProfessionalStep() {
+  Widget _buildProfessionalStep(AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -365,27 +400,27 @@ class _DoctorRegistrationScreenState extends State<DoctorRegistrationScreen> {
         TextFormField(
           controller: _professionController,
           decoration: _buildInputDecoration(
-            'Profession *',
+            l10n.professionRequired,
             Icons.medical_services_outlined,
           ),
           validator: (value) =>
-              value == null || value.trim().isEmpty ? 'Required' : null,
+              value == null || value.trim().isEmpty ? l10n.required : null,
         ),
         const SizedBox(height: 14),
         TextFormField(
           controller: _licenseController,
           decoration: _buildInputDecoration(
-            'License number *',
+            l10n.licenseNumberRequired,
             Icons.badge_outlined,
           ),
           validator: (value) =>
-              value == null || value.trim().isEmpty ? 'Required' : null,
+              value == null || value.trim().isEmpty ? l10n.required : null,
         ),
         const SizedBox(height: 14),
         TextFormField(
           controller: _academicDegreeController,
           decoration: _buildInputDecoration(
-            'Academic degree (optional)',
+            l10n.academicDegreeOptional,
             Icons.school_outlined,
           ),
         ),
@@ -394,7 +429,7 @@ class _DoctorRegistrationScreenState extends State<DoctorRegistrationScreen> {
           controller: _experienceController,
           keyboardType: TextInputType.number,
           decoration: _buildInputDecoration(
-            'Years of experience',
+            l10n.yearsOfExperience,
             Icons.timeline_outlined,
           ),
         ),
@@ -403,14 +438,14 @@ class _DoctorRegistrationScreenState extends State<DoctorRegistrationScreen> {
           controller: _developmentController,
           maxLines: 2,
           decoration: _buildInputDecoration(
-            'Professional development (optional)',
+            l10n.professionalDevelopmentOptional,
             Icons.menu_book_outlined,
           ),
         ),
         const SizedBox(height: 16),
-        const Text(
-          'Profile photo (optional)',
-          style: TextStyle(fontWeight: FontWeight.w600),
+        Text(
+          l10n.profilePhotoOptional,
+          style: const TextStyle(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         Row(
@@ -442,8 +477,8 @@ class _DoctorRegistrationScreenState extends State<DoctorRegistrationScreen> {
                 icon: const Icon(Icons.upload),
                 label: Text(
                   _selectedProfilePhoto == null
-                      ? 'Upload profile photo'
-                      : 'Change photo',
+                      ? l10n.uploadProfilePhoto
+                      : l10n.changePhoto,
                 ),
               ),
             ),
@@ -453,7 +488,7 @@ class _DoctorRegistrationScreenState extends State<DoctorRegistrationScreen> {
     );
   }
 
-  Widget _buildSecurityStep() {
+  Widget _buildSecurityStep(AppLocalizations l10n) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -462,7 +497,7 @@ class _DoctorRegistrationScreenState extends State<DoctorRegistrationScreen> {
           controller: _passwordController,
           obscureText: _obscurePassword,
           decoration: _buildInputDecoration(
-            'Password *',
+            l10n.passwordRequired,
             Icons.lock_outline,
           ).copyWith(
             suffixIcon: IconButton(
@@ -479,10 +514,10 @@ class _DoctorRegistrationScreenState extends State<DoctorRegistrationScreen> {
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return 'Required';
+              return l10n.required;
             }
             if (value.length < 6) {
-              return 'Must be at least 6 characters';
+              return l10n.passwordMinLength;
             }
             return null;
           },
@@ -492,7 +527,7 @@ class _DoctorRegistrationScreenState extends State<DoctorRegistrationScreen> {
           controller: _confirmPasswordController,
           obscureText: _obscureConfirmPassword,
           decoration: _buildInputDecoration(
-            'Confirm password *',
+            l10n.confirmPasswordRequired,
             Icons.lock_outline,
           ).copyWith(
             suffixIcon: IconButton(
@@ -510,10 +545,10 @@ class _DoctorRegistrationScreenState extends State<DoctorRegistrationScreen> {
           ),
           validator: (value) {
             if (value == null || value.isEmpty) {
-              return 'Required';
+              return l10n.required;
             }
             if (value != _passwordController.text) {
-              return 'Passwords do not match';
+              return l10n.passwordsMustMatch;
             }
             return null;
           },

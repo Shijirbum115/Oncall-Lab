@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:iconsax/iconsax.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/core/services/supabase_service.dart';
-import 'package:oncall_lab/ui/patient/laboratories_screen.dart';
-import 'package:oncall_lab/l10n/app_localizations.dart';
-import 'package:oncall_lab/ui/shared/widgets/app_card.dart';
-import 'package:oncall_lab/ui/design_system/widgets/app_text_field.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
+import 'package:bugamed/ui/design_system/widgets/app_text_field.dart';
+import 'package:bugamed/ui/patient/laboratories_screen.dart';
+import 'package:bugamed/ui/patient/widgets/service_category_grid.dart';
+import 'package:bugamed/ui/shared/widgets/mascot_state_widget.dart';
+import 'package:bugamed/ui/shared/widgets/skeleton_loader.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AllLabServicesScreen extends StatefulWidget {
   const AllLabServicesScreen({super.key});
@@ -19,13 +22,12 @@ class _AllLabServicesScreenState extends State<AllLabServicesScreen> {
   List<Map<String, dynamic>> filteredServices = [];
   bool isLoading = true;
   String? errorMessage;
-  final TextEditingController _searchController = TextEditingController();
+  final _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _loadServices();
-    _searchController.addListener(_filterServices);
   }
 
   @override
@@ -35,70 +37,100 @@ class _AllLabServicesScreenState extends State<AllLabServicesScreen> {
   }
 
   Future<void> _loadServices() async {
+    if (!mounted) return;
     setState(() {
       isLoading = true;
       errorMessage = null;
     });
 
     try {
-      // Load all lab test services
-      final servicesData = await supabase
+      final response = await Supabase.instance.client
           .from('services')
           .select('''
-            *,
-            service_categories(*)
+            id,
+            name,
+            name_mn,
+            description,
+            description_mn,
+            sample_type,
+            preparation_instructions,
+            preparation_instructions_mn,
+            service_categories!inner(
+              id,
+              name,
+              name_mn,
+              type,
+              icon
+            )
           ''')
           .eq('service_categories.type', 'lab_test')
           .eq('is_active', true)
           .order('name');
 
+      if (!mounted) return;
+
+      final services = (response as List).map((item) {
+        final category = item['service_categories'] as Map<String, dynamic>;
+        return {
+          'service_id': item['id'],
+          'service_name': item['name'],
+          'service_name_mn': item['name_mn'],
+          'description': item['description'],
+          'description_mn': item['description_mn'],
+          'sample_type': item['sample_type'],
+          'preparation_instructions': item['preparation_instructions'],
+          'preparation_instructions_mn': item['preparation_instructions_mn'],
+          'category_name': category['name'],
+          'category_name_mn': category['name_mn'],
+          'category_type': category['type'],
+          'category_icon': category['icon'],
+        };
+      }).toList();
+
       setState(() {
-        allServices = List<Map<String, dynamic>>.from(servicesData);
-        filteredServices = List<Map<String, dynamic>>.from(servicesData);
+        allServices = services;
+        filteredServices = services;
         isLoading = false;
       });
     } catch (e) {
-      debugPrint('Error loading services: $e');
+      if (!mounted) return;
       setState(() {
-        errorMessage = e.toString();
         isLoading = false;
+        errorMessage = e.toString();
       });
     }
   }
 
-  String _getLocalizedServiceName(Map<String, dynamic> service) {
-    final l10n = AppLocalizations.of(context)!;
-    if (l10n.localeName == 'mn' && service['name_mn'] != null) {
-      return service['name_mn'];
+  void _filterServices(String query) {
+    if (query.isEmpty) {
+      setState(() => filteredServices = allServices);
+      return;
     }
-    return service['name'];
-  }
-
-  void _filterServices() {
-    final query = _searchController.text.toLowerCase();
-
+    final lower = query.toLowerCase();
     setState(() {
-      if (query.isEmpty) {
-        filteredServices = List<Map<String, dynamic>>.from(allServices);
-      } else {
-        filteredServices = allServices.where((service) {
-          final name = (service['name'] as String).toLowerCase();
-          final nameMn = (service['name_mn'] as String?)?.toLowerCase() ?? '';
-          final description =
-              (service['description'] as String?)?.toLowerCase() ?? '';
-          return name.contains(query) || nameMn.contains(query) || description.contains(query);
-        }).toList();
-      }
+      filteredServices = allServices.where((s) {
+        final name = (s['service_name'] as String?)?.toLowerCase() ?? '';
+        final nameMn = (s['service_name_mn'] as String?)?.toLowerCase() ?? '';
+        final desc = (s['description'] as String?)?.toLowerCase() ?? '';
+        return name.contains(lower) ||
+            nameMn.contains(lower) ||
+            desc.contains(lower);
+      }).toList();
     });
   }
 
   void _navigateToLaboratories(Map<String, dynamic> service) {
+    final l10n = AppLocalizations.of(context)!;
+    final serviceName = l10n.localeName == 'mn'
+        ? (service['service_name_mn'] ?? service['service_name'])
+        : service['service_name'];
+
     Navigator.push(
       context,
-      MaterialPageRoute(
+      CupertinoPageRoute(
         builder: (_) => LaboratoriesScreen(
-          preSelectedServiceId: service['id'],
-          serviceName: _getLocalizedServiceName(service),
+          preSelectedServiceId: service['service_id'],
+          serviceName: serviceName,
         ),
       ),
     );
@@ -109,301 +141,74 @@ class _AllLabServicesScreenState extends State<AllLabServicesScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.scaffoldBackground,
       appBar: AppBar(
-        title: Text(l10n.laboratoryTestsTitle),
-        backgroundColor: Colors.white,
+        title: Text(l10n.labServices),
+        backgroundColor: AppColors.scaffoldBackground,
         elevation: 0,
       ),
-      body: Column(
-        children: [
-          // Search Bar
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: AppSearchField(
-              controller: _searchController,
-              hint: l10n.searchTests,
-              prefixIcon: Iconsax.search_normal,
-              onChanged: (_) => _filterServices(),
-              onClear: () {
-                _searchController.clear();
-                _filterServices();
-              },
-            ),
-          ),
-
-          // Results Count
-          if (!isLoading && filteredServices.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: Text(
-                  filteredServices.length == 1
-                      ? l10n.singleTestAvailable
-                      : l10n.testsAvailable(filteredServices.length),
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.grey,
-                    fontWeight: FontWeight.w500,
+      body: isLoading
+          ? const SkeletonServiceGrid(itemCount: 9)
+          : errorMessage != null
+              ? Center(
+                  child: MascotStateWidget(
+                    emotion: MascotEmotion.error,
+                    title: l10n.errorLoadingServices,
+                    subtitle: errorMessage ?? '',
+                    actionText: l10n.retry,
+                    onAction: _loadServices,
                   ),
-                ),
-              ),
-            ),
-
-          const SizedBox(height: 16),
-
-          // Services List
-          Expanded(
-            child: _buildContent(l10n),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildContent(AppLocalizations l10n) {
-    if (isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(color: AppColors.primary),
-      );
-    }
-
-    if (errorMessage != null) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.error_outline,
-                size: 60,
-                color: AppColors.error,
-              ),
-              const SizedBox(height: 20),
-              Text(
-                l10n.errorLoadingServices,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                errorMessage!,
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: AppColors.grey),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _loadServices,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                ),
-                child: Text(l10n.retry),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    if (filteredServices.isEmpty) {
-      return Center(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'assets/images/mascot/deer_searching.jpeg',
-                height: 180,
-              ),
-              const SizedBox(height: 20),
-              Text(
-                _searchController.text.isEmpty
-                    ? l10n.noServicesAvailable
-                    : l10n.noResultsFound,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.black,
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                _searchController.text.isEmpty
-                    ? l10n.pleaseTryAgainLater
-                    : l10n.tryDifferentKeywords,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: AppColors.grey,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
-    return RefreshIndicator(
-      onRefresh: _loadServices,
-      child: ListView.builder(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.symmetric(horizontal: 16),
-        itemCount: filteredServices.length,
-        itemBuilder: (context, index) {
-          final service = filteredServices[index];
-          return _ServiceCard(
-            service: service,
-            l10n: l10n,
-            onTap: () => _navigateToLaboratories(service),
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _ServiceCard extends StatelessWidget {
-  final Map<String, dynamic> service;
-  final VoidCallback onTap;
-  final AppLocalizations l10n;
-
-  const _ServiceCard({
-    required this.service,
-    required this.onTap,
-    required this.l10n,
-  });
-
-  String _getLocalizedServiceName() {
-    if (l10n.localeName == 'mn' && service['name_mn'] != null) {
-      return service['name_mn'];
-    }
-    return service['name'];
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final sampleType = service['sample_type'] as String?;
-    final preparationInstructions = service['preparation_instructions'] as String?;
-
-    return AppCard(
-      margin: const EdgeInsets.only(bottom: 12),
-      borderRadius: 18,
-      borderColor: AppColors.grey.withValues(alpha: 0.16),
-      showShadow: false,
-      onTap: onTap,
-      child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                children: [
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: const Icon(
-                      Iconsax.health,
-                      color: AppColors.primary,
-                      size: 24,
-                    ),
+                )
+              : CustomScrollView(
+                  physics: const BouncingScrollPhysics(
+                    parent: AlwaysScrollableScrollPhysics(),
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          _getLocalizedServiceName(),
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: AppColors.black,
-                          ),
+                  slivers: [
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 8, 20, 4),
+                        child: AppSearchField(
+                          controller: _searchController,
+                          hint: l10n.searchServices,
+                          onChanged: _filterServices,
+                          onClear: () {
+                            _searchController.clear();
+                            _filterServices('');
+                          },
                         ),
-                        if (sampleType != null) ...[
-                          const SizedBox(height: 4),
-                          Row(
-                            children: [
-                              Icon(
-                                Iconsax.drop,
-                                size: 14,
-                                color: AppColors.grey.withValues(alpha: 0.7),
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                sampleType.toUpperCase(),
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: AppColors.grey.withValues(alpha: 0.7),
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  const Icon(
-                    Icons.chevron_right,
-                    color: AppColors.grey,
-                  ),
-                ],
-              ),
-              if (service['description'] != null) ...[
-                const SizedBox(height: 12),
-                Text(
-                  service['description'],
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.grey,
-                    height: 1.4,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-              if (preparationInstructions != null) ...[
-                const SizedBox(height: 12),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: AppColors.warning.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(
-                      color: AppColors.warning.withValues(alpha: 0.3),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        Icons.info_outline,
-                        size: 16,
-                        color: AppColors.warning.withValues(alpha: 0.8),
                       ),
-                      const SizedBox(width: 8),
-                      Expanded(
+                    ),
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
                         child: Text(
-                          l10n.preparationRequired,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.warning,
+                          '${filteredServices.length} ${l10n.services.toLowerCase()}',
+                          style: AppTypography.bodySmall.copyWith(
+                            color: AppColors.textSecondary,
                           ),
                         ),
                       ),
-                    ],
-                  ),
+                    ),
+                    if (filteredServices.isEmpty && !isLoading)
+                      SliverFillRemaining(
+                        child: Center(
+                          child: MascotStateWidget(
+                            emotion: MascotEmotion.searching,
+                            title: l10n.noServicesMatchSearch,
+                            subtitle: l10n.tryDifferentKeywords,
+                          ),
+                        ),
+                      )
+                    else
+                      ServiceCategoryGrid(
+                        services: filteredServices,
+                        onServiceTap: _navigateToLaboratories,
+                      ),
+                    const SliverToBoxAdapter(
+                      child: SizedBox(height: 40),
+                    ),
+                  ],
                 ),
-              ],
-            ],
-          ),
     );
   }
 }

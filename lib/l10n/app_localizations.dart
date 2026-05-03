@@ -2089,6 +2089,660 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Login'**
   String get login;
+
+  /// No description provided for @healthcareAtYourDoorstep.
+  ///
+  /// In en, this message translates to:
+  /// **'Healthcare at your doorstep'**
+  String get healthcareAtYourDoorstep;
+
+  /// No description provided for @appVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'v{version}'**
+  String appVersion(String version);
+
+  /// No description provided for @joinAsDoctorLabTech.
+  ///
+  /// In en, this message translates to:
+  /// **'Join as Doctor / Lab Technician'**
+  String get joinAsDoctorLabTech;
+
+  /// No description provided for @provideAccurateDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Provide accurate details to pass verification.'**
+  String get provideAccurateDetails;
+
+  /// No description provided for @profileStep.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profileStep;
+
+  /// No description provided for @professionalStep.
+  ///
+  /// In en, this message translates to:
+  /// **'Professional'**
+  String get professionalStep;
+
+  /// No description provided for @securityStep.
+  ///
+  /// In en, this message translates to:
+  /// **'Security'**
+  String get securityStep;
+
+  /// No description provided for @submitApplication.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Application'**
+  String get submitApplication;
+
+  /// No description provided for @doctorApplicationSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Doctor application submitted! We will verify your credentials soon.'**
+  String get doctorApplicationSubmitted;
+
+  /// No description provided for @firstNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'First name *'**
+  String get firstNameRequired;
+
+  /// No description provided for @lastNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Last name *'**
+  String get lastNameRequired;
+
+  /// No description provided for @phoneNumberRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number *'**
+  String get phoneNumberRequired;
+
+  /// No description provided for @professionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Profession *'**
+  String get professionRequired;
+
+  /// No description provided for @licenseNumberRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'License number *'**
+  String get licenseNumberRequired;
+
+  /// No description provided for @academicDegreeOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Academic degree (optional)'**
+  String get academicDegreeOptional;
+
+  /// No description provided for @yearsOfExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'Years of experience'**
+  String get yearsOfExperience;
+
+  /// No description provided for @professionalDevelopmentOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Professional development (optional)'**
+  String get professionalDevelopmentOptional;
+
+  /// No description provided for @passwordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Password *'**
+  String get passwordRequired;
+
+  /// No description provided for @confirmPasswordRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm password *'**
+  String get confirmPasswordRequired;
+
+  /// No description provided for @alreadyRegisteredSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Already registered? Sign in'**
+  String get alreadyRegisteredSignIn;
+
+  /// No description provided for @myDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'My Dashboard'**
+  String get myDashboard;
+
+  /// No description provided for @availableTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get availableTab;
+
+  /// No description provided for @myRequestsTab.
+  ///
+  /// In en, this message translates to:
+  /// **'My Requests'**
+  String get myRequestsTab;
+
+  /// No description provided for @completedTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get completedTab;
+
+  /// No description provided for @noAvailableRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'No available requests'**
+  String get noAvailableRequests;
+
+  /// No description provided for @newRequestsWillAppear.
+  ///
+  /// In en, this message translates to:
+  /// **'New requests will appear here'**
+  String get newRequestsWillAppear;
+
+  /// No description provided for @acceptRequestToStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept a request to get started'**
+  String get acceptRequestToStart;
+
+  /// No description provided for @completedRequestsWillAppear.
+  ///
+  /// In en, this message translates to:
+  /// **'Your completed requests will appear here'**
+  String get completedRequestsWillAppear;
+
+  /// No description provided for @requestAcceptedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Request accepted successfully!'**
+  String get requestAcceptedSuccess;
+
+  /// No description provided for @accept.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get accept;
+
+  /// No description provided for @scheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'Scheduled'**
+  String get scheduled;
+
+  /// No description provided for @priceMnt.
+  ///
+  /// In en, this message translates to:
+  /// **'Price: {price} MNT'**
+  String priceMnt(int price);
+
+  /// No description provided for @statusUpdatedTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Status updated to {status}'**
+  String statusUpdatedTo(String status);
+
+  /// No description provided for @failedToUpdateStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update status'**
+  String get failedToUpdateStatus;
+
+  /// No description provided for @requestCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Request cancelled'**
+  String get requestCancelled;
+
+  /// No description provided for @collectSample.
+  ///
+  /// In en, this message translates to:
+  /// **'Collect Sample'**
+  String get collectSample;
+
+  /// No description provided for @deliverToLab.
+  ///
+  /// In en, this message translates to:
+  /// **'Deliver to Lab'**
+  String get deliverToLab;
+
+  /// No description provided for @completeRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete Request'**
+  String get completeRequest;
+
+  /// No description provided for @requestType.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Type'**
+  String get requestType;
+
+  /// No description provided for @type.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get type;
+
+  /// No description provided for @schedule.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule'**
+  String get schedule;
+
+  /// No description provided for @timeSlot.
+  ///
+  /// In en, this message translates to:
+  /// **'Time Slot'**
+  String get timeSlot;
+
+  /// No description provided for @location.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get location;
+
+  /// No description provided for @provideCancellationReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Please provide a reason for cancellation:'**
+  String get provideCancellationReason;
+
+  /// No description provided for @enterReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter reason...'**
+  String get enterReason;
+
+  /// No description provided for @entrance.
+  ///
+  /// In en, this message translates to:
+  /// **'Entrance'**
+  String get entrance;
+
+  /// No description provided for @floor.
+  ///
+  /// In en, this message translates to:
+  /// **'Floor'**
+  String get floor;
+
+  /// No description provided for @apartment.
+  ///
+  /// In en, this message translates to:
+  /// **'Apartment'**
+  String get apartment;
+
+  /// No description provided for @doorNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Door'**
+  String get doorNumber;
+
+  /// No description provided for @entranceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Entrance: {value}'**
+  String entranceLabel(String value);
+
+  /// No description provided for @floorLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Floor: {value}'**
+  String floorLabel(String value);
+
+  /// No description provided for @apartmentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Apt: {value}'**
+  String apartmentLabel(String value);
+
+  /// No description provided for @doorLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Door: {value}'**
+  String doorLabel(String value);
+
+  /// No description provided for @selectDoctorOrAnyAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a doctor or choose \"Any Available Doctor\"'**
+  String get selectDoctorOrAnyAvailable;
+
+  /// No description provided for @selectLocationOnMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select your location on the map'**
+  String get selectLocationOnMap;
+
+  /// No description provided for @errorLoadingService.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading service'**
+  String get errorLoadingService;
+
+  /// No description provided for @firstAvailableDoctorWillAccept.
+  ///
+  /// In en, this message translates to:
+  /// **'First available doctor will accept your request'**
+  String get firstAvailableDoctorWillAccept;
+
+  /// No description provided for @orChooseSpecificDoctor.
+  ///
+  /// In en, this message translates to:
+  /// **'Or choose a specific doctor:'**
+  String get orChooseSpecificDoctor;
+
+  /// No description provided for @noDoctorsAvailableForService.
+  ///
+  /// In en, this message translates to:
+  /// **'No doctors available for this service'**
+  String get noDoctorsAvailableForService;
+
+  /// No description provided for @tapToOpenMapSelectAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to open map and select your address'**
+  String get tapToOpenMapSelectAddress;
+
+  /// No description provided for @specialInstructionsOrLandmarks.
+  ///
+  /// In en, this message translates to:
+  /// **'Any special instructions or landmarks'**
+  String get specialInstructionsOrLandmarks;
+
+  /// No description provided for @locationPermissionsDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permissions are denied'**
+  String get locationPermissionsDenied;
+
+  /// No description provided for @locationPermissionsPermanentlyDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permissions are permanently denied'**
+  String get locationPermissionsPermanentlyDenied;
+
+  /// No description provided for @failedToGetLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to get current location'**
+  String get failedToGetLocation;
+
+  /// No description provided for @pleaseSelectLocationOnMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select a location on the map'**
+  String get pleaseSelectLocationOnMap;
+
+  /// No description provided for @pleaseEnterAnAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter an address'**
+  String get pleaseEnterAnAddress;
+
+  /// No description provided for @noNotificationsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications yet'**
+  String get noNotificationsYet;
+
+  /// No description provided for @justNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get justNow;
+
+  /// No description provided for @areYouSureLogout.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to logout?'**
+  String get areYouSureLogout;
+
+  /// No description provided for @failedToUpdatePhotoError.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update photo: {error}'**
+  String failedToUpdatePhotoError(String error);
+
+  /// No description provided for @completedVisits.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed visits'**
+  String get completedVisits;
+
+  /// No description provided for @canceledVisits.
+  ///
+  /// In en, this message translates to:
+  /// **'Canceled visits'**
+  String get canceledVisits;
+
+  /// No description provided for @noVisitsScheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'No visits scheduled'**
+  String get noVisitsScheduled;
+
+  /// No description provided for @couldNotOpenMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open map'**
+  String get couldNotOpenMap;
+
+  /// No description provided for @errorOpeningMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Error opening map'**
+  String get errorOpeningMap;
+
+  /// No description provided for @openInMaps.
+  ///
+  /// In en, this message translates to:
+  /// **'Open in Maps'**
+  String get openInMaps;
+
+  /// No description provided for @minutesAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes}m ago'**
+  String minutesAgo(int minutes);
+
+  /// No description provided for @hoursAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours}h ago'**
+  String hoursAgo(int hours);
+
+  /// No description provided for @daysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{days}d ago'**
+  String daysAgo(int days);
+
+  /// No description provided for @notificationsUpdatesHere.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ll see updates about your requests here'**
+  String get notificationsUpdatesHere;
+
+  /// No description provided for @selectLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Location'**
+  String get selectLocation;
+
+  /// No description provided for @addressDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Address Details'**
+  String get addressDetails;
+
+  /// No description provided for @streetAddressRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Street Address *'**
+  String get streetAddressRequired;
+
+  /// No description provided for @streetAddressHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., Baga toiruu 17, Sukhbaatar district'**
+  String get streetAddressHint;
+
+  /// No description provided for @labelOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Label (optional)'**
+  String get labelOptional;
+
+  /// No description provided for @labelHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., Home, Work, Parent\'s House'**
+  String get labelHint;
+
+  /// No description provided for @buildingName.
+  ///
+  /// In en, this message translates to:
+  /// **'Building Name'**
+  String get buildingName;
+
+  /// No description provided for @buildingNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., Skytel Tower'**
+  String get buildingNameHint;
+
+  /// No description provided for @entranceHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., A, B, 1'**
+  String get entranceHint;
+
+  /// No description provided for @apartmentNumberLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Apartment #'**
+  String get apartmentNumberLabel;
+
+  /// No description provided for @apartmentNumberHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., 512'**
+  String get apartmentNumberHint;
+
+  /// No description provided for @doorNumberHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., A'**
+  String get doorNumberHint;
+
+  /// No description provided for @phone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get phone;
+
+  /// No description provided for @professionalDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Professional Details'**
+  String get professionalDetails;
+
+  /// No description provided for @logout.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get logout;
+
+  /// No description provided for @patientLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient Location'**
+  String get patientLocation;
+
+  /// No description provided for @viewFullMap.
+  ///
+  /// In en, this message translates to:
+  /// **'View Full Map'**
+  String get viewFullMap;
+
+  /// No description provided for @getDirections.
+  ///
+  /// In en, this message translates to:
+  /// **'Get Directions'**
+  String get getDirections;
+
+  /// No description provided for @defaultDoctorBio.
+  ///
+  /// In en, this message translates to:
+  /// **'An experienced healthcare specialist dedicated to providing quality care.'**
+  String get defaultDoctorBio;
+
+  /// No description provided for @defaultLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Ulaanbaatar, Mongolia'**
+  String get defaultLocation;
+
+  /// No description provided for @durationMinutesShort.
+  ///
+  /// In en, this message translates to:
+  /// **'~{minutes} minutes'**
+  String durationMinutesShort(int minutes);
+
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
+
+  /// No description provided for @description.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get description;
+
+  /// No description provided for @selectLaboratory.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Laboratory'**
+  String get selectLaboratory;
+
+  /// No description provided for @tapForDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap for details'**
+  String get tapForDetails;
+
+  /// No description provided for @prep.
+  ///
+  /// In en, this message translates to:
+  /// **'Prep'**
+  String get prep;
+
+  /// No description provided for @searchHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Search services, laboratories...'**
+  String get searchHome;
+
+  /// No description provided for @popularServices.
+  ///
+  /// In en, this message translates to:
+  /// **'Popular Services'**
+  String get popularServices;
+
+  /// No description provided for @allCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'All Categories'**
+  String get allCategories;
 }
 
 class _AppLocalizationsDelegate

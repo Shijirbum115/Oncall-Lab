@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
 
 class AppTheme {
   static ThemeData light() {
@@ -76,8 +76,38 @@ class AppTypography {
     color: AppColors.black,
   );
 
+  static const TextStyle sectionHeader = TextStyle(
+    fontSize: 22,
+    fontWeight: FontWeight.w600,
+    color: AppColors.black,
+    letterSpacing: -0.5,
+  );
+
   static const TextStyle bodyMedium = TextStyle(
     fontSize: 14,
+    color: AppColors.textSecondary,
+  );
+
+  static const TextStyle bodySmall = TextStyle(
+    fontSize: 12,
+    color: AppColors.textSecondary,
+  );
+
+  static const TextStyle labelSmall = TextStyle(
+    fontSize: 10,
+    color: AppColors.grey,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const TextStyle heading = TextStyle(
+    fontSize: 28,
+    fontWeight: FontWeight.w700,
+    color: AppColors.black,
+  );
+
+  static const TextStyle caption = TextStyle(
+    fontSize: 13,
+    fontWeight: FontWeight.w500,
     color: AppColors.textSecondary,
   );
 }
@@ -88,4 +118,23 @@ class AppSpacing {
   static const double md = 16;
   static const double lg = 24;
   static const double xl = 32;
+  static const double xxl = 40;
+  static const double xxxl = 60;
+}
+
+class AppRadius {
+  AppRadius._();
+  static const double xs = 8;
+  static const double sm = 12;
+  static const double md = 16;
+  static const double lg = 20;
+  static const double xl = 24;
+  static const double pill = 100;
+}
+
+class AppPadding {
+  AppPadding._();
+  static const double screen = 20;
+  static const EdgeInsets screenH = EdgeInsets.symmetric(horizontal: 20);
+  static const EdgeInsets screenAll = EdgeInsets.all(20);
 }

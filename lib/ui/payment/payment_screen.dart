@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/core/utils/auth_context.dart';
-import 'package:oncall_lab/l10n/app_localizations.dart';
-import 'package:oncall_lab/stores/auth_store.dart';
-import 'package:oncall_lab/ui/payment/payment_method_screen.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/core/utils/auth_context.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
+import 'package:bugamed/stores/auth_store.dart';
+import 'package:bugamed/ui/payment/payment_method_screen.dart';
 
 class PaymentScreen extends StatefulWidget {
   final int amountMnt;
@@ -89,6 +89,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
     if (!authStore.isAuthenticated) {
       await _showLoginRequiredDialog();
       
+      if (!mounted) return;
+
       if (!authStore.isAuthenticated) {
         return; // User cancelled login
       }
@@ -126,7 +128,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
       ),
     );
 
-    setState(() => isProcessing = false);
+    if (mounted) {
+      setState(() => isProcessing = false);
+    }
   }
 
   @override
@@ -293,7 +297,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                           const SizedBox(width: 12),
                           Expanded(
                             child: Text(
-                              'QPay-ээр төлбөр төлөх боломжтой. QR код эсвэл банкны апп ашиглан төлбөрөө хийнэ үү.',
+                              'Одоогоор дансаар шилжүүлгийн төлбөрийн горим ажиллаж байна. Доорх алхмаар шилжүүлгээ хийнэ үү.',
                               style: const TextStyle(
                                 fontSize: 14,
                                 color: AppColors.textSecondary,

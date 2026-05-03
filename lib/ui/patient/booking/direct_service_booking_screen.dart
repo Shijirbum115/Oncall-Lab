@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/core/utils/avatar_helper.dart';
-import 'package:oncall_lab/data/models/service_model.dart';
-import 'package:oncall_lab/stores/auth_store.dart';
-import 'package:oncall_lab/stores/service_store.dart';
-import 'package:oncall_lab/ui/patient/location/location_picker_screen.dart';
-import 'package:oncall_lab/ui/design_system/widgets/app_text_field.dart';
-import 'package:oncall_lab/ui/shared/widgets/app_card.dart';
-import 'package:oncall_lab/ui/payment/payment_screen.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/core/utils/avatar_helper.dart';
+import 'package:bugamed/data/models/service_model.dart';
+import 'package:bugamed/stores/auth_store.dart';
+import 'package:bugamed/stores/service_store.dart';
+import 'package:bugamed/ui/patient/location/location_picker_screen.dart';
+import 'package:bugamed/ui/design_system/widgets/app_text_field.dart';
+import 'package:bugamed/ui/shared/widgets/app_card.dart';
+import 'package:bugamed/ui/payment/payment_screen.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
 
 class DirectServiceBookingScreen extends StatefulWidget {
   final String serviceId;
@@ -106,6 +107,8 @@ class _DirectServiceBookingScreenState
     );
 
     if (result != null) {
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
       setState(() {
         selectedLocation = result;
         useSavedAddress = false;
@@ -117,16 +120,16 @@ class _DirectServiceBookingScreenState
           parts.add(result['building_name']);
         }
         if (result['entrance']?.isNotEmpty == true) {
-          parts.add('Entrance: ${result['entrance']}');
+          parts.add(l10n.entranceLabel(result['entrance']));
         }
         if (result['floor']?.isNotEmpty == true) {
-          parts.add('Floor: ${result['floor']}');
+          parts.add(l10n.floorLabel(result['floor']));
         }
         if (result['apartment_number']?.isNotEmpty == true) {
-          parts.add('Apt: ${result['apartment_number']}');
+          parts.add(l10n.apartmentLabel(result['apartment_number']));
         }
         if (result['door_number']?.isNotEmpty == true) {
-          parts.add('Door: ${result['door_number']}');
+          parts.add(l10n.doorLabel(result['door_number']));
         }
 
         _addressController.text = parts.join(', ');
@@ -163,12 +166,14 @@ class _DirectServiceBookingScreenState
   }
 
   Future<void> _submitBooking() async {
+    final l10n = AppLocalizations.of(context)!;
+
     if (!_formKey.currentState!.validate()) return;
 
     if (!anyDoctor && selectedDoctor == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select a doctor or choose "Any Available Doctor"'),
+        SnackBar(
+          content: Text(l10n.selectDoctorOrAnyAvailable),
           backgroundColor: AppColors.warning,
         ),
       );
@@ -178,8 +183,8 @@ class _DirectServiceBookingScreenState
     // Validate location is selected
     if (selectedLocation == null && _addressController.text.trim().isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select your location on the map'),
+        SnackBar(
+          content: Text(l10n.selectLocationOnMap),
           backgroundColor: AppColors.error,
         ),
       );
@@ -232,20 +237,20 @@ class _DirectServiceBookingScreenState
             : _notesController.text.trim(),
       };
 
-      if (mounted) {
-        // Navigate to payment screen
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PaymentScreen(
-              amountMnt: priceMnt,
-              serviceName: widget.serviceName,
-              laboratoryName: null,
-              bookingData: bookingData,
-            ),
+      if (!mounted) return;
+
+      // Navigate to payment screen
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => PaymentScreen(
+            amountMnt: priceMnt,
+            serviceName: widget.serviceName,
+            laboratoryName: null,
+            bookingData: bookingData,
           ),
-        );
-      }
+        ),
+      );
     } finally {
       if (mounted) {
         setState(() => isSubmitting = false);
@@ -255,10 +260,12 @@ class _DirectServiceBookingScreenState
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Book Service'),
+        title: Text(l10n.bookService),
         backgroundColor: Colors.white,
         elevation: 0,
       ),
@@ -294,6 +301,8 @@ class _DirectServiceBookingScreenState
   }
 
   Widget _buildError() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(20),
@@ -302,9 +311,9 @@ class _DirectServiceBookingScreenState
           children: [
             const Icon(Icons.error_outline, size: 60, color: AppColors.error),
             const SizedBox(height: 16),
-            const Text(
-              'Error loading service',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            Text(
+              l10n.errorLoadingService,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
@@ -315,7 +324,7 @@ class _DirectServiceBookingScreenState
             const SizedBox(height: 16),
             ElevatedButton(
               onPressed: _loadData,
-              child: const Text('Retry'),
+              child: Text(l10n.retry),
             ),
           ],
         ),
@@ -360,7 +369,7 @@ class _DirectServiceBookingScreenState
                 const Icon(Icons.access_time, size: 16, color: AppColors.grey),
                 const SizedBox(width: 4),
                 Text(
-                  '~${serviceDetails!.estimatedDurationMinutes} minutes',
+                  AppLocalizations.of(context)!.durationMinutesShort(serviceDetails!.estimatedDurationMinutes!),
                   style: const TextStyle(
                     fontSize: 13,
                     color: AppColors.grey,
@@ -375,6 +384,8 @@ class _DirectServiceBookingScreenState
   }
 
   Widget _buildPreparationInstructions() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       children: [
         Container(
@@ -388,13 +399,13 @@ class _DirectServiceBookingScreenState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Row(
+              Row(
                 children: [
-                  Icon(Icons.info_outline, color: AppColors.warning, size: 20),
-                  SizedBox(width: 8),
+                  const Icon(Icons.info_outline, color: AppColors.warning, size: 20),
+                  const SizedBox(width: 8),
                   Text(
-                    'Preparation Required',
-                    style: TextStyle(
+                    l10n.preparationRequired,
+                    style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: AppColors.warning,
@@ -420,12 +431,14 @@ class _DirectServiceBookingScreenState
   }
 
   Widget _buildDoctorSelection() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Select Doctor',
-          style: TextStyle(
+        Text(
+          l10n.selectDoctor,
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
             color: AppColors.black,
@@ -465,21 +478,21 @@ class _DirectServiceBookingScreenState
                   color: anyDoctor ? AppColors.primary : AppColors.grey,
                 ),
                 const SizedBox(width: 12),
-                const Expanded(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Any Available Doctor',
-                        style: TextStyle(
+                        l10n.anyAvailableDoctor,
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      SizedBox(height: 4),
+                      const SizedBox(height: 4),
                       Text(
-                        'First available doctor will accept your request',
-                        style: TextStyle(
+                        l10n.firstAvailableDoctorWillAccept,
+                        style: const TextStyle(
                           fontSize: 13,
                           color: AppColors.grey,
                         ),
@@ -494,9 +507,9 @@ class _DirectServiceBookingScreenState
 
         if (!anyDoctor) ...[
           const SizedBox(height: 16),
-          const Text(
-            'Or choose a specific doctor:',
-            style: TextStyle(
+          Text(
+            l10n.orChooseSpecificDoctor,
+            style: const TextStyle(
               fontSize: 14,
               color: AppColors.grey,
               fontWeight: FontWeight.w600,
@@ -518,10 +531,10 @@ class _DirectServiceBookingScreenState
                 color: AppColors.grey.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: const Center(
+              child: Center(
                 child: Text(
-                  'No doctors available for this service',
-                  style: TextStyle(color: AppColors.grey),
+                  l10n.noDoctorsAvailableForService,
+                  style: const TextStyle(color: AppColors.grey),
                 ),
               ),
             )
@@ -542,12 +555,14 @@ class _DirectServiceBookingScreenState
   }
 
   Widget _buildDateSelection() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Select Date',
-          style: TextStyle(
+        Text(
+          l10n.selectDate,
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
             color: AppColors.black,
@@ -595,12 +610,14 @@ class _DirectServiceBookingScreenState
   }
 
   Widget _buildTimeSlotSelection() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Select Time Slot',
-          style: TextStyle(
+        Text(
+          l10n.selectTimeSlot,
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
             color: AppColors.black,
@@ -646,12 +663,14 @@ class _DirectServiceBookingScreenState
   }
 
   Widget _buildAddressField() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Your Address',
-          style: TextStyle(
+        Text(
+          l10n.yourAddress,
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
             color: AppColors.black,
@@ -683,7 +702,7 @@ class _DirectServiceBookingScreenState
                 child: Text(
                   selectedLocation != null
                       ? _addressController.text
-                      : 'Select your location on the map',
+                      : l10n.selectLocationOnMap,
                   style: TextStyle(
                     fontSize: 14,
                     color: selectedLocation != null
@@ -709,7 +728,7 @@ class _DirectServiceBookingScreenState
           Padding(
             padding: const EdgeInsets.only(top: 8, left: 12),
             child: Text(
-              'Tap to open map and select your address',
+              l10n.tapToOpenMapSelectAddress,
               style: TextStyle(
                 fontSize: 12,
                 color: AppColors.grey.withValues(alpha: 0.8),
@@ -721,12 +740,14 @@ class _DirectServiceBookingScreenState
   }
 
   Widget _buildNotesField() {
+    final l10n = AppLocalizations.of(context)!;
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Additional Notes (Optional)',
-          style: TextStyle(
+        Text(
+          l10n.additionalNotesOptional,
+          style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.bold,
             color: AppColors.black,
@@ -736,13 +757,15 @@ class _DirectServiceBookingScreenState
         AppTextField(
           controller: _notesController,
           maxLines: 3,
-          hint: 'Any special instructions...',
+          hint: l10n.specialInstructionsHint,
         ),
       ],
     );
   }
 
   Widget _buildSubmitButton() {
+    final l10n = AppLocalizations.of(context)!;
+
     return SizedBox(
       height: 56,
       child: ElevatedButton(
@@ -763,9 +786,9 @@ class _DirectServiceBookingScreenState
                   valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                 ),
               )
-            : const Text(
-                'Confirm Booking',
-                style: TextStyle(
+            : Text(
+                l10n.confirmBooking,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),

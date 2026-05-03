@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:oncall_lab/core/services/supabase_service.dart';
+import 'package:bugamed/core/services/supabase_service.dart';
 
 class StorageService {
   static final ImagePicker _picker = ImagePicker();

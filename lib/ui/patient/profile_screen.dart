@@ -2,17 +2,17 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/core/services/storage_service.dart';
-import 'package:oncall_lab/core/services/supabase_service.dart';
-import 'package:oncall_lab/data/models/profile_model.dart';
-import 'package:oncall_lab/stores/auth_store.dart';
-import 'package:oncall_lab/ui/shared/widgets/profile_avatar.dart';
-import 'package:oncall_lab/l10n/app_localizations.dart';
-import 'package:oncall_lab/ui/design_system/widgets/app_text_field.dart';
-import 'package:oncall_lab/ui/shared/widgets/language_switcher.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/core/services/storage_service.dart';
+import 'package:bugamed/core/services/supabase_service.dart';
+import 'package:bugamed/data/models/profile_model.dart';
+import 'package:bugamed/stores/auth_store.dart';
+import 'package:bugamed/ui/shared/widgets/profile_avatar.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
+import 'package:bugamed/ui/design_system/widgets/app_text_field.dart';
+import 'package:bugamed/ui/shared/widgets/language_switcher.dart';
 
-import 'package:oncall_lab/core/utils/notification_helper.dart'; // Import NotificationHelper
+import 'package:bugamed/core/utils/notification_helper.dart'; // Import NotificationHelper
 
 class PatientProfileScreen extends StatelessWidget {
   const PatientProfileScreen({super.key});
@@ -22,331 +22,342 @@ class PatientProfileScreen extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.all(15),
-        child: Observer(
-          builder: (_) {
-            final profile = authStore.currentProfile;
-            return Column(
-              children: [
-                const SizedBox(height: 20),
-                GestureDetector(
-                  onTap: () async {
-                    final user = authStore.currentUser;
-                    if (user == null) return;
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            padding: const EdgeInsets.all(15),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minHeight: constraints.maxHeight - 30, // Subtract vertical padding
+              ),
+              child: IntrinsicHeight(
+                child: Observer(
+                  builder: (_) {
+                    final profile = authStore.currentProfile;
+                    return Column(
+                      children: [
+                        const SizedBox(height: 20),
+                        GestureDetector(
+                          onTap: () async {
+                            final user = authStore.currentUser;
+                            if (user == null) return;
 
-                    final change = await showDialog<bool>(
-                      context: context,
-                      builder: (ctx) {
-                        final dialogL10n = AppLocalizations.of(ctx)!;
-                        return AlertDialog(
-                          title: Text(dialogL10n.changeProfilePhoto),
-                          content: Text(dialogL10n.changeProfilePhotoConfirm),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.of(ctx).pop(false),
-                              child: Text(dialogL10n.cancel),
-                            ),
-                            ElevatedButton(
-                              onPressed: () => Navigator.of(ctx).pop(true),
-                              child: Text(dialogL10n.change),
-                            ),
-                          ],
-                        );
-                      },
-                    );
+                            final change = await showDialog<bool>(
+                              context: context,
+                              builder: (ctx) {
+                                final dialogL10n = AppLocalizations.of(ctx)!;
+                                return AlertDialog(
+                                  title: Text(dialogL10n.changeProfilePhoto),
+                                  content: Text(dialogL10n.changeProfilePhotoConfirm),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.of(ctx).pop(false),
+                                      child: Text(dialogL10n.cancel),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () => Navigator.of(ctx).pop(true),
+                                      child: Text(dialogL10n.change),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
 
-                    if (change != true || !context.mounted) return;
+                            if (change != true || !context.mounted) return;
 
-                    final File? file = await StorageService.pickImage();
-                    if (file == null || !context.mounted) return;
+                            final File? file = await StorageService.pickImage();
+                            if (file == null || !context.mounted) return;
 
-                    final confirm = await showDialog<bool>(
-                      context: context,
-                      builder: (ctx) {
-                        final dialogL10n = AppLocalizations.of(ctx)!;
-                        return AlertDialog(
-                          title: Text(dialogL10n.useThisPhoto),
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
+                            final confirm = await showDialog<bool>(
+                              context: context,
+                              builder: (ctx) {
+                                final dialogL10n = AppLocalizations.of(ctx)!;
+                                return AlertDialog(
+                                  title: Text(dialogL10n.useThisPhoto),
+                                  content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 40,
+                                        backgroundImage: FileImage(file),
+                                      ),
+                                      const SizedBox(height: 12),
+                                      Text(
+                                        dialogL10n.profilePhotoPreview,
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ],
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.of(ctx).pop(false),
+                                      child: Text(dialogL10n.cancel),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () => Navigator.of(ctx).pop(true),
+                                      child: Text(dialogL10n.save),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+
+                            if (confirm != true || !context.mounted) return;
+
+                            try {
+                              final url = await StorageService.uploadProfilePhoto(
+                                userId: user.id,
+                                file: file,
+                              );
+
+                              if (url == null) {
+                                throw Exception('Failed to upload photo');
+                              }
+
+                              final cacheBustedUrl =
+                                  '$url?t=${DateTime.now().millisecondsSinceEpoch}';
+
+                              await supabase
+                                  .from('profiles')
+                                  .update({
+                                    'avatar_url': cacheBustedUrl,
+                                    'updated_at': DateTime.now().toIso8601String(),
+                                  })
+                                  .eq('id', user.id);
+
+                              await authStore.loadCurrentProfile();
+
+                              if (context.mounted) {
+                                NotificationHelper.showSuccess(context, l10n.profilePhotoUpdated);
+                              }
+                            } catch (e) {
+                              if (context.mounted) {
+                                NotificationHelper.showError(context, '${l10n.failedToUpdatePhoto}: $e');
+                              }
+                            }
+                          },
+                          child: Stack(
+                            alignment: Alignment.bottomRight,
                             children: [
-                              CircleAvatar(
-                                radius: 40,
-                                backgroundImage: FileImage(file),
+                              ProfileAvatar(
+                                avatarUrl: profile?.getAvatarUrl(),
+                                initials: profile?.initials ?? 'U',
+                                radius: 50,
                               ),
-                              const SizedBox(height: 12),
-                              Text(
-                                dialogL10n.profilePhotoPreview,
-                                textAlign: TextAlign.center,
+                              Container(
+                                padding: const EdgeInsets.all(6),
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.camera_alt,
+                                  size: 18,
+                                  color: AppColors.primary,
+                                ),
                               ),
                             ],
                           ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.of(ctx).pop(false),
-                              child: Text(dialogL10n.cancel),
+                        ),
+                        const SizedBox(height: 20),
+                        Text(
+                          profile?.displayName ?? l10n.user,
+                          style: const TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          profile?.phoneNumber ?? profile?.email ?? l10n.noPhoneNumber,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: AppColors.grey,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: AppColors.primary.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Text(
+                            l10n.patient,
+                            style: const TextStyle(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.bold,
                             ),
-                            ElevatedButton(
-                              onPressed: () => Navigator.of(ctx).pop(true),
-                              child: Text(dialogL10n.save),
+                          ),
+                        ),
+                        const SizedBox(height: 40),
+                        _buildProfileOption(
+                          icon: Icons.person_outline,
+                          title: l10n.editProfile,
+                          onTap: () {
+                            final userProfile = authStore.currentProfile;
+                            if (userProfile != null) {
+                              showModalBottomSheet(
+                                context: context,
+                                isScrollControlled: true,
+                                backgroundColor: Colors.white,
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.vertical(top: Radius.circular(24)),
+                                ),
+                                builder: (ctx) => EditProfileSheet(profile: userProfile),
+                              );
+                            }
+                          },
+                        ),
+                        _buildProfileOption(
+                          icon: Icons.history,
+                          title: l10n.requestHistory,
+                          onTap: () {
+                            NotificationHelper.show(context, l10n.viewAll);
+                          },
+                        ),
+                        _buildProfileOption(
+                          icon: Icons.language,
+                          title: 'Language / Хэл',
+                          onTap: () {
+                            showModalBottomSheet(
+                              context: context,
+                              backgroundColor: Colors.white,
+                              shape: const RoundedRectangleBorder(
+                                borderRadius:
+                                    BorderRadius.vertical(top: Radius.circular(24)),
+                              ),
+                              builder: (_) => const LanguageSettingsSheet(),
+                            );
+                          },
+                        ),
+                        _buildProfileOption(
+                          icon: Icons.notifications_outlined,
+                          title: l10n.notifications,
+                          onTap: () {
+                            NotificationHelper.show(context, '${l10n.notifications} ${l10n.adminComingSoon}');
+                          },
+                        ),
+                        const Spacer(),
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 20),
+                          child: OutlinedButton.icon(
+                            onPressed: () async {
+                              showModalBottomSheet(
+                                context: context,
+                                backgroundColor: Colors.white,
+                                shape: const RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+                                ),
+                                builder: (context) {
+                                  final dialogL10n = AppLocalizations.of(context)!;
+                                  return Padding(
+                                    padding: const EdgeInsets.all(24.0),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        Container(
+                                          width: 40,
+                                          height: 4,
+                                          margin: const EdgeInsets.only(bottom: 24),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.grey.withValues(alpha: 0.3),
+                                            borderRadius: BorderRadius.circular(2),
+                                          ),
+                                        ),
+                                        Text(
+                                          dialogL10n.signOut,
+                                          style: const TextStyle(
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                            color: AppColors.error,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 12),
+                                        Text(
+                                          '${dialogL10n.yes}? ${dialogL10n.signOut}',
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            color: AppColors.grey,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        const SizedBox(height: 32),
+                                        Row(
+                                          children: [
+                                            Expanded(
+                                              child: OutlinedButton(
+                                                onPressed: () => Navigator.pop(context),
+                                                style: OutlinedButton.styleFrom(
+                                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.circular(12),
+                                                  ),
+                                                ),
+                                                child: Text(dialogL10n.cancel),
+                                              ),
+                                            ),
+                                            const SizedBox(width: 16),
+                                            Expanded(
+                                              child: ElevatedButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context, true);
+                                                },
+                                                style: ElevatedButton.styleFrom(
+                                                  backgroundColor: AppColors.error,
+                                                  foregroundColor: Colors.white,
+                                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                                  shape: RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.circular(12),
+                                                  ),
+                                                ),
+                                                child: Text(dialogL10n.signOut),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 20),
+                                      ],
+                                    ),
+                                  );
+                                },
+                              ).then((shouldSignOut) async {
+                                if (shouldSignOut == true && context.mounted) {
+                                  await authStore.signOut();
+                                  if (context.mounted) {
+                                    NotificationHelper.showSuccess(context, l10n.success);
+                                  }
+                                }
+                              });
+                            },
+                            icon: const Icon(Icons.logout),
+                            label: Text(l10n.signOut),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: AppColors.error,
+                              side: const BorderSide(color: AppColors.error),
+                              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                             ),
-                          ],
-                        );
-                      },
+                          ),
+                        ),
+                        const Text(
+                          'OnCall Lab v1.0.0',
+                          style: TextStyle(
+                            color: AppColors.grey,
+                            fontSize: 12,
+                          ),
+                        ),
+                      ],
                     );
-
-                    if (confirm != true || !context.mounted) return;
-
-                    try {
-                      final url = await StorageService.uploadProfilePhoto(
-                        userId: user.id,
-                        file: file,
-                      );
-
-                      if (url == null) {
-                        throw Exception('Failed to upload photo');
-                      }
-
-                      final cacheBustedUrl =
-                          '$url?t=${DateTime.now().millisecondsSinceEpoch}';
-
-                      await supabase
-                          .from('profiles')
-                          .update({
-                            'avatar_url': cacheBustedUrl,
-                            'updated_at': DateTime.now().toIso8601String(),
-                          })
-                          .eq('id', user.id);
-
-                      await authStore.loadCurrentProfile();
-
-                      if (context.mounted) {
-                        NotificationHelper.showSuccess(context, l10n.profilePhotoUpdated);
-                      }
-                    } catch (e) {
-                      if (context.mounted) {
-                        NotificationHelper.showError(context, '${l10n.failedToUpdatePhoto}: $e');
-                      }
-                    }
                   },
-                  child: Stack(
-                    alignment: Alignment.bottomRight,
-                    children: [
-                      ProfileAvatar(
-                        avatarUrl: profile?.getAvatarUrl(),
-                        initials: profile?.initials ?? 'U',
-                        radius: 50,
-                      ),
-                      Container(
-                        padding: const EdgeInsets.all(6),
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.camera_alt,
-                          size: 18,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  profile?.displayName ?? l10n.user,
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: 5),
-                Text(
-                  profile?.phoneNumber ?? profile?.email ?? l10n.noPhoneNumber,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: AppColors.grey,
-                  ),
-                ),
-                const SizedBox(height: 10),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(20),
-              ),
-              child: Text(
-                l10n.patient,
-                style: const TextStyle(
-                  color: AppColors.primary,
-                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
-                const SizedBox(height: 40),
-                _buildProfileOption(
-              icon: Icons.person_outline,
-              title: l10n.editProfile,
-              onTap: () {
-                final userProfile = authStore.currentProfile;
-                if (userProfile != null) {
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    backgroundColor: Colors.white,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(24)),
-                    ),
-                    builder: (ctx) => EditProfileSheet(profile: userProfile),
-                  );
-                }
-              },
-            ),
-                _buildProfileOption(
-              icon: Icons.history,
-              title: l10n.requestHistory,
-              onTap: () {
-                NotificationHelper.show(context, l10n.viewAll);
-              },
-            ),
-                _buildProfileOption(
-              icon: Icons.language,
-              title: 'Language / Хэл',
-              onTap: () {
-                showModalBottomSheet(
-                  context: context,
-                  backgroundColor: Colors.white,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius:
-                        BorderRadius.vertical(top: Radius.circular(24)),
-                  ),
-                  builder: (_) => const LanguageSettingsSheet(),
-                );
-              },
-            ),
-                _buildProfileOption(
-              icon: Icons.notifications_outlined,
-              title: l10n.notifications,
-              onTap: () {
-                NotificationHelper.show(context, '${l10n.notifications} ${l10n.adminComingSoon}');
-              },
-            ),
-            const Spacer(),
-                Padding(
-              padding: const EdgeInsets.only(bottom: 100), // Extra padding for floating navbar
-              child: OutlinedButton.icon(
-                onPressed: () async {
-                  showModalBottomSheet(
-                    context: context,
-                    backgroundColor: Colors.white,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-                    ),
-                    builder: (context) {
-                      final dialogL10n = AppLocalizations.of(context)!;
-                      return Padding(
-                        padding: const EdgeInsets.all(24.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              width: 40,
-                              height: 4,
-                              margin: const EdgeInsets.only(bottom: 24),
-                              decoration: BoxDecoration(
-                                color: AppColors.grey.withValues(alpha: 0.3),
-                                borderRadius: BorderRadius.circular(2),
-                              ),
-                            ),
-                            Text(
-                              dialogL10n.signOut,
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.error,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              '${dialogL10n.yes}? ${dialogL10n.signOut}',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: AppColors.grey,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                            const SizedBox(height: 32),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: OutlinedButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    style: OutlinedButton.styleFrom(
-                                      padding: const EdgeInsets.symmetric(vertical: 16),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                    ),
-                                    child: Text(dialogL10n.cancel),
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: ElevatedButton(
-                                    onPressed: () {
-                                      Navigator.pop(context, true);
-                                    },
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: AppColors.error,
-                                      foregroundColor: Colors.white,
-                                      padding: const EdgeInsets.symmetric(vertical: 16),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                    ),
-                                    child: Text(dialogL10n.signOut),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 20),
-                          ],
-                        ),
-                      );
-                    },
-                  ).then((shouldSignOut) async {
-                    if (shouldSignOut == true && context.mounted) {
-                      await authStore.signOut();
-                      if (context.mounted) {
-                        NotificationHelper.showSuccess(context, l10n.success);
-                      }
-                    }
-                  });
-                },
-                icon: const Icon(Icons.logout),
-                label: Text(l10n.signOut),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: AppColors.error,
-                  side: const BorderSide(color: AppColors.error),
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              ),
-            ),
-                const Text(
-              'OnCall Lab v1.0.0',
-              style: TextStyle(
-                color: AppColors.grey,
-                fontSize: 12,
-              ),
-            ),
-              ],
-            );
-          },
-        ),
+          );
+        },
       ),
     );
   }

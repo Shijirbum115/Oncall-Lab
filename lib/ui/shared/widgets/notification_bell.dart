@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
-import 'package:oncall_lab/stores/notification_store.dart';
-import 'package:oncall_lab/ui/shared/notifications_screen.dart';
+import 'package:bugamed/stores/notification_store.dart';
+import 'package:bugamed/ui/shared/notifications_screen.dart';
 
 /// Simple notification bell icon with unread badge for AppBar
 class NotificationBell extends StatelessWidget {

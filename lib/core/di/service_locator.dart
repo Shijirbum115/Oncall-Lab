@@ -1,21 +1,21 @@
 import 'package:get_it/get_it.dart';
-import 'package:oncall_lab/data/repositories/auth_repository.dart';
-import 'package:oncall_lab/data/repositories/doctor_repository.dart';
-import 'package:oncall_lab/data/repositories/laboratory_repository.dart';
-import 'package:oncall_lab/data/repositories/service_repository.dart';
-import 'package:oncall_lab/data/repositories/test_request_repository.dart';
-import 'package:oncall_lab/data/repositories/notification_repository.dart';
-import 'package:oncall_lab/data/repositories/payment_repository.dart';
-import 'package:oncall_lab/stores/auth_store.dart';
-import 'package:oncall_lab/stores/doctor_request_store.dart';
-import 'package:oncall_lab/stores/home_store.dart';
-import 'package:oncall_lab/stores/locale_store.dart';
-import 'package:oncall_lab/stores/service_store.dart';
-import 'package:oncall_lab/stores/test_request_store.dart';
-import 'package:oncall_lab/stores/notification_store.dart';
-import 'package:oncall_lab/stores/payment_store.dart';
-import 'package:oncall_lab/core/services/push_notification_service.dart';
-import 'package:oncall_lab/core/services/qpay_service.dart';
+import 'package:bugamed/data/repositories/auth_repository.dart';
+import 'package:bugamed/data/repositories/doctor_repository.dart';
+import 'package:bugamed/data/repositories/laboratory_repository.dart';
+import 'package:bugamed/data/repositories/service_repository.dart';
+import 'package:bugamed/data/repositories/test_request_repository.dart';
+import 'package:bugamed/data/repositories/notification_repository.dart';
+import 'package:bugamed/data/repositories/payment_repository.dart';
+import 'package:bugamed/stores/auth_store.dart';
+import 'package:bugamed/stores/doctor_request_store.dart';
+import 'package:bugamed/stores/home_store.dart';
+import 'package:bugamed/stores/locale_store.dart';
+import 'package:bugamed/stores/service_store.dart';
+import 'package:bugamed/stores/test_request_store.dart';
+import 'package:bugamed/stores/notification_store.dart';
+import 'package:bugamed/stores/payment_store.dart';
+import 'package:bugamed/core/services/push_notification_service.dart';
+import 'package:bugamed/core/services/qpay_service.dart';
 
 final GetIt locator = GetIt.instance;
 

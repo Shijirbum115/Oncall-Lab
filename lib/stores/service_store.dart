@@ -1,10 +1,10 @@
 import 'package:get_it/get_it.dart';
 import 'package:mobx/mobx.dart';
-import 'package:oncall_lab/data/models/doctor_service_model.dart';
-import 'package:oncall_lab/data/models/service_category_model.dart';
-import 'package:oncall_lab/data/models/service_model.dart';
-import 'package:oncall_lab/data/models/laboratory_service_model.dart';
-import 'package:oncall_lab/data/repositories/service_repository.dart';
+import 'package:bugamed/data/models/doctor_service_model.dart';
+import 'package:bugamed/data/models/service_category_model.dart';
+import 'package:bugamed/data/models/service_model.dart';
+import 'package:bugamed/data/models/laboratory_service_model.dart';
+import 'package:bugamed/data/repositories/service_repository.dart';
 
 part 'service_store.g.dart';
 

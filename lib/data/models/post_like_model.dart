@@ -1,6 +1,6 @@
 // ignore_for_file: invalid_annotation_target
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:oncall_lab/data/models/profile_model.dart';
+import 'package:bugamed/data/models/profile_model.dart';
 
 part 'post_like_model.freezed.dart';
 part 'post_like_model.g.dart';

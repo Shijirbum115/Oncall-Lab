@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/core/services/supabase_service.dart';
-import 'package:oncall_lab/ui/patient/laboratory_detail_screen_new.dart';
-import 'package:oncall_lab/l10n/app_localizations.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/core/services/supabase_service.dart';
+import 'package:bugamed/ui/patient/laboratory_detail_screen_new.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
 
 class LaboratoriesScreen extends StatefulWidget {
   final String? preSelectedServiceId;
@@ -89,13 +90,14 @@ class _LaboratoriesScreenState extends State<LaboratoriesScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    // Only show back button when pushed with parameters (not when used as tab)
     final showBackButton = widget.preSelectedServiceId != null;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
         elevation: 0,
         automaticallyImplyLeading: showBackButton,
         leading: showBackButton
@@ -103,7 +105,7 @@ class _LaboratoriesScreenState extends State<LaboratoriesScreen> {
                 icon: const Icon(
                   Icons.arrow_back_ios,
                   size: 20,
-                  color: AppColors.grey,
+                  color: AppColors.black,
                 ),
                 onPressed: () {
                   if (mounted) {
@@ -124,24 +126,20 @@ class _LaboratoriesScreenState extends State<LaboratoriesScreen> {
       body: Column(
         children: [
           // Search Bar
-          Container(
-            color: Colors.white,
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
             child: Container(
               height: 48,
               decoration: BoxDecoration(
-                color: AppColors.background,
-                borderRadius: BorderRadius.circular(24),
-                border: Border.all(
-                  color: AppColors.grey.withValues(alpha: 0.2),
-                ),
+                color: AppColors.scaffoldBackground,
+                borderRadius: BorderRadius.circular(14),
               ),
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 children: [
                   const Icon(
-                    Icons.search,
-                    color: AppColors.primary,
+                    Iconsax.search_normal,
+                    color: AppColors.grey,
                     size: 20,
                   ),
                   const SizedBox(width: 12),
@@ -151,13 +149,16 @@ class _LaboratoriesScreenState extends State<LaboratoriesScreen> {
                       decoration: InputDecoration(
                         hintText: l10n.searchLaboratories,
                         border: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        filled: false,
                         hintStyle: const TextStyle(
-                          fontSize: 16,
+                          fontSize: 15,
                           color: AppColors.grey,
                         ),
                       ),
                       style: const TextStyle(
-                        fontSize: 16,
+                        fontSize: 15,
                         color: AppColors.black,
                       ),
                     ),
@@ -168,16 +169,39 @@ class _LaboratoriesScreenState extends State<LaboratoriesScreen> {
                         _searchController.clear();
                         _onSearchChanged();
                       },
-                      child: const Icon(
-                        Icons.cancel,
-                        color: AppColors.grey,
-                        size: 20,
+                      child: Container(
+                        padding: const EdgeInsets.all(4),
+                        decoration: BoxDecoration(
+                          color: AppColors.grey.withValues(alpha: 0.2),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.close,
+                          color: AppColors.grey,
+                          size: 14,
+                        ),
                       ),
                     ),
                 ],
               ),
             ),
           ),
+
+          // Results count
+          if (!isLoading && filteredLaboratories.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  '${filteredLaboratories.length} ${l10n.laboratories.toLowerCase()}',
+                  style: AppTypography.bodySmall.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+              ),
+            ),
+
           // Content
           Expanded(
             child: _buildContent(l10n),
@@ -189,39 +213,42 @@ class _LaboratoriesScreenState extends State<LaboratoriesScreen> {
 
   Widget _buildContent(AppLocalizations l10n) {
     if (isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(
-          color: AppColors.primary,
-        ),
-      );
+      return _buildSkeletonLoader();
     }
 
     if (errorMessage != null) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.error_outline,
-                  color: AppColors.error, size: 48),
-              const SizedBox(height: 16),
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: AppColors.error.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Iconsax.warning_2,
+                  color: AppColors.error,
+                  size: 40,
+                ),
+              ),
+              const SizedBox(height: 20),
               Text(
                 l10n.unableToLoadLaboratories,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.black,
-                ),
+                style: AppTypography.titleMedium,
+                textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
               Text(
                 errorMessage!,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: AppColors.grey),
+                style: AppTypography.bodyMedium,
               ),
-              const SizedBox(height: 16),
-              ElevatedButton(
+              const SizedBox(height: 20),
+              ElevatedButton.icon(
                 onPressed: () {
                   setState(() {
                     errorMessage = null;
@@ -229,11 +256,8 @@ class _LaboratoriesScreenState extends State<LaboratoriesScreen> {
                   });
                   _loadLaboratories();
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                ),
-                child: Text(l10n.retry),
+                icon: const Icon(Iconsax.refresh),
+                label: Text(l10n.retry),
               ),
             ],
           ),
@@ -246,14 +270,23 @@ class _LaboratoriesScreenState extends State<LaboratoriesScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Iconsax.buildings,
-                size: 60, color: AppColors.grey),
-            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: AppColors.grey.withValues(alpha: 0.1),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Iconsax.buildings,
+                size: 48,
+                color: AppColors.grey,
+              ),
+            ),
+            const SizedBox(height: 16),
             Text(
               l10n.noLaboratoriesAvailable,
-              style: const TextStyle(
-                color: AppColors.grey,
-                fontWeight: FontWeight.w600,
+              style: AppTypography.titleMedium.copyWith(
+                color: AppColors.textSecondary,
               ),
             ),
           ],
@@ -264,20 +297,27 @@ class _LaboratoriesScreenState extends State<LaboratoriesScreen> {
     if (filteredLaboratories.isEmpty && _query.isNotEmpty) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.search_off,
-                  color: AppColors.grey, size: 48),
-              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                  color: AppColors.grey.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Iconsax.search_status,
+                  color: AppColors.grey,
+                  size: 40,
+                ),
+              ),
+              const SizedBox(height: 16),
               Text(
                 l10n.noLaboratoriesMatchQuery(_query),
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: AppColors.grey,
-                  fontSize: 14,
-                ),
+                style: AppTypography.bodyMedium,
               ),
             ],
           ),
@@ -290,29 +330,35 @@ class _LaboratoriesScreenState extends State<LaboratoriesScreen> {
       color: AppColors.primary,
       child: ListView.builder(
         physics: const AlwaysScrollableScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(20, 20, 20, 110),
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
         itemCount: filteredLaboratories.length,
         itemBuilder: (context, index) {
           final lab = filteredLaboratories[index];
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 20),
-            child: _LaboratoryCard(
-              laboratory: lab,
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => LaboratoryDetailScreenNew(
-                      laboratory: lab,
-                      preSelectedServiceId: widget.preSelectedServiceId,
-                    ),
+          return _ModernLabCard(
+            laboratory: lab,
+            l10n: l10n,
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => LaboratoryDetailScreenNew(
+                    laboratory: lab,
+                    preSelectedServiceId: widget.preSelectedServiceId,
                   ),
-                );
-              },
-            ),
+                ),
+              );
+            },
           );
         },
       ),
+    );
+  }
+
+  Widget _buildSkeletonLoader() {
+    return ListView.builder(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+      itemCount: 5,
+      itemBuilder: (context, index) => const _SkeletonLabCard(),
     );
   }
 
@@ -333,234 +379,285 @@ class _LaboratoriesScreenState extends State<LaboratoriesScreen> {
   }
 }
 
-class _LaboratoryCard extends StatefulWidget {
-  const _LaboratoryCard({
+// Modern compact laboratory card
+class _ModernLabCard extends StatelessWidget {
+  final Map<String, dynamic> laboratory;
+  final AppLocalizations l10n;
+  final VoidCallback onTap;
+
+  const _ModernLabCard({
     required this.laboratory,
+    required this.l10n,
     required this.onTap,
   });
 
-  final Map<String, dynamic> laboratory;
-  final VoidCallback onTap;
-
   @override
-  State<_LaboratoryCard> createState() => _LaboratoryCardState();
+  Widget build(BuildContext context) {
+    final name = laboratory['name'] as String? ?? l10n.laboratoryFallback;
+    final address = laboratory['address'] as String? ?? l10n.addressNotProvided;
+    final isActive = laboratory['is_active'] as bool? ?? true;
+
+    // Check if currently open (simplified logic - would need actual hours)
+    final now = DateTime.now();
+    final isOpen = now.hour >= 8 && now.hour < 20;
+
+    // Mock rating for now
+    final rating = 4.8;
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppColors.grey.withValues(alpha: 0.15),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              children: [
+                // Lab image/logo
+                Container(
+                  width: 72,
+                  height: 72,
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.asset(
+                      'assets/images/express.png',
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Center(
+                          child: Icon(
+                            Iconsax.buildings,
+                            size: 32,
+                            color: AppColors.primary.withValues(alpha: 0.5),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 14),
+
+                // Lab info
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Name row with rating
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              name,
+                              style: const TextStyle(
+                                fontSize: 15,
+                                fontWeight: FontWeight.w600,
+                                color: AppColors.black,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          // Rating
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(
+                                Icons.star_rounded,
+                                color: AppColors.warning,
+                                size: 16,
+                              ),
+                              const SizedBox(width: 2),
+                              Text(
+                                rating.toString(),
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppColors.black,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+
+                      // Address
+                      Row(
+                        children: [
+                          Icon(
+                            Iconsax.location,
+                            size: 14,
+                            color: AppColors.grey.withValues(alpha: 0.8),
+                          ),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              address,
+                              style: TextStyle(
+                                fontSize: 13,
+                                color: AppColors.grey.withValues(alpha: 0.9),
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+
+                      // Status badges
+                      Row(
+                        children: [
+                          // Open/Closed badge
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: (isOpen && isActive)
+                                  ? AppColors.success.withValues(alpha: 0.12)
+                                  : AppColors.error.withValues(alpha: 0.12),
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Container(
+                                  width: 6,
+                                  height: 6,
+                                  decoration: BoxDecoration(
+                                    color: (isOpen && isActive)
+                                        ? AppColors.success
+                                        : AppColors.error,
+                                    shape: BoxShape.circle,
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  (isOpen && isActive) ? l10n.available : l10n.closed,
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    color: (isOpen && isActive)
+                                        ? AppColors.success
+                                        : AppColors.error,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          // Operating hours hint
+                          Text(
+                            '8:00 - 20:00',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: AppColors.grey.withValues(alpha: 0.7),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                // Arrow
+                Icon(
+                  Icons.chevron_right_rounded,
+                  color: AppColors.grey.withValues(alpha: 0.5),
+                  size: 24,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }
 
-class _LaboratoryCardState extends State<_LaboratoryCard> {
-  bool isFavorite = false;
+// Skeleton loading card
+class _SkeletonLabCard extends StatelessWidget {
+  const _SkeletonLabCard();
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final name = widget.laboratory['name'] as String? ?? l10n.laboratoryFallback;
-    final address =
-        widget.laboratory['address'] as String? ?? l10n.addressNotProvided;
-
-    // Mock data for demonstration
-    final rating = 4.8;
-    final reviewCount = 127;
-    final distance = "2.5 km";
-    final operatingHours = "Open until 8:00 PM";
-
-    return GestureDetector(
-      onTap: widget.onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.08),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Row(
+        children: [
+          // Image skeleton
+          Container(
+            width: 72,
+            height: 72,
+            decoration: BoxDecoration(
+              color: AppColors.grey.withValues(alpha: 0.15),
+              borderRadius: BorderRadius.circular(12),
             ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Image Header
-            Stack(
+          ),
+          const SizedBox(width: 14),
+          // Text skeletons
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Cover Image
-                ClipRRect(
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(20),
-                    topRight: Radius.circular(20),
-                  ),
-                  child: Image.asset(
-                    'assets/images/express.png',
-                    height: 180,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        height: 180,
-                        color: AppColors.background,
-                        child: const Center(
-                          child: Icon(
-                            Iconsax.buildings,
-                            size: 48,
-                            color: AppColors.grey,
-                          ),
-                        ),
-                      );
-                    },
+                Container(
+                  height: 16,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                    color: AppColors.grey.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(4),
                   ),
                 ),
-                // Favorite Button
-                Positioned(
-                  top: 16,
-                  right: 16,
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        isFavorite = !isFavorite;
-                      });
-                    },
-                    child: Container(
-                      width: 36,
-                      height: 36,
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.3),
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        isFavorite ? Icons.favorite : Icons.favorite_border,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                    ),
+                const SizedBox(height: 8),
+                Container(
+                  height: 14,
+                  width: 150,
+                  decoration: BoxDecoration(
+                    color: AppColors.grey.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(4),
                   ),
                 ),
-                // Rating Badge
-                Positioned(
-                  bottom: 16,
-                  right: 16,
-                  child: Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.star,
-                          color: AppColors.warning,
-                          size: 14,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          rating.toString(),
-                          style: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.black,
-                          ),
-                        ),
-                        const SizedBox(width: 2),
-                        Text(
-                          '($reviewCount)',
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AppColors.grey,
-                          ),
-                        ),
-                      ],
-                    ),
+                const SizedBox(height: 8),
+                Container(
+                  height: 20,
+                  width: 80,
+                  decoration: BoxDecoration(
+                    color: AppColors.grey.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(6),
                   ),
                 ),
               ],
             ),
-            // Card Body
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Title
-                  Text(
-                    name,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.black,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  // Subtitle
-                  Text(
-                    l10n.laboratory,
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppColors.grey,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  // Divider
-                  Container(
-                    height: 1,
-                    color: AppColors.grey.withValues(alpha: 0.2),
-                  ),
-                  const SizedBox(height: 12),
-                  // Address Row
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.location_on,
-                        color: AppColors.primary,
-                        size: 16,
-                      ),
-                      const SizedBox(width: 6),
-                      Expanded(
-                        child: Text(
-                          address,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AppColors.grey,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        distance,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.grey,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 8),
-                  // Time Row
-                  Row(
-                    children: [
-                      const Icon(
-                        Icons.access_time,
-                        color: AppColors.primary,
-                        size: 16,
-                      ),
-                      const SizedBox(width: 6),
-                      Text(
-                        operatingHours,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.grey,
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

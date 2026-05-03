@@ -1,5 +1,5 @@
-import 'package:oncall_lab/core/services/supabase_service.dart';
-import 'package:oncall_lab/data/models/laboratory_model.dart';
+import 'package:bugamed/core/services/supabase_service.dart';
+import 'package:bugamed/data/models/laboratory_model.dart';
 
 class LaboratoryRepository {
   /// Get all active laboratories

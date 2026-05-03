@@ -1,10 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/core/utils/avatar_helper.dart';
-import 'package:oncall_lab/ui/patient/models/doctor_profile_ui.dart';
-import 'package:oncall_lab/data/repositories/doctor_repository.dart';
-import 'package:oncall_lab/l10n/app_localizations.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/core/utils/avatar_helper.dart';
+import 'package:bugamed/ui/patient/models/doctor_profile_ui.dart';
+import 'package:bugamed/data/repositories/doctor_repository.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
 
 class DoctorDetailScreen extends StatefulWidget {
   const DoctorDetailScreen({
@@ -34,21 +35,23 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
 
   Future<void> _loadDoctorDetails() async {
     try {
-      debugPrint('Loading details for doctor ID: ${widget.doctor.id}');
-      debugPrint('Doctor name: ${widget.doctor.name}');
+      if (kDebugMode) debugPrint('Loading details for doctor ID: ${widget.doctor.id}');
+      if (kDebugMode) debugPrint('Doctor name: ${widget.doctor.name}');
 
       final details = await _doctorRepository.getDoctorDetails(widget.doctor.id);
       final services = await _doctorRepository.getDoctorServices(widget.doctor.id);
 
-      debugPrint('Successfully loaded doctor details');
+      if (kDebugMode) debugPrint('Successfully loaded doctor details');
       setState(() {
         fullDoctorData = details;
         doctorServices = services;
         isLoading = false;
       });
     } catch (e, stackTrace) {
-      debugPrint('❌ Error loading doctor details for ID ${widget.doctor.id}: $e');
-      debugPrint('Stack trace: $stackTrace');
+      if (kDebugMode) debugPrint('❌ Error loading doctor details for ID ${widget.doctor.id}: $e');
+      if (kDebugMode) debugPrint('Stack trace: $stackTrace');
+      
+      if (!mounted) return;
       final l10n = AppLocalizations.of(context)!;
       setState(() {
         errorMessage = l10n.doctorProfileNotFound;

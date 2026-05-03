@@ -3,17 +3,20 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/core/services/storage_service.dart';
-import 'package:oncall_lab/core/services/supabase_service.dart';
-import 'package:oncall_lab/stores/auth_store.dart';
-import 'package:oncall_lab/ui/shared/widgets/profile_avatar.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/core/services/storage_service.dart';
+import 'package:bugamed/core/services/supabase_service.dart';
+import 'package:bugamed/stores/auth_store.dart';
+import 'package:bugamed/ui/shared/widgets/profile_avatar.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
 
 class DoctorProfileScreen extends StatelessWidget {
   const DoctorProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return SafeArea(
       child: Observer(
         builder: (_) {
@@ -24,9 +27,9 @@ class DoctorProfileScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             children: [
               // Header
-              const Text(
-                'Profile',
-                style: TextStyle(
+              Text(
+                l10n.profile,
+                style: const TextStyle(
                   fontSize: 28,
                   color: Colors.black,
                   fontWeight: FontWeight.bold,
@@ -46,19 +49,18 @@ class DoctorProfileScreen extends StatelessWidget {
                         final change = await showDialog<bool>(
                           context: context,
                           builder: (ctx) => AlertDialog(
-                            title: const Text('Change profile photo'),
-                            content: const Text(
-                                'Do you want to change your profile photo?'),
+                            title: Text(l10n.changeProfilePhoto),
+                            content: Text(l10n.changeProfilePhotoConfirm),
                             actions: [
                               TextButton(
                                 onPressed: () =>
                                     Navigator.of(ctx).pop(false),
-                                child: const Text('Cancel'),
+                                child: Text(l10n.cancel),
                               ),
                               ElevatedButton(
                                 onPressed: () =>
                                     Navigator.of(ctx).pop(true),
-                                child: const Text('Change'),
+                                child: Text(l10n.change),
                               ),
                             ],
                           ),
@@ -73,7 +75,7 @@ class DoctorProfileScreen extends StatelessWidget {
                         final confirm = await showDialog<bool>(
                           context: context,
                           builder: (ctx) => AlertDialog(
-                            title: const Text('Use this photo?'),
+                            title: Text(l10n.useThisPhoto),
                             content: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: [
@@ -82,8 +84,8 @@ class DoctorProfileScreen extends StatelessWidget {
                                   backgroundImage: FileImage(file),
                                 ),
                                 const SizedBox(height: 12),
-                                const Text(
-                                  'This is how your profile photo will look.',
+                                Text(
+                                  l10n.profilePhotoPreview,
                                   textAlign: TextAlign.center,
                                 ),
                               ],
@@ -92,12 +94,12 @@ class DoctorProfileScreen extends StatelessWidget {
                               TextButton(
                                 onPressed: () =>
                                     Navigator.of(ctx).pop(false),
-                                child: const Text('Cancel'),
+                                child: Text(l10n.cancel),
                               ),
                               ElevatedButton(
                                 onPressed: () =>
                                     Navigator.of(ctx).pop(true),
-                                child: const Text('Save'),
+                                child: Text(l10n.save),
                               ),
                             ],
                           ),
@@ -140,15 +142,16 @@ class DoctorProfileScreen extends StatelessWidget {
                           await authStore.loadCurrentProfile();
 
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Profile photo updated'),
+                            SnackBar(
+                              content: Text(l10n.profilePhotoUpdated),
                             ),
                           );
                         } catch (e) {
+                          if (!context.mounted) return;
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content:
-                                  Text('Failed to update photo: $e'),
+                                  Text(l10n.failedToUpdatePhotoError(e.toString())),
                               backgroundColor: AppColors.error,
                             ),
                           );
@@ -208,7 +211,7 @@ class DoctorProfileScreen extends StatelessWidget {
                   child: _StatCard(
                     icon: Iconsax.star,
                     value: doctorProfile.rating.toStringAsFixed(1),
-                    label: 'Rating',
+                    label: l10n.rating,
                     color: Colors.amber,
                   ),
                 ),
@@ -217,7 +220,7 @@ class DoctorProfileScreen extends StatelessWidget {
                   child: _StatCard(
                     icon: Iconsax.tick_circle,
                     value: doctorProfile.totalCompletedRequests.toString(),
-                    label: 'Completed',
+                    label: l10n.completedCount,
                     color: AppColors.success,
                   ),
                 ),
@@ -226,7 +229,7 @@ class DoctorProfileScreen extends StatelessWidget {
                   child: _StatCard(
                     icon: Iconsax.calendar,
                     value: '${doctorProfile.yearsOfExperience ?? 0}',
-                    label: 'Years Exp',
+                    label: l10n.yearsExp,
                     color: AppColors.primary,
                   ),
                 ),
@@ -237,18 +240,18 @@ class DoctorProfileScreen extends StatelessWidget {
 
           // Information Section
           _InfoSection(
-            title: 'Contact Information',
+            title: l10n.contactInformation,
             icon: Iconsax.call,
             children: [
               if (profile?.phoneNumber != null)
                 _InfoRow(
-                  label: 'Phone',
+                  label: l10n.phone,
                   value: profile?.phoneNumber ?? '',
                   icon: Iconsax.mobile,
                 ),
               if (profile?.email != null)
                 _InfoRow(
-                  label: 'Email',
+                  label: l10n.email,
                   value: profile?.email ?? '',
                   icon: Iconsax.sms,
                 ),
@@ -260,23 +263,23 @@ class DoctorProfileScreen extends StatelessWidget {
           // Professional Information
           if (doctorProfile != null)
             _InfoSection(
-              title: 'Professional Details',
+              title: l10n.professionalDetails,
               icon: Iconsax.briefcase,
               children: [
                 _InfoRow(
-                  label: 'License Number',
+                  label: l10n.licenseNumber,
                   value: doctorProfile.licenseNumber,
                   icon: Iconsax.card,
                 ),
                 if (doctorProfile.academicDegree != null)
                   _InfoRow(
-                    label: 'Academic Degree',
+                    label: l10n.academicDegree,
                     value: doctorProfile.academicDegree!,
                     icon: Iconsax.award,
                   ),
                 _InfoRow(
-                  label: 'Status',
-                  value: doctorProfile.isAvailable ? 'Available' : 'Unavailable',
+                  label: l10n.status,
+                  value: doctorProfile.isAvailable ? l10n.available : l10n.unavailable,
                   icon: Iconsax.status,
                   valueColor: doctorProfile.isAvailable
                       ? AppColors.success
@@ -290,7 +293,7 @@ class DoctorProfileScreen extends StatelessWidget {
           // Bio Section
           if (doctorProfile?.bio != null && doctorProfile!.bio!.isNotEmpty)
             _InfoSection(
-              title: 'About',
+              title: l10n.about,
               icon: Iconsax.document_text,
               children: [
                 Text(
@@ -313,21 +316,21 @@ class DoctorProfileScreen extends StatelessWidget {
               onPressed: () async {
                 final confirm = await showDialog<bool>(
                   context: context,
-                  builder: (context) => AlertDialog(
-                    title: const Text('Logout'),
-                    content: const Text('Are you sure you want to logout?'),
+                  builder: (ctx) => AlertDialog(
+                    title: Text(l10n.logout),
+                    content: Text(l10n.areYouSureLogout),
                     actions: [
                       TextButton(
-                        onPressed: () => Navigator.of(context).pop(false),
-                        child: const Text('Cancel'),
+                        onPressed: () => Navigator.of(ctx).pop(false),
+                        child: Text(l10n.cancel),
                       ),
                       ElevatedButton(
-                        onPressed: () => Navigator.of(context).pop(true),
+                        onPressed: () => Navigator.of(ctx).pop(true),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.error,
                           foregroundColor: Colors.white,
                         ),
-                        child: const Text('Logout'),
+                        child: Text(l10n.logout),
                       ),
                     ],
                   ),
@@ -335,14 +338,15 @@ class DoctorProfileScreen extends StatelessWidget {
 
                 if (confirm == true && context.mounted) {
                   await authStore.signOut();
+                  if (!context.mounted) return;
                   // Let AuthGate decide the next screen
                   Navigator.of(context).popUntil((route) => route.isFirst);
                 }
               },
               icon: const Icon(Iconsax.logout, color: AppColors.error),
-              label: const Text(
-                'Logout',
-                style: TextStyle(
+              label: Text(
+                l10n.logout,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                   color: AppColors.error,

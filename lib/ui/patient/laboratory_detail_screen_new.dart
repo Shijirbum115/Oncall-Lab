@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/data/models/laboratory_service_model.dart';
-import 'package:oncall_lab/stores/service_store.dart';
-import 'package:oncall_lab/ui/patient/booking/lab_service_booking_screen.dart';
-import 'package:oncall_lab/l10n/app_localizations.dart';
-import 'package:oncall_lab/ui/design_system/widgets/app_text_field.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/data/models/laboratory_service_model.dart';
+import 'package:bugamed/stores/service_store.dart';
+import 'package:bugamed/ui/patient/booking/lab_service_booking_screen.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
+import 'package:bugamed/ui/design_system/widgets/app_text_field.dart';
 
 class LaboratoryDetailScreenNew extends StatefulWidget {
   final Map<String, dynamic> laboratory;
@@ -48,6 +48,29 @@ class _LaboratoryDetailScreenNewState
         services = data;
         isLoading = false;
       });
+
+      // FIX 2: If a service was pre-selected (patient came from test list),
+      // skip re-showing the service list and jump straight to booking.
+      if (widget.preSelectedServiceId != null && mounted) {
+        final match = data.firstWhere(
+          (s) => s.serviceId == widget.preSelectedServiceId,
+          orElse: () => data.first,
+        );
+        // Use pushReplacement so back-button goes to lab list, not here.
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (_) => LabServiceBookingScreen(
+                  laboratory: widget.laboratory,
+                  laboratoryService: match,
+                ),
+              ),
+            );
+          }
+        });
+      }
     } catch (e) {
       setState(() {
         errorMessage = e.toString();
@@ -77,6 +100,8 @@ class _LaboratoryDetailScreenNewState
       appBar: AppBar(
         title: Text(widget.laboratory['name']),
         backgroundColor: Colors.white,
+        surfaceTintColor: Colors.transparent,
+        scrolledUnderElevation: 0,
         elevation: 0,
       ),
       body: Column(
@@ -228,7 +253,7 @@ class _LaboratoryDetailScreenNewState
       child: ListView.separated(
         padding: const EdgeInsets.all(16),
         itemCount: displayServices.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        separatorBuilder: (_, index) => const SizedBox(height: 12),
         itemBuilder: (context, index) {
           final labService = displayServices[index];
 

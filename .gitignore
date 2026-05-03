@@ -46,6 +46,7 @@ web/.dart_tool/
 
 # Supabase / Env secrets
 lib/core/constants/supabase_config.dart
+admin_panel_web/lib/config/supabase_config.dart
 supabase/.temp/
 .env
 .env.*

@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
-import 'package:oncall_lab/data/models/notification_model.dart';
-import 'package:oncall_lab/stores/auth_store.dart';
-import 'package:oncall_lab/stores/notification_store.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
-import 'package:oncall_lab/ui/shared/widgets/mascot_state_widget.dart';
-import 'package:oncall_lab/ui/shared/notification_detail_screen.dart';
+import 'package:bugamed/data/models/notification_model.dart';
+import 'package:bugamed/stores/auth_store.dart';
+import 'package:bugamed/stores/notification_store.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/shared/widgets/mascot_state_widget.dart';
+import 'package:bugamed/ui/shared/notification_detail_screen.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
 
 class NotificationsScreen extends StatefulWidget {
   const NotificationsScreen({super.key});
@@ -36,14 +37,16 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: const Text(
-          'Notifications',
-          style: TextStyle(
+        title: Text(
+          l10n.notifications,
+          style: const TextStyle(
             color: Colors.black,
             fontSize: 20,
             fontWeight: FontWeight.w600,
@@ -59,9 +62,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                         _notificationStore.markAllAsRead(userId);
                       }
                     },
-                    child: const Text(
-                      'Mark all read',
-                      style: TextStyle(color: AppColors.primary),
+                    child: Text(
+                      l10n.markAllAsRead,
+                      style: const TextStyle(color: AppColors.primary),
                     ),
                   )
                 : const SizedBox.shrink(),
@@ -75,11 +78,11 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           }
 
           if (_notificationStore.notifications.isEmpty) {
-            return const Center(
+            return Center(
               child: MascotStateWidget(
                 emotion: MascotEmotion.sleeping,
-                title: 'No notifications yet',
-                subtitle: 'You\'ll see updates about your requests here',
+                title: l10n.noNotificationsYet,
+                subtitle: l10n.notificationsUpdatesHere,
               ),
             );
           }
@@ -94,6 +97,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                 return _NotificationCard(
                   notification: notification,
                   onTap: () => _handleNotificationTap(notification),
+                  l10n: l10n,
                 );
               },
             ),
@@ -124,10 +128,12 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 class _NotificationCard extends StatelessWidget {
   final NotificationModel notification;
   final VoidCallback onTap;
+  final AppLocalizations l10n;
 
   const _NotificationCard({
     required this.notification,
     required this.onTap,
+    required this.l10n,
   });
 
   @override
@@ -135,10 +141,10 @@ class _NotificationCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: notification.isRead ? Colors.white : AppColors.primary.withOpacity(0.05),
+        color: notification.isRead ? Colors.white : AppColors.primary.withValues(alpha: 0.05),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: notification.isRead ? Colors.grey[200]! : AppColors.primary.withOpacity(0.2),
+          color: notification.isRead ? Colors.grey[200]! : AppColors.primary.withValues(alpha: 0.2),
         ),
       ),
       child: InkWell(
@@ -153,7 +159,7 @@ class _NotificationCard extends StatelessWidget {
                 width: 40,
                 height: 40,
                 decoration: BoxDecoration(
-                  color: _getIconColor(notification.type).withOpacity(0.1),
+                  color: _getIconColor(notification.type).withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
@@ -256,13 +262,13 @@ class _NotificationCard extends StatelessWidget {
       final difference = now.difference(date);
 
       if (difference.inMinutes < 1) {
-        return 'Just now';
+        return l10n.justNow;
       } else if (difference.inHours < 1) {
-        return '${difference.inMinutes}m ago';
+        return l10n.minutesAgo(difference.inMinutes);
       } else if (difference.inDays < 1) {
-        return '${difference.inHours}h ago';
+        return l10n.hoursAgo(difference.inHours);
       } else if (difference.inDays < 7) {
-        return '${difference.inDays}d ago';
+        return l10n.daysAgo(difference.inDays);
       } else {
         return DateFormat('MMM d, yyyy').format(date);
       }

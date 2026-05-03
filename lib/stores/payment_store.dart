@@ -1,7 +1,7 @@
 import 'package:mobx/mobx.dart';
-import 'package:oncall_lab/core/services/qpay_service.dart';
-import 'package:oncall_lab/data/models/payment_model.dart';
-import 'package:oncall_lab/data/repositories/payment_repository.dart';
+import 'package:bugamed/core/services/qpay_service.dart';
+import 'package:bugamed/data/models/payment_model.dart';
+import 'package:bugamed/data/repositories/payment_repository.dart';
 
 part 'payment_store.g.dart';
 

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:oncall_lab/core/constants/app_colors.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
 
 class VisitOptionCard extends StatelessWidget {
   const VisitOptionCard({
@@ -60,57 +60,77 @@ class VisitOptionCard extends StatelessWidget {
           ),
           child: ClipRRect(
             borderRadius: borderRadius,
-            child: Stack(
-              children: [
-                if (showWavyPattern)
-                  Positioned.fill(
-                    child: CustomPaint(
-                      painter: _WavyPatternPainter(
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                Padding(
-                  padding: const EdgeInsets.all(18),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      CircleAvatar(
-                        radius: 24,
-                        backgroundColor: iconFilled
-                            ? AppColors.primary.withValues(alpha: 0.12)
-                            : iconBackgroundColor,
-                        child: Icon(
-                          icon,
-                          color: iconFilled ? AppColors.primary : iconColor,
-                          size: iconSize,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final isSmall = constraints.maxHeight < 160;
+                final padding = isSmall ? 14.0 : 18.0;
+                final iconRadius = isSmall ? 20.0 : 24.0;
+                final titleSize = isSmall ? 15.0 : 18.0;
+                final subtitleSize = isSmall ? 12.0 : 14.0;
+
+                return Stack(
+                  children: [
+                    if (showWavyPattern)
+                      Positioned.fill(
+                        child: CustomPaint(
+                          painter: _WavyPatternPainter(
+                            color: Colors.white,
+                          ),
                         ),
                       ),
-                      Column(
+                    Padding(
+                      padding: EdgeInsets.all(padding),
+                      child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            title,
-                            style: TextStyle(
-                              color: titleColor,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                          CircleAvatar(
+                            radius: iconRadius,
+                            backgroundColor: iconFilled
+                                ? AppColors.primary.withValues(alpha: 0.12)
+                                : iconBackgroundColor,
+                            child: Icon(
+                              icon,
+                              color: iconFilled ? AppColors.primary : iconColor,
+                              size: iconSize,
                             ),
                           ),
-                          const SizedBox(height: 4),
-                          Text(
-                            subtitle,
-                            style: TextStyle(
-                              color: subtitleColor,
+                          Flexible(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  title,
+                                  style: TextStyle(
+                                    color: titleColor,
+                                    fontSize: titleSize,
+                                    fontWeight: FontWeight.bold,
+                                    height: 1.2,
+                                  ),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  subtitle,
+                                  style: TextStyle(
+                                    color: subtitleColor,
+                                    fontSize: isSmall ? 11.0 : 12.0,
+                                    height: 1.2,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
-                    ],
-                  ),
-                ),
-              ],
+                    ),
+                  ],
+                );
+              },
             ),
           ),
         ),
