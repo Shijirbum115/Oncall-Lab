@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
 
@@ -89,7 +90,7 @@ class _TestTypesSectionState extends State<TestTypesSection> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 15),
+          padding: AppPadding.screenH,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -128,7 +129,7 @@ class _TestTypesSectionState extends State<TestTypesSection> {
           width: double.infinity,
           child: ListView.builder(
             controller: _scrollController,
-            padding: const EdgeInsets.symmetric(horizontal: 15),
+            padding: AppPadding.screenH,
             scrollDirection: Axis.horizontal,
             physics: const BouncingScrollPhysics(),
             // No itemCount = infinite scroll

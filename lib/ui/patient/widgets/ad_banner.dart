@@ -102,7 +102,7 @@ class _AdBannerState extends State<AdBanner> {
                   );
                 },
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  padding: AppPadding.screenH,
                   child: _AdCard(content: ad),
                 ),
               );

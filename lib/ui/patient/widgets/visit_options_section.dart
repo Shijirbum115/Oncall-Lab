@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
 import 'package:bugamed/ui/patient/widgets/visit_option_card.dart';
@@ -19,7 +20,7 @@ class VisitOptionsSection extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15),
+      padding: AppPadding.screenH,
       child: Row(
         children: [
           Expanded(

@@ -30,7 +30,7 @@ class PatientProfileScreen extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(15),
+            padding: AppPadding.screenAll,
             child: ConstrainedBox(
               constraints: BoxConstraints(
                 minHeight: constraints.maxHeight - 30, // Subtract vertical padding

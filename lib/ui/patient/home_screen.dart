@@ -204,7 +204,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
                         const AdBanner(),
                         const SizedBox(height: AppSpacing.lg),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          padding: AppPadding.screenH,
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -261,7 +261,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
         (profile?.firstName?.isNotEmpty ?? false) ? profile!.firstName : profile?.displayName;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15),
+      padding: AppPadding.screenH,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [

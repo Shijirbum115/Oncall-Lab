@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:iconsax/iconsax.dart';
@@ -63,7 +64,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.all(15),
+                padding: AppPadding.screenAll,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -85,7 +86,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                   child: Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                        padding: AppPadding.screenH,
                         child: Container(
                           decoration: BoxDecoration(
                             color: AppColors.grey.withValues(alpha: 0.1),
@@ -190,7 +191,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
           onRefresh: () => doctorRequestStore.loadAvailableRequests(),
           child: ListView.builder(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 15),
+            padding: AppPadding.screenH,
             itemCount: doctorRequestStore.availableRequests.length,
             itemBuilder: (context, index) {
               final request = doctorRequestStore.availableRequests[index];
@@ -250,7 +251,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
           onRefresh: () => doctorRequestStore.loadMyActiveRequests(doctorId!),
           child: ListView.builder(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 15),
+            padding: AppPadding.screenH,
             itemCount: doctorRequestStore.myActiveRequests.length,
             itemBuilder: (context, index) {
               final request = doctorRequestStore.myActiveRequests[index];
@@ -309,7 +310,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
           onRefresh: () => doctorRequestStore.loadMyCompletedRequests(doctorId!),
           child: ListView.builder(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 15),
+            padding: AppPadding.screenH,
             itemCount: doctorRequestStore.myCompletedRequests.length,
             itemBuilder: (context, index) {
               final request = doctorRequestStore.myCompletedRequests[index];
@@ -377,7 +378,7 @@ class _RequestCard extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Container(
-          padding: const EdgeInsets.all(15),
+          padding: AppPadding.screenAll,
           decoration: BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.circular(12),
