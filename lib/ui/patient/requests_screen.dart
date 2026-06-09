@@ -5,7 +5,7 @@ import 'package:bugamed/stores/auth_store.dart';
 import 'package:bugamed/stores/test_request_store.dart';
 import 'package:bugamed/data/models/test_request_model.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
-import 'package:bugamed/ui/shared/widgets/app_card.dart';
+import 'package:bugamed/ui/design_system/widgets/app_card.dart';
 import 'package:bugamed/ui/shared/widgets/mascot_state_widget.dart';
 
 class PatientRequestsScreen extends StatefulWidget {
@@ -272,7 +272,6 @@ class _RequestCard extends StatelessWidget {
 
     return AppCard(
       borderRadius: 18,
-      showShadow: true,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -8,7 +8,8 @@ import 'package:bugamed/stores/auth_store.dart';
 import 'package:bugamed/ui/patient/location/location_picker_screen.dart';
 import 'package:bugamed/ui/design_system/widgets/app_text_field.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
-import 'package:bugamed/ui/shared/widgets/app_card.dart';
+import 'package:bugamed/ui/design_system/widgets/app_card.dart';
+import 'package:bugamed/ui/design_system/app_shadows.dart';
 import 'package:bugamed/ui/payment/payment_screen.dart';
 
 class LabServiceBookingScreen extends StatefulWidget {
@@ -187,7 +188,7 @@ class _LabServiceBookingScreenState extends State<LabServiceBookingScreen> {
           children: [
             // Service Info Card
             AppCard(
-              showShadow: false,
+              shadow: AppShadows.none,
               borderRadius: 18,
               borderColor: AppColors.primary.withValues(alpha: 0.15),
               backgroundColor: AppColors.primary.withValues(alpha: 0.04),
@@ -261,7 +262,7 @@ class _LabServiceBookingScreenState extends State<LabServiceBookingScreen> {
             // Preparation Instructions
             if (service.preparationInstructions != null) ...[
               AppCard(
-                showShadow: false,
+                shadow: AppShadows.none,
                 borderRadius: 18,
                 borderColor: AppColors.warning.withValues(alpha: 0.2),
                 backgroundColor: AppColors.warning.withValues(alpha: 0.07),
@@ -309,7 +310,7 @@ class _LabServiceBookingScreenState extends State<LabServiceBookingScreen> {
             ),
             const SizedBox(height: 12),
             AppCard(
-              showShadow: false,
+              shadow: AppShadows.none,
               borderRadius: 14,
               borderColor: AppColors.grey.withValues(alpha: 0.25),
               onTap: () async {
@@ -401,7 +402,7 @@ class _LabServiceBookingScreenState extends State<LabServiceBookingScreen> {
 
             // Location Picker Button
             AppCard(
-              showShadow: false,
+              shadow: AppShadows.none,
               borderRadius: 14,
               borderColor: selectedLocation != null
                   ? AppColors.primary.withValues(alpha: 0.3)

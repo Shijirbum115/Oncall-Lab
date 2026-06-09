@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
-import 'package:bugamed/ui/shared/widgets/app_card.dart';
+import 'package:bugamed/ui/design_system/widgets/app_card.dart';
+import 'package:bugamed/ui/design_system/app_shadows.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
 
 class SavedAddressSelector extends StatelessWidget {
@@ -25,7 +26,7 @@ class SavedAddressSelector extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AppCard(
-          showShadow: false,
+          shadow: AppShadows.none,
           borderRadius: 14,
           borderColor: selected
               ? AppColors.primary

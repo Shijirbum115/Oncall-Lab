@@ -8,7 +8,8 @@ import 'package:bugamed/stores/auth_store.dart';
 import 'package:bugamed/stores/service_store.dart';
 import 'package:bugamed/ui/patient/location/location_picker_screen.dart';
 import 'package:bugamed/ui/design_system/widgets/app_text_field.dart';
-import 'package:bugamed/ui/shared/widgets/app_card.dart';
+import 'package:bugamed/ui/design_system/widgets/app_card.dart';
+import 'package:bugamed/ui/design_system/app_shadows.dart';
 import 'package:bugamed/ui/payment/payment_screen.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
 
@@ -680,7 +681,7 @@ class _DirectServiceBookingScreenState
 
         // Location Picker Button
         AppCard(
-          showShadow: false,
+          shadow: AppShadows.none,
           borderRadius: 14,
           borderColor: selectedLocation != null
               ? AppColors.primary.withValues(alpha: 0.3)
