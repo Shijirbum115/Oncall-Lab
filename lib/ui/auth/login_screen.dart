@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
 import 'package:bugamed/stores/auth_store.dart';
@@ -283,7 +284,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(
+                              CupertinoPageRoute(
                                 builder: (_) => const PatientRegistrationScreen(),
                               ),
                             );
@@ -300,7 +301,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(
+                              CupertinoPageRoute(
                                 builder: (_) => const DoctorRegistrationScreen(),
                               ),
                             );

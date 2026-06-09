@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
 import 'package:bugamed/ui/patient/booking_confirmation_screen.dart';
@@ -218,7 +219,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                         onPressed: () {
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(
+                            CupertinoPageRoute(
                               builder: (context) => BookingConfirmationScreen(
                                 bookingData: bookingData,
                                 serviceName: serviceName,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
 import 'package:bugamed/core/services/supabase_service.dart';
@@ -340,7 +341,7 @@ class _LaboratoriesScreenState extends State<LaboratoriesScreen> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(
+                CupertinoPageRoute(
                   builder: (_) => LaboratoryDetailScreenNew(
                     laboratory: lab,
                     preSelectedServiceId: widget.preSelectedServiceId,

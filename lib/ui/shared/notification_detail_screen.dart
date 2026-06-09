@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
@@ -293,7 +294,7 @@ class NotificationDetailScreen extends StatelessWidget {
                               // Navigate to requests screen
                               Navigator.pushReplacement(
                                 context,
-                                MaterialPageRoute(
+                                CupertinoPageRoute(
                                   builder: (context) =>
                                       const PatientRequestsScreen(),
                                 ),

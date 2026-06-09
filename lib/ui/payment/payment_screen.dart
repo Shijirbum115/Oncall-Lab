@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
 import 'package:bugamed/core/utils/auth_context.dart';
@@ -116,7 +117,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     // Navigate to payment method selection screen
     await Navigator.push(
       context,
-      MaterialPageRoute(
+      CupertinoPageRoute(
         builder: (context) => PaymentMethodScreen(
           userId: _userId!,
           amountMnt: widget.amountMnt,

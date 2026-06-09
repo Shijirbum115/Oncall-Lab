@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
@@ -327,7 +328,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
   void _navigateToDetail(TestRequestModel request) {
     Navigator.push(
       context,
-      MaterialPageRoute(
+      CupertinoPageRoute(
         builder: (_) => DoctorRequestDetailScreen(request: request),
       ),
     );

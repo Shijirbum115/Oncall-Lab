@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
@@ -74,7 +75,7 @@ class _LabServiceBookingScreenState extends State<LabServiceBookingScreen> {
   Future<void> _openLocationPicker() async {
     final result = await Navigator.push<Map<String, dynamic>>(
       context,
-      MaterialPageRoute(
+      CupertinoPageRoute(
         builder: (_) => LocationPickerScreen(
           initialLocation: selectedLocation != null
               ? LatLng(
@@ -152,7 +153,7 @@ class _LabServiceBookingScreenState extends State<LabServiceBookingScreen> {
         // Navigate to payment screen
         Navigator.push(
           context,
-          MaterialPageRoute(
+          CupertinoPageRoute(
             builder: (context) => PaymentScreen(
               amountMnt: widget.laboratoryService.priceMnt,
               serviceName: widget.laboratoryService.service!.getLocalizedName(context),

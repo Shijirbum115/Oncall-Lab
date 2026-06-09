@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
@@ -116,7 +117,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     // Navigate to notification detail screen
     Navigator.push(
       context,
-      MaterialPageRoute(
+      CupertinoPageRoute(
         builder: (context) => NotificationDetailScreen(
           notification: notification,
         ),

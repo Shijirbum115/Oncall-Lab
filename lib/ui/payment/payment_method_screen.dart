@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
@@ -91,7 +92,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
       if (requestId == null || !mounted) return;
       await Navigator.push(
         context,
-        MaterialPageRoute(
+        CupertinoPageRoute(
           builder: (_) => QpayInvoiceScreen(
             testRequestId: requestId,
             amountMnt: widget.amountMnt,
@@ -441,7 +442,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                         onPressed: () {
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(
+                            CupertinoPageRoute(
                               builder: (context) => PaymentSuccessScreen(
                                 amountMnt: widget.amountMnt,
                                 serviceName: widget.serviceName,

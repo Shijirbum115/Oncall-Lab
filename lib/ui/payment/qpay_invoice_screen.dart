@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -79,7 +80,7 @@ class _QpayInvoiceScreenState extends State<QpayInvoiceScreen> {
     _statusSubscription?.cancel();
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(
+      CupertinoPageRoute(
         builder: (_) => PaymentSuccessScreen(
           amountMnt: widget.amountMnt,
           serviceName: widget.serviceName,

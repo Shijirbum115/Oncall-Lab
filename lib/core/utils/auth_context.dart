@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:bugamed/stores/auth_store.dart';
 import 'package:bugamed/ui/auth/login_screen.dart';
 
@@ -29,7 +30,7 @@ class AuthContext {
 
     // Navigate to login screen with reason message
     final result = await Navigator.of(context).push<bool>(
-      MaterialPageRoute(
+      CupertinoPageRoute(
         builder: (context) => LoginScreen(
           message: reason != null 
             ? 'Please sign in to $reason'

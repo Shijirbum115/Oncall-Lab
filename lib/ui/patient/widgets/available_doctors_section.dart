@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:bugamed/ui/design_system/app_theme.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
 import 'package:bugamed/stores/home_store.dart';
@@ -58,7 +58,7 @@ class AvailableDoctorsSection extends StatelessWidget {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(
+              CupertinoPageRoute(
                 builder: (_) => DoctorDetailScreen(doctor: doctor),
               ),
             );

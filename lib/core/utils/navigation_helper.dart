@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:bugamed/data/models/notification_model.dart';
 import 'package:bugamed/ui/shared/notification_detail_screen.dart';
 import 'package:bugamed/ui/patient/requests_screen.dart';
@@ -14,7 +14,7 @@ class NavigationHelper {
 
     Navigator.push(
       context,
-      MaterialPageRoute(
+      CupertinoPageRoute(
         builder: (context) => NotificationDetailScreen(
           notification: notification,
         ),
@@ -29,7 +29,7 @@ class NavigationHelper {
 
     Navigator.push(
       context,
-      MaterialPageRoute(
+      CupertinoPageRoute(
         builder: (context) => const PatientRequestsScreen(),
       ),
     );
