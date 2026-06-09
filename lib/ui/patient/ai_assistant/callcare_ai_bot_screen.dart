@@ -135,7 +135,7 @@ class _CallCareAiBotScreenState extends State<CallCareAiBotScreen> {
   @override
   void initState() {
     super.initState();
-    // Defaults to Gemini (gemini-2.5-pro) called directly with the .env key.
+    // Defaults to Gemini (gemini-2.5-flash) called directly with the .env key.
     // Alternatives: `LiveCallCareAiService()` (Claude via Supabase edge fn,
     // key server-side) or `MockCallCareAiService()` (offline scripted flow).
     _service = widget.service ?? GeminiCallCareAiService();
@@ -679,7 +679,7 @@ class LiveCallCareAiService implements CallCareAiService {
 }
 
 // ============================================================================
-//  Gemini service — calls gemini-2.5-pro directly from the app.
+//  Gemini service — calls gemini-2.5-flash directly from the app.
 //
 //  Reads GEMINI_API_KEY from .env (flutter_dotenv). NOTE: a key bundled in the
 //  app is extractable — fine for a POC, but for production move this call into
@@ -687,7 +687,9 @@ class LiveCallCareAiService implements CallCareAiService {
 // ============================================================================
 
 class GeminiCallCareAiService implements CallCareAiService {
-  static const _model = 'gemini-2.5-pro';
+  // Try the primary model first; fall back to the more available one if the
+  // primary is overloaded (503/429). Both are kept current.
+  static const _models = ['gemini-2.5-flash', 'gemini-2.0-flash'];
   static final _bookTag = RegExp(r'\[\[BOOK:(lab|diagnostic|nursing)\]\]');
 
   // Reuse the scripted greeting + Q1 chips for an instant first turn; Gemini
@@ -729,36 +731,57 @@ class GeminiCallCareAiService implements CallCareAiService {
       });
     }
 
-    final uri = Uri.parse(
-      'https://generativelanguage.googleapis.com/v1beta/models/$_model:generateContent',
-    );
-
     try {
-      final res = await http.post(
-        uri,
-        headers: {
-          'content-type': 'application/json',
-          'x-goog-api-key': apiKey,
+      final headers = {
+        'content-type': 'application/json',
+        'x-goog-api-key': apiKey,
+      };
+      final payload = jsonEncode({
+        'systemInstruction': {
+          'parts': [
+            {'text': callCareSystemPrompt}
+          ],
         },
-        body: jsonEncode({
-          'systemInstruction': {
-            'parts': [
-              {'text': callCareSystemPrompt}
-            ],
-          },
-          'contents': contents,
-          'generationConfig': {
-            'temperature': 0.6,
-            'maxOutputTokens': 2048,
-          },
-        }),
-      );
+        'contents': contents,
+        'generationConfig': {
+          'temperature': 0.6,
+          // These are thinking models: maxOutputTokens covers BOTH thinking and
+          // the reply, so cap thinking and leave room for the visible text.
+          'maxOutputTokens': 2048,
+          'thinkingConfig': {'thinkingBudget': 512},
+        },
+      });
+
+      bool isTransient(int code) => code == 503 || code == 429 || code == 500;
+
+      // Per model: retry briefly on transient errors. Across models: fall back
+      // to the next model if the current one stays overloaded.
+      late http.Response res;
+      for (final model in _models) {
+        final uri = Uri.parse(
+          'https://generativelanguage.googleapis.com/v1beta/models/'
+          '$model:generateContent',
+        );
+        res = await http.post(uri, headers: headers, body: payload);
+        for (var attempt = 0;
+            attempt < 2 && isTransient(res.statusCode);
+            attempt++) {
+          await Future.delayed(Duration(milliseconds: 900 * (attempt + 1)));
+          res = await http.post(uri, headers: headers, body: payload);
+        }
+        // Stop early on success or a non-transient error (no point trying the
+        // fallback for e.g. a 400/401).
+        if (!isTransient(res.statusCode)) break;
+      }
 
       if (res.statusCode != 200) {
-        return const BotReply(
-          text:
-              'Уучлаарай, AI туслахтай холбогдоход алдаа гарлаа. Дараа дахин '
-              'оролдоно уу.',
+        debugPrint('CallCare AI: Gemini HTTP ${res.statusCode}');
+        final busy = res.statusCode == 503 || res.statusCode == 429;
+        return BotReply(
+          text: busy
+              ? 'AI туслах түр завгүй байна. Хэсэг хүлээгээд дахин оролдоно уу.'
+              : 'Уучлаарай, AI туслахтай холбогдоход алдаа гарлаа. Дараа дахин '
+                  'оролдоно уу.',
         );
       }
 
@@ -774,7 +797,8 @@ class GeminiCallCareAiService implements CallCareAiService {
         );
       }
       return _parse(reply.trim());
-    } catch (_) {
+    } catch (e) {
+      debugPrint('CallCare AI: request failed: $e');
       return const BotReply(
         text:
             'Уучлаарай, AI туслахтай холбогдоход алдаа гарлаа. Сүлжээгээ шалгаад '
