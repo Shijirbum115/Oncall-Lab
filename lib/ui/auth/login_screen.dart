@@ -89,7 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       // Language switcher at the top
                       const Align(
                         alignment: Alignment.centerRight,
-                        child: LanguageSwitcher(),
+                        child: LanguageSegmentedPill(),
                       ),
                       const SizedBox(height: 20),
                       // Logo or app name

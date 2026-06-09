@@ -59,6 +59,36 @@ class AppTheme {
           borderRadius: BorderRadius.circular(28),
         ),
       ),
+      dialogTheme: DialogThemeData(
+        backgroundColor: Colors.white,
+        surfaceTintColor: Colors.white,
+        elevation: 1,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+        ),
+        titleTextStyle: const TextStyle(
+          fontFamily: 'SFPro',
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+          color: AppColors.black,
+        ),
+        contentTextStyle: const TextStyle(
+          fontFamily: 'SFPro',
+          fontSize: 14,
+          height: 1.4,
+          color: AppColors.textSecondary,
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: AppColors.primary,
+          textStyle: const TextStyle(
+            fontFamily: 'SFPro',
+            fontSize: 15,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
     );
   }
 }
