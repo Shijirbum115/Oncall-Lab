@@ -233,6 +233,8 @@
   "completed": "Дууссан",
   "cancelled": "Цуцлагдсан",
   "myProfile": "Миний профайл",
+  "aiAssistant": "AI туслах",
+  "loginToUseAiAssistant": "AI туслахыг ашиглахын тулд нэвтэрнэ үү",
   "account": "Бүртгэл",
   "editProfile": "Профайл засах",
   "personalInformation": "Хувийн мэдээлэл",

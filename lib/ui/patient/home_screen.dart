@@ -17,7 +17,6 @@ import 'package:bugamed/ui/shared/widgets/notification_bell.dart';
 import 'package:bugamed/ui/design_system/widgets/app_empty_state.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
 import 'package:bugamed/core/utils/error_handler.dart';
-import 'package:bugamed/ui/patient/ai_assistant/callcare_ai_bot_screen.dart';
 import 'package:bugamed/ui/patient/widgets/ad_banner.dart';
 
 class PatientHomeScreen extends StatefulWidget {
@@ -298,27 +297,6 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
           ),
           Row(
             children: [
-              GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    CupertinoPageRoute(
-                      builder: (_) => const CallCareAiBotScreen(),
-                    ),
-                  );
-                },
-                child: Container(
-                  width: 44,
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.1),
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(Icons.smart_toy_outlined,
-                      color: AppColors.primary, size: 22),
-                ),
-              ),
-              const SizedBox(width: 8),
               const NotificationBell(),
               const SizedBox(width: 8),
               GestureDetector(

@@ -613,6 +613,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myProfile => 'My Profile';
 
   @override
+  String get aiAssistant => 'AI Assistant';
+
+  @override
+  String get loginToUseAiAssistant => 'Please sign in to use the AI Assistant';
+
+  @override
   String get account => 'Account';
 
   @override

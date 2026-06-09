@@ -1,13 +1,16 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/core/utils/notification_helper.dart';
 import 'package:bugamed/stores/auth_store.dart';
 import 'package:bugamed/ui/patient/home_screen.dart';
 import 'package:bugamed/ui/patient/laboratories_screen.dart';
 import 'package:bugamed/ui/patient/requests_screen.dart';
 import 'package:bugamed/ui/patient/profile_screen.dart';
+import 'package:bugamed/ui/patient/ai_assistant/callcare_ai_bot_screen.dart';
 import 'package:bugamed/ui/auth/login_screen.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
 
@@ -48,6 +51,21 @@ class _MainPageState extends State<MainPage> {
         ),
       ];
 
+  /// Opens the AI assistant — but only for signed-in users. Guests are nudged
+  /// to the login tab so the chat interface only works after logging in.
+  void _openAiAssistant(BuildContext context, AppLocalizations l10n,
+      bool isAuthenticated, int loginTabIndex) {
+    if (isAuthenticated) {
+      Navigator.push(
+        context,
+        CupertinoPageRoute(builder: (_) => const CallCareAiBotScreen()),
+      );
+    } else {
+      NotificationHelper.show(context, l10n.loginToUseAiAssistant);
+      setState(() => selectedIndex = loginTabIndex);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -63,17 +81,37 @@ class _MainPageState extends State<MainPage> {
           selectedIndex = 0;
         }
 
+        // The AI item is an *action* (pushes a screen / gates on login), not a
+        // page in the IndexedStack — so page indices stay 0..n unchanged.
+        void openAi() => _openAiAssistant(
+            context, l10n, isAuthenticated, pages.length - 1);
+
         final navItems = isAuthenticated
             ? [
-                _NavItem(Iconsax.home_1, Iconsax.home_15, l10n.home),
-                _NavItem(Iconsax.microscope, Iconsax.microscope, l10n.laboratories),
-                _NavItem(Iconsax.calendar_1, Iconsax.calendar5, l10n.requests),
-                _NavItem(Iconsax.user, Iconsax.user, l10n.profile),
+                _NavItem(Iconsax.home_1, Iconsax.home_15, l10n.home,
+                    pageIndex: 0),
+                _NavItem(Icons.smart_toy_outlined, Icons.smart_toy,
+                    l10n.aiAssistant,
+                    onTap: openAi),
+                _NavItem(Iconsax.microscope, Iconsax.microscope,
+                    l10n.laboratories,
+                    pageIndex: 1),
+                _NavItem(Iconsax.calendar_1, Iconsax.calendar5, l10n.requests,
+                    pageIndex: 2),
+                _NavItem(Iconsax.user, Iconsax.user, l10n.profile,
+                    pageIndex: 3),
               ]
             : [
-                _NavItem(Iconsax.home_1, Iconsax.home_15, l10n.home),
-                _NavItem(Iconsax.microscope, Iconsax.microscope, l10n.laboratories),
-                _NavItem(Iconsax.login, Iconsax.login, l10n.login),
+                _NavItem(Iconsax.home_1, Iconsax.home_15, l10n.home,
+                    pageIndex: 0),
+                _NavItem(Icons.smart_toy_outlined, Icons.smart_toy,
+                    l10n.aiAssistant,
+                    onTap: openAi),
+                _NavItem(Iconsax.microscope, Iconsax.microscope,
+                    l10n.laboratories,
+                    pageIndex: 1),
+                _NavItem(Iconsax.login, Iconsax.login, l10n.login,
+                    pageIndex: 2),
               ];
 
         return Scaffold(
@@ -119,14 +157,17 @@ class _MainPageState extends State<MainPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: List.generate(navItems.length, (index) {
                       final item = navItems[index];
-                      final isSelected = selectedIndex == index;
+                      final isSelected =
+                          item.pageIndex != null && selectedIndex == item.pageIndex;
 
                       return Expanded(
                         child: GestureDetector(
                           onTap: () {
-                            setState(() {
-                              selectedIndex = index;
-                            });
+                            if (item.onTap != null) {
+                              item.onTap!();
+                            } else {
+                              setState(() => selectedIndex = item.pageIndex!);
+                            }
                           },
                           behavior: HitTestBehavior.opaque,
                           child: _NavBarItem(
@@ -154,7 +195,19 @@ class _NavItem {
   final IconData activeIcon;
   final String label;
 
-  const _NavItem(this.icon, this.activeIcon, this.label);
+  /// Index into the IndexedStack pages. Null for action items (e.g. AI).
+  final int? pageIndex;
+
+  /// Action to run instead of switching pages (e.g. push the AI screen).
+  final VoidCallback? onTap;
+
+  const _NavItem(
+    this.icon,
+    this.activeIcon,
+    this.label, {
+    this.pageIndex,
+    this.onTap,
+  });
 }
 
 class _NavBarItem extends StatelessWidget {

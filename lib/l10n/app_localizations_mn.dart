@@ -612,6 +612,12 @@ class AppLocalizationsMn extends AppLocalizations {
   String get myProfile => 'Миний профайл';
 
   @override
+  String get aiAssistant => 'AI туслах';
+
+  @override
+  String get loginToUseAiAssistant => 'AI туслахыг ашиглахын тулд нэвтэрнэ үү';
+
+  @override
   String get account => 'Бүртгэл';
 
   @override

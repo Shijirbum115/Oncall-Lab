@@ -1262,6 +1262,18 @@ abstract class AppLocalizations {
   /// **'My Profile'**
   String get myProfile;
 
+  /// No description provided for @aiAssistant.
+  ///
+  /// In en, this message translates to:
+  /// **'AI Assistant'**
+  String get aiAssistant;
+
+  /// No description provided for @loginToUseAiAssistant.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in to use the AI Assistant'**
+  String get loginToUseAiAssistant;
+
   /// No description provided for @account.
   ///
   /// In en, this message translates to:

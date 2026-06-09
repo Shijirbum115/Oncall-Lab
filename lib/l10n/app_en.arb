@@ -267,6 +267,8 @@
   "completed": "Completed",
   "cancelled": "Cancelled",
   "myProfile": "My Profile",
+  "aiAssistant": "AI Assistant",
+  "loginToUseAiAssistant": "Please sign in to use the AI Assistant",
   "account": "Account",
   "editProfile": "Edit Profile",
   "personalInformation": "Personal Information",
