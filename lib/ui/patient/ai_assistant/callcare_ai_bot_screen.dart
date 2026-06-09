@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
 import 'package:bugamed/ui/design_system/app_theme.dart';
 import 'package:bugamed/ui/design_system/widgets/app_button.dart';
@@ -59,11 +60,16 @@ class BotReply {
     required this.text,
     this.quickReplies = const [],
     this.recommendation,
+    this.bookModality,
   });
 
   final String text;
   final List<String> quickReplies;
   final Recommendation? recommendation;
+
+  /// Set when a (live) reply should show a standalone "Book" button without a
+  /// full structured recommendation card. Driven by the hidden [[BOOK:..]] tag.
+  final ServiceModality? bookModality;
 }
 
 /// A chat message rendered in the list.
@@ -71,15 +77,21 @@ class ChatMessage {
   ChatMessage.user(this.text)
       : isUser = true,
         quickReplies = const [],
-        recommendation = null;
+        recommendation = null,
+        bookModality = null;
 
-  ChatMessage.bot(this.text, {this.quickReplies = const [], this.recommendation})
-      : isUser = false;
+  ChatMessage.bot(
+    this.text, {
+    this.quickReplies = const [],
+    this.recommendation,
+    this.bookModality,
+  }) : isUser = false;
 
   final bool isUser;
   final String text;
   final List<String> quickReplies;
   final Recommendation? recommendation;
+  final ServiceModality? bookModality;
 }
 
 /// Swap point: the only thing to replace when wiring a real LLM.
@@ -118,13 +130,16 @@ class _CallCareAiBotScreenState extends State<CallCareAiBotScreen> {
   @override
   void initState() {
     super.initState();
-    _service = widget.service ?? MockCallCareAiService();
+    // Defaults to the live LLM-backed service (Supabase Edge Function).
+    // Pass `service: MockCallCareAiService()` to run the offline scripted flow.
+    _service = widget.service ?? LiveCallCareAiService();
     // STATE: greeting — the first bot turn appears immediately.
     final intro = _service.greeting();
     _messages.add(ChatMessage.bot(
       intro.text,
       quickReplies: intro.quickReplies,
       recommendation: intro.recommendation,
+      bookModality: intro.bookModality,
     ));
   }
 
@@ -160,6 +175,7 @@ class _CallCareAiBotScreenState extends State<CallCareAiBotScreen> {
         reply.text,
         quickReplies: reply.quickReplies,
         recommendation: reply.recommendation,
+        bookModality: reply.bookModality,
       ));
     });
     _scrollToBottom();
@@ -592,24 +608,69 @@ class MockCallCareAiService implements CallCareAiService {
 //
 //  Keep the API key server-side (in the edge function), never in the app.
 // ============================================================================
-//
-// class LiveCallCareAiService implements CallCareAiService {
-//   @override
-//   BotReply greeting() => MockCallCareAiService().greeting();
-//
-//   @override
-//   Future<BotReply> respond({
-//     required String userInput,
-//     required List<ChatMessage> history,
-//   }) async {
-//     // final res = await Supabase.instance.client.functions.invoke(
-//     //   'callcare-ai-chat',
-//     //   body: {'messages': history.map(_toApi).toList()},
-//     // );
-//     // return BotReply(text: res.data['reply'] as String);
-//     throw UnimplementedError();
-//   }
-// }
+
+class LiveCallCareAiService implements CallCareAiService {
+  static const _bookTag = r'\[\[BOOK:(lab|diagnostic|nursing)\]\]';
+
+  // Reuse the scripted greeting + Q1 chips so the first turn is instant (no
+  // round-trip); the LLM takes over from the user's first answer onward.
+  @override
+  BotReply greeting() => MockCallCareAiService().greeting();
+
+  @override
+  Future<BotReply> respond({
+    required String userInput,
+    required List<ChatMessage> history,
+  }) async {
+    // The Anthropic Messages API expects {role, content}; the edge function
+    // drops any leading assistant turns (e.g. the local greeting).
+    final messages = history
+        .map((m) => {
+              'role': m.isUser ? 'user' : 'assistant',
+              'content': m.text,
+            })
+        .toList();
+
+    try {
+      final res = await Supabase.instance.client.functions.invoke(
+        'callcare-ai-chat',
+        body: {'messages': messages},
+      );
+      final data = res.data;
+      final reply = (data is Map && data['reply'] is String)
+          ? (data['reply'] as String).trim()
+          : '';
+      if (reply.isEmpty) {
+        return const BotReply(
+          text:
+              'Уучлаарай, хариу авахад алдаа гарлаа. Та дахин оролдоно уу.',
+        );
+      }
+      return _parse(reply);
+    } catch (_) {
+      return const BotReply(
+        text:
+            'Уучлаарай, AI туслахтай холбогдоход алдаа гарлаа. Сүлжээгээ '
+            'шалгаад дахин оролдоно уу.',
+      );
+    }
+  }
+
+  /// Strips the hidden booking tag and maps it to a [ServiceModality].
+  BotReply _parse(String reply) {
+    final re = RegExp(_bookTag);
+    final match = re.firstMatch(reply);
+    if (match == null) return BotReply(text: reply);
+
+    final text = reply.replaceAll(re, '').trim();
+    final modality = switch (match.group(1)) {
+      'diagnostic' => ServiceModality.diagnostic,
+      'nursing' => ServiceModality.nursing,
+      _ => ServiceModality.lab,
+    };
+    return BotReply(text: text, bookModality: modality);
+  }
+}
 
 // ============================================================================
 //  UI widgets
@@ -665,6 +726,20 @@ class _MessageBubble extends StatelessWidget {
           _RecommendationCard(
             recommendation: message.recommendation!,
             onBook: onBook,
+          ),
+        // Live replies carry just a modality (via the [[BOOK:..]] tag) → show a
+        // standalone book button under the text bubble.
+        if (message.recommendation == null && message.bookModality != null)
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: SizedBox(
+              width: 220,
+              child: AppButton(
+                label: 'Үйлчилгээ захиалах',
+                icon: Icons.arrow_forward,
+                onPressed: () => onBook(message.bookModality!),
+              ),
+            ),
           ),
         if (showQuickReplies && message.quickReplies.isNotEmpty)
           Padding(
