@@ -63,23 +63,26 @@ abstract class _HomeStore with Store {
     errorMessage = null;
 
     try {
-      // Load data concurrently for better performance
-      final testsFuture = _serviceRepository.getAggregatedTestTypes();
-      final doctorsFuture = _doctorRepository.getAvailableDoctors();
-      final categoriesFuture = _serviceRepository.getServiceCategories();
+      // Load data concurrently. Awaiting them together (rather than
+      // sequentially) avoids orphaned futures whose rejections would otherwise
+      // surface as unhandled async errors when one of the calls fails.
+      final results = await Future.wait([
+        _serviceRepository.getAggregatedTestTypes(),
+        _doctorRepository.getAvailableDoctors(),
+        _serviceRepository.getServiceCategories().then(
+              (cats) => cats
+                  .map((c) => <String, dynamic>{
+                        'id': c.id,
+                        'name': c.name,
+                        'icon': c.iconName,
+                      })
+                  .toList(),
+            ),
+      ]);
 
-      testTypes = ObservableList.of((await testsFuture).take(maxTestTypesOnHome));
-      availableDoctors =
-          ObservableList.of((await doctorsFuture).take(maxDoctorsOnHome));
-      serviceCategories = ObservableList.of(
-        (await categoriesFuture).map(
-          (c) => <String, dynamic>{
-            'id': c.id,
-            'name': c.name,
-            'icon': c.iconName,
-          },
-        ),
-      );
+      testTypes = ObservableList.of(results[0].take(maxTestTypesOnHome));
+      availableDoctors = ObservableList.of(results[1].take(maxDoctorsOnHome));
+      serviceCategories = ObservableList.of(results[2]);
 
       _loadingCompleter!.complete();
     } catch (e) {
