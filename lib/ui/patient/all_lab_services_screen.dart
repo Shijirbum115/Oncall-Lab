@@ -5,6 +5,7 @@ import 'package:bugamed/ui/design_system/app_theme.dart';
 import 'package:bugamed/ui/design_system/widgets/app_text_field.dart';
 import 'package:bugamed/ui/patient/laboratories_screen.dart';
 import 'package:bugamed/ui/patient/widgets/service_category_grid.dart';
+import 'package:bugamed/ui/patient/widgets/category_filter_bar.dart';
 import 'package:bugamed/ui/design_system/widgets/app_empty_state.dart';
 import 'package:bugamed/ui/shared/widgets/skeleton_loader.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
@@ -22,7 +23,55 @@ class _AllLabServicesScreenState extends State<AllLabServicesScreen> {
   List<Map<String, dynamic>> filteredServices = [];
   bool isLoading = true;
   String? errorMessage;
+  String _searchQuery = '';
+  String? _selectedCategory;
   final _searchController = TextEditingController();
+
+  String _categoryNameOf(Map<String, dynamic> s, bool isMn) {
+    final mn = s['category_name_mn'] as String?;
+    final en = s['category_name'] as String?;
+    return (isMn ? (mn ?? en) : en) ?? '';
+  }
+
+  List<String> _categoriesFor(bool isMn) {
+    final cats = <String>{};
+    for (final s in allServices) {
+      final name = _categoryNameOf(s, isMn);
+      if (name.isNotEmpty) cats.add(name);
+    }
+    return cats.toList();
+  }
+
+  void _applyFilters(bool isMn) {
+    var result = allServices;
+
+    if (_selectedCategory != null) {
+      result = result
+          .where((s) => _categoryNameOf(s, isMn) == _selectedCategory)
+          .toList();
+    }
+
+    if (_searchQuery.isNotEmpty) {
+      final lower = _searchQuery.toLowerCase();
+      result = result.where((s) {
+        final name = (s['service_name'] as String?)?.toLowerCase() ?? '';
+        final nameMn = (s['service_name_mn'] as String?)?.toLowerCase() ?? '';
+        final desc = (s['description'] as String?)?.toLowerCase() ?? '';
+        return name.contains(lower) ||
+            nameMn.contains(lower) ||
+            desc.contains(lower);
+      }).toList();
+    }
+
+    filteredServices = result;
+  }
+
+  void _selectCategory(String? category, bool isMn) {
+    setState(() {
+      _selectedCategory = category;
+      _applyFilters(isMn);
+    });
+  }
 
   @override
   void initState() {
@@ -101,21 +150,10 @@ class _AllLabServicesScreenState extends State<AllLabServicesScreen> {
     }
   }
 
-  void _filterServices(String query) {
-    if (query.isEmpty) {
-      setState(() => filteredServices = allServices);
-      return;
-    }
-    final lower = query.toLowerCase();
+  void _filterServices(String query, bool isMn) {
     setState(() {
-      filteredServices = allServices.where((s) {
-        final name = (s['service_name'] as String?)?.toLowerCase() ?? '';
-        final nameMn = (s['service_name_mn'] as String?)?.toLowerCase() ?? '';
-        final desc = (s['description'] as String?)?.toLowerCase() ?? '';
-        return name.contains(lower) ||
-            nameMn.contains(lower) ||
-            desc.contains(lower);
-      }).toList();
+      _searchQuery = query;
+      _applyFilters(isMn);
     });
   }
 
@@ -139,6 +177,7 @@ class _AllLabServicesScreenState extends State<AllLabServicesScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isMn = l10n.localeName == 'mn';
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
@@ -170,11 +209,22 @@ class _AllLabServicesScreenState extends State<AllLabServicesScreen> {
                         child: AppSearchField(
                           controller: _searchController,
                           hint: l10n.searchServices,
-                          onChanged: _filterServices,
+                          onChanged: (q) => _filterServices(q, isMn),
                           onClear: () {
                             _searchController.clear();
-                            _filterServices('');
+                            _filterServices('', isMn);
                           },
+                        ),
+                      ),
+                    ),
+                    SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 8, bottom: 4),
+                        child: CategoryFilterBar(
+                          categories: _categoriesFor(isMn),
+                          selectedCategory: _selectedCategory,
+                          onCategorySelected: (c) => _selectCategory(c, isMn),
+                          allLabel: l10n.all,
                         ),
                       ),
                     ),
