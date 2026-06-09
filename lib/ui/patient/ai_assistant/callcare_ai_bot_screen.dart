@@ -1,9 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
 import 'package:bugamed/ui/design_system/app_theme.dart';
 import 'package:bugamed/ui/design_system/widgets/app_button.dart';
+import 'package:bugamed/ui/patient/ai_assistant/callcare_ai_prompt.dart';
 import 'package:bugamed/ui/patient/all_lab_services_screen.dart';
 import 'package:bugamed/ui/patient/direct_services_screen.dart';
 
@@ -130,9 +135,10 @@ class _CallCareAiBotScreenState extends State<CallCareAiBotScreen> {
   @override
   void initState() {
     super.initState();
-    // Defaults to the live LLM-backed service (Supabase Edge Function).
-    // Pass `service: MockCallCareAiService()` to run the offline scripted flow.
-    _service = widget.service ?? LiveCallCareAiService();
+    // Defaults to Gemini (gemini-2.5-pro) called directly with the .env key.
+    // Alternatives: `LiveCallCareAiService()` (Claude via Supabase edge fn,
+    // key server-side) or `MockCallCareAiService()` (offline scripted flow).
+    _service = widget.service ?? GeminiCallCareAiService();
     // STATE: greeting — the first bot turn appears immediately.
     final intro = _service.greeting();
     _messages.add(ChatMessage.bot(
@@ -663,6 +669,130 @@ class LiveCallCareAiService implements CallCareAiService {
     if (match == null) return BotReply(text: reply);
 
     final text = reply.replaceAll(re, '').trim();
+    final modality = switch (match.group(1)) {
+      'diagnostic' => ServiceModality.diagnostic,
+      'nursing' => ServiceModality.nursing,
+      _ => ServiceModality.lab,
+    };
+    return BotReply(text: text, bookModality: modality);
+  }
+}
+
+// ============================================================================
+//  Gemini service — calls gemini-2.5-pro directly from the app.
+//
+//  Reads GEMINI_API_KEY from .env (flutter_dotenv). NOTE: a key bundled in the
+//  app is extractable — fine for a POC, but for production move this call into
+//  a server (e.g. the callcare-ai-chat edge function) and keep the key there.
+// ============================================================================
+
+class GeminiCallCareAiService implements CallCareAiService {
+  static const _model = 'gemini-2.5-pro';
+  static final _bookTag = RegExp(r'\[\[BOOK:(lab|diagnostic|nursing)\]\]');
+
+  // Reuse the scripted greeting + Q1 chips for an instant first turn; Gemini
+  // takes over from the user's first answer.
+  @override
+  BotReply greeting() => MockCallCareAiService().greeting();
+
+  @override
+  Future<BotReply> respond({
+    required String userInput,
+    required List<ChatMessage> history,
+  }) async {
+    final apiKey = dotenv.env['GEMINI_API_KEY'];
+    if (apiKey == null || apiKey.isEmpty) {
+      return const BotReply(
+        text: 'AI тохиргоо дутуу байна (GEMINI_API_KEY олдсонгүй).',
+      );
+    }
+
+    // Gemini "contents" use roles user / model. The first turn must be a user
+    // turn, so drop the leading local greeting (a model turn).
+    final contents = history
+        .map((m) => {
+              'role': m.isUser ? 'user' : 'model',
+              'parts': [
+                {'text': m.text}
+              ],
+            })
+        .toList();
+    while (contents.isNotEmpty && contents.first['role'] == 'model') {
+      contents.removeAt(0);
+    }
+    if (contents.isEmpty) {
+      contents.add({
+        'role': 'user',
+        'parts': [
+          {'text': userInput}
+        ],
+      });
+    }
+
+    final uri = Uri.parse(
+      'https://generativelanguage.googleapis.com/v1beta/models/$_model:generateContent',
+    );
+
+    try {
+      final res = await http.post(
+        uri,
+        headers: {
+          'content-type': 'application/json',
+          'x-goog-api-key': apiKey,
+        },
+        body: jsonEncode({
+          'systemInstruction': {
+            'parts': [
+              {'text': callCareSystemPrompt}
+            ],
+          },
+          'contents': contents,
+          'generationConfig': {
+            'temperature': 0.6,
+            'maxOutputTokens': 2048,
+          },
+        }),
+      );
+
+      if (res.statusCode != 200) {
+        return const BotReply(
+          text:
+              'Уучлаарай, AI туслахтай холбогдоход алдаа гарлаа. Дараа дахин '
+              'оролдоно уу.',
+        );
+      }
+
+      final data = jsonDecode(utf8.decode(res.bodyBytes)) as Map<String, dynamic>;
+      final candidates = data['candidates'] as List?;
+      final reply = (candidates != null && candidates.isNotEmpty)
+          ? _extractText(candidates.first)
+          : '';
+
+      if (reply.trim().isEmpty) {
+        return const BotReply(
+          text: 'Уучлаарай, хариу авахад алдаа гарлаа. Дахин оролдоно уу.',
+        );
+      }
+      return _parse(reply.trim());
+    } catch (_) {
+      return const BotReply(
+        text:
+            'Уучлаарай, AI туслахтай холбогдоход алдаа гарлаа. Сүлжээгээ шалгаад '
+            'дахин оролдоно уу.',
+      );
+    }
+  }
+
+  String _extractText(dynamic candidate) {
+    final parts = candidate?['content']?['parts'] as List?;
+    if (parts == null) return '';
+    return parts.map((p) => (p?['text'] ?? '') as String).join('\n');
+  }
+
+  BotReply _parse(String reply) {
+    final match = _bookTag.firstMatch(reply);
+    if (match == null) return BotReply(text: reply);
+    final text = reply.replaceAll(_bookTag, '').trim();
     final modality = switch (match.group(1)) {
       'diagnostic' => ServiceModality.diagnostic,
       'nursing' => ServiceModality.nursing,
