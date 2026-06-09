@@ -5,7 +5,7 @@ import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart' as geo;
 import 'package:bugamed/core/constants/app_colors.dart';
-import 'package:bugamed/ui/shared/widgets/custom_text_field.dart';
+import 'package:bugamed/ui/design_system/widgets/app_text_field.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
 
 class LocationPickerScreen extends StatefulWidget {
@@ -303,7 +303,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                     ),
                     const SizedBox(height: 16),
 
-                    CustomTextField(
+                    AppTextField(
                       controller: _addressController,
                       label: l10n.streetAddressRequired,
                       hint: l10n.streetAddressHint,
@@ -311,7 +311,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                     ),
                     const SizedBox(height: 12),
 
-                    CustomTextField(
+                    AppTextField(
                       controller: _labelController,
                       label: l10n.labelOptional,
                       hint: l10n.labelHint,
@@ -321,7 +321,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                     Row(
                       children: [
                         Expanded(
-                          child: CustomTextField(
+                          child: AppTextField(
                             controller: _buildingController,
                             label: l10n.buildingName,
                             hint: l10n.buildingNameHint,
@@ -329,7 +329,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                         ),
                         const SizedBox(width: 12),
                         Expanded(
-                          child: CustomTextField(
+                          child: AppTextField(
                             controller: _entranceController,
                             label: l10n.entrance,
                             hint: l10n.entranceHint,
@@ -342,7 +342,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                     Row(
                       children: [
                         Expanded(
-                          child: CustomTextField(
+                          child: AppTextField(
                             controller: _floorController,
                             label: l10n.floor,
                             hint: 'e.g., 5',
@@ -351,7 +351,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                         ),
                         const SizedBox(width: 12),
                         Expanded(
-                          child: CustomTextField(
+                          child: AppTextField(
                             controller: _apartmentController,
                             label: l10n.apartmentNumberLabel,
                             hint: l10n.apartmentNumberHint,
@@ -359,7 +359,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                         ),
                         const SizedBox(width: 12),
                         Expanded(
-                          child: CustomTextField(
+                          child: AppTextField(
                             controller: _doorController,
                             label: l10n.doorNumber,
                             hint: l10n.doorNumberHint,
@@ -369,7 +369,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                     ),
                     const SizedBox(height: 12),
 
-                    CustomTextField(
+                    AppTextField(
                       controller: _additionalInfoController,
                       label: l10n.additionalInfo,
                       hint: l10n.specialInstructionsOrLandmarks,
