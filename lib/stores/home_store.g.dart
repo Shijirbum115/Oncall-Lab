@@ -41,6 +41,22 @@ mixin _$HomeStore on _HomeStore, Store {
     });
   }
 
+  late final _$serviceCategoriesAtom =
+      Atom(name: '_HomeStore.serviceCategories', context: context);
+
+  @override
+  ObservableList<Map<String, dynamic>> get serviceCategories {
+    _$serviceCategoriesAtom.reportRead();
+    return super.serviceCategories;
+  }
+
+  @override
+  set serviceCategories(ObservableList<Map<String, dynamic>> value) {
+    _$serviceCategoriesAtom.reportWrite(value, super.serviceCategories, () {
+      super.serviceCategories = value;
+    });
+  }
+
   late final _$isLoadingAtom =
       Atom(name: '_HomeStore.isLoading', context: context);
 
@@ -117,6 +133,7 @@ mixin _$HomeStore on _HomeStore, Store {
     return '''
 testTypes: ${testTypes},
 availableDoctors: ${availableDoctors},
+serviceCategories: ${serviceCategories},
 isLoading: ${isLoading},
 errorMessage: ${errorMessage}
     ''';

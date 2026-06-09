@@ -32,6 +32,10 @@ abstract class _HomeStore with Store {
       ObservableList<Map<String, dynamic>>();
 
   @observable
+  ObservableList<Map<String, dynamic>> serviceCategories =
+      ObservableList<Map<String, dynamic>>();
+
+  @observable
   bool isLoading = false;
 
   @observable
@@ -59,14 +63,23 @@ abstract class _HomeStore with Store {
     errorMessage = null;
 
     try {
-      // Load data in parallel for better performance
-      final results = await Future.wait([
-        _serviceRepository.getAggregatedTestTypes(),
-        _doctorRepository.getAvailableDoctors(),
-      ]);
+      // Load data concurrently for better performance
+      final testsFuture = _serviceRepository.getAggregatedTestTypes();
+      final doctorsFuture = _doctorRepository.getAvailableDoctors();
+      final categoriesFuture = _serviceRepository.getServiceCategories();
 
-      testTypes = ObservableList.of(results[0].take(maxTestTypesOnHome));
-      availableDoctors = ObservableList.of(results[1].take(maxDoctorsOnHome));
+      testTypes = ObservableList.of((await testsFuture).take(maxTestTypesOnHome));
+      availableDoctors =
+          ObservableList.of((await doctorsFuture).take(maxDoctorsOnHome));
+      serviceCategories = ObservableList.of(
+        (await categoriesFuture).map(
+          (c) => <String, dynamic>{
+            'id': c.id,
+            'name': c.name,
+            'icon': c.iconName,
+          },
+        ),
+      );
 
       _loadingCompleter!.complete();
     } catch (e) {

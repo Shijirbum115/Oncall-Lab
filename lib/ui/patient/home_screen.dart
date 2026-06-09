@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
@@ -7,7 +8,7 @@ import 'package:bugamed/stores/auth_store.dart';
 import 'package:bugamed/stores/home_store.dart';
 import 'package:bugamed/ui/design_system/app_theme.dart';
 import 'package:bugamed/ui/patient/widgets/visit_options_section.dart';
-import 'package:bugamed/ui/patient/widgets/test_types_section.dart';
+import 'package:bugamed/ui/patient/widgets/service_category_row.dart';
 import 'package:bugamed/ui/patient/widgets/available_doctors_section.dart';
 import 'package:bugamed/ui/patient/all_lab_services_screen.dart';
 import 'package:bugamed/ui/patient/direct_services_screen.dart';
@@ -82,7 +83,8 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
 
     return Observer(
       builder: (_) {
-        final hasData = _homeStore.testTypes.isNotEmpty ||
+        final hasData = _homeStore.serviceCategories.isNotEmpty ||
+            _homeStore.testTypes.isNotEmpty ||
             _homeStore.availableDoctors.isNotEmpty;
 
         if (_homeStore.isLoading && !hasData) {
@@ -108,7 +110,6 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
           );
         }
 
-        final tests = _homeStore.testTypes.toList();
         final doctors = _homeStore.availableDoctors.toList();
 
         return SafeArea(
@@ -134,7 +135,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
                           onClinicTap: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(
+                              CupertinoPageRoute(
                                 builder: (_) => const AllLabServicesScreen(),
                               ),
                             );
@@ -142,27 +143,66 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
                           onHomeTap: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(
+                              CupertinoPageRoute(
                                 builder: (_) => const DirectServicesScreen(),
                               ),
                             );
                           },
                         ),
-                        const SizedBox(height: AppSpacing.xl),
-                        const AdBanner(),
                         const SizedBox(height: AppSpacing.lg),
-                        TestTypesSection(
-                          testTypes: tests,
-                          onSeeAllTap: () {
+                        Padding(
+                          padding: AppPadding.screenH,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                l10n.services,
+                                style: AppTypography.sectionHeader,
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    CupertinoPageRoute(
+                                      builder: (_) =>
+                                          const AllLabServicesScreen(),
+                                    ),
+                                  );
+                                },
+                                style: TextButton.styleFrom(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 12, vertical: 4),
+                                  minimumSize: Size.zero,
+                                  tapTargetSize:
+                                      MaterialTapTargetSize.shrinkWrap,
+                                ),
+                                child: Text(
+                                  l10n.viewAll,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.primary,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        ServiceCategoryRow(
+                          categories: _homeStore.serviceCategories.toList(),
+                          onCategoryTap: (category) {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(
+                              CupertinoPageRoute(
                                 builder: (_) => const AllLabServicesScreen(),
                               ),
                             );
                           },
                         ),
-                        const SizedBox(height: AppSpacing.xxl),
+                        const SizedBox(height: AppSpacing.lg),
+                        const AdBanner(),
+                        const SizedBox(height: AppSpacing.lg),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 15),
                           child: Row(
@@ -176,7 +216,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
                                 onPressed: () {
                                   Navigator.push(
                                     context,
-                                    MaterialPageRoute(
+                                    CupertinoPageRoute(
                                       builder: (_) =>
                                           const DirectServicesScreen(),
                                     ),
@@ -231,11 +271,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
                 Flexible(
                   child: Text(
                     displayName ?? l10n.welcome,
-                    style: const TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.black,
-                    ),
+                    style: AppTypography.heading,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
