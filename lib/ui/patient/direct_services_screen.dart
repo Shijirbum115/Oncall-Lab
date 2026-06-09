@@ -7,7 +7,7 @@ import 'package:bugamed/ui/design_system/app_theme.dart';
 import 'package:bugamed/ui/design_system/widgets/app_text_field.dart';
 import 'package:bugamed/ui/patient/booking/direct_service_booking_screen.dart';
 import 'package:bugamed/ui/patient/widgets/service_category_grid.dart';
-import 'package:bugamed/ui/shared/widgets/mascot_state_widget.dart';
+import 'package:bugamed/ui/design_system/widgets/app_empty_state.dart';
 import 'package:bugamed/ui/shared/widgets/skeleton_loader.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
 
@@ -77,8 +77,8 @@ class _DirectServicesScreenState extends State<DirectServicesScreen> {
 
           if (serviceStore.errorMessage != null) {
             return Center(
-              child: MascotStateWidget(
-                emotion: MascotEmotion.error,
+              child: AppEmptyState(
+                emotion: AppEmptyEmotion.error,
                 title: l10n.errorLoadingServices,
                 subtitle: serviceStore.errorMessage ?? '',
                 actionText: l10n.retry,
@@ -90,8 +90,8 @@ class _DirectServicesScreenState extends State<DirectServicesScreen> {
           final services = serviceStore.directServices;
           if (services.isEmpty) {
             return Center(
-              child: MascotStateWidget(
-                emotion: MascotEmotion.empty,
+              child: AppEmptyState(
+                emotion: AppEmptyEmotion.empty,
                 title: l10n.noServicesAvailable,
               ),
             );
@@ -139,8 +139,8 @@ class _DirectServicesScreenState extends State<DirectServicesScreen> {
               if (filtered.isEmpty)
                 SliverFillRemaining(
                   child: Center(
-                    child: MascotStateWidget(
-                      emotion: MascotEmotion.searching,
+                    child: AppEmptyState(
+                      emotion: AppEmptyEmotion.searching,
                       title: l10n.noServicesMatchSearch,
                       subtitle: l10n.tryDifferentKeywords,
                     ),

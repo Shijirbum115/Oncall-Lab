@@ -13,7 +13,7 @@ import 'package:bugamed/ui/patient/all_lab_services_screen.dart';
 import 'package:bugamed/ui/patient/direct_services_screen.dart';
 import 'package:bugamed/ui/shared/widgets/profile_avatar.dart';
 import 'package:bugamed/ui/shared/widgets/notification_bell.dart';
-import 'package:bugamed/ui/shared/widgets/mascot_state_widget.dart';
+import 'package:bugamed/ui/design_system/widgets/app_empty_state.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
 import 'package:bugamed/ui/patient/widgets/ad_banner.dart';
 
@@ -87,8 +87,8 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
 
         if (_homeStore.isLoading && !hasData) {
           return const Center(
-            child: MascotStateWidget(
-              emotion: MascotEmotion.loading,
+            child: AppEmptyState(
+              emotion: AppEmptyEmotion.loading,
               title: 'Мэдээлэл уншиж байна...',
             ),
           );
@@ -97,8 +97,8 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
         if (_homeStore.errorMessage != null && !hasData) {
           return Center(
             child: SingleChildScrollView(
-              child: MascotStateWidget(
-                emotion: MascotEmotion.error,
+              child: AppEmptyState(
+                emotion: AppEmptyEmotion.error,
                 title: l10n.errorLoadingData,
                 subtitle: _homeStore.errorMessage ?? '',
                 actionText: l10n.retry,

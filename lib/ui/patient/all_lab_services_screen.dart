@@ -5,7 +5,7 @@ import 'package:bugamed/ui/design_system/app_theme.dart';
 import 'package:bugamed/ui/design_system/widgets/app_text_field.dart';
 import 'package:bugamed/ui/patient/laboratories_screen.dart';
 import 'package:bugamed/ui/patient/widgets/service_category_grid.dart';
-import 'package:bugamed/ui/shared/widgets/mascot_state_widget.dart';
+import 'package:bugamed/ui/design_system/widgets/app_empty_state.dart';
 import 'package:bugamed/ui/shared/widgets/skeleton_loader.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -151,8 +151,8 @@ class _AllLabServicesScreenState extends State<AllLabServicesScreen> {
           ? const SkeletonServiceGrid(itemCount: 9)
           : errorMessage != null
               ? Center(
-                  child: MascotStateWidget(
-                    emotion: MascotEmotion.error,
+                  child: AppEmptyState(
+                    emotion: AppEmptyEmotion.error,
                     title: l10n.errorLoadingServices,
                     subtitle: errorMessage ?? '',
                     actionText: l10n.retry,
@@ -192,8 +192,8 @@ class _AllLabServicesScreenState extends State<AllLabServicesScreen> {
                     if (filteredServices.isEmpty && !isLoading)
                       SliverFillRemaining(
                         child: Center(
-                          child: MascotStateWidget(
-                            emotion: MascotEmotion.searching,
+                          child: AppEmptyState(
+                            emotion: AppEmptyEmotion.searching,
                             title: l10n.noServicesMatchSearch,
                             subtitle: l10n.tryDifferentKeywords,
                           ),

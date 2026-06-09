@@ -6,7 +6,7 @@ import 'package:bugamed/stores/test_request_store.dart';
 import 'package:bugamed/data/models/test_request_model.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
 import 'package:bugamed/ui/design_system/widgets/app_card.dart';
-import 'package:bugamed/ui/shared/widgets/mascot_state_widget.dart';
+import 'package:bugamed/ui/design_system/widgets/app_empty_state.dart';
 
 class PatientRequestsScreen extends StatefulWidget {
   const PatientRequestsScreen({super.key});
@@ -217,9 +217,9 @@ class _PatientRequestsScreenState extends State<PatientRequestsScreen> {
   ) {
     if (requests.isEmpty) {
       final emotion = switch (type) {
-        'active' => MascotEmotion.empty,
-        'completed' => MascotEmotion.sleeping,
-        _ => MascotEmotion.canceled,
+        'active' => AppEmptyEmotion.empty,
+        'completed' => AppEmptyEmotion.sleeping,
+        _ => AppEmptyEmotion.canceled,
       };
 
       final title = switch (type) {
@@ -230,7 +230,7 @@ class _PatientRequestsScreenState extends State<PatientRequestsScreen> {
 
       return Center(
         child: SingleChildScrollView(
-          child: MascotStateWidget(
+          child: AppEmptyState(
             emotion: emotion,
             title: title,
             subtitle: l10n.requestHomeServicePrompt,

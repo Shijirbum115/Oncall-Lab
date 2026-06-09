@@ -6,7 +6,7 @@ import 'package:bugamed/data/models/notification_model.dart';
 import 'package:bugamed/stores/auth_store.dart';
 import 'package:bugamed/stores/notification_store.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
-import 'package:bugamed/ui/shared/widgets/mascot_state_widget.dart';
+import 'package:bugamed/ui/design_system/widgets/app_empty_state.dart';
 import 'package:bugamed/ui/shared/notification_detail_screen.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
 
@@ -79,8 +79,8 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
 
           if (_notificationStore.notifications.isEmpty) {
             return Center(
-              child: MascotStateWidget(
-                emotion: MascotEmotion.sleeping,
+              child: AppEmptyState(
+                emotion: AppEmptyEmotion.sleeping,
                 title: l10n.noNotificationsYet,
                 subtitle: l10n.notificationsUpdatesHere,
               ),
