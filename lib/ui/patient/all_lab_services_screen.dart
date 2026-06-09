@@ -9,6 +9,7 @@ import 'package:bugamed/ui/patient/widgets/category_filter_bar.dart';
 import 'package:bugamed/ui/design_system/widgets/app_empty_state.dart';
 import 'package:bugamed/ui/shared/widgets/skeleton_loader.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
+import 'package:bugamed/core/utils/error_handler.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AllLabServicesScreen extends StatefulWidget {
@@ -193,7 +194,7 @@ class _AllLabServicesScreenState extends State<AllLabServicesScreen> {
                   child: AppEmptyState(
                     emotion: AppEmptyEmotion.error,
                     title: l10n.errorLoadingServices,
-                    subtitle: errorMessage ?? '',
+                    subtitle: friendlyErrorMessage(l10n, errorMessage),
                     actionText: l10n.retry,
                     onAction: _loadServices,
                   ),

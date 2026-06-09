@@ -8,6 +8,7 @@ import 'package:bugamed/core/services/supabase_service.dart';
 import 'package:bugamed/core/services/push_notification_service.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
 import 'package:bugamed/core/di/service_locator.dart';
+import 'package:bugamed/core/utils/error_handler.dart';
 import 'package:bugamed/core/utils/navigation_helper.dart';
 import 'package:bugamed/stores/auth_store.dart';
 import 'package:bugamed/stores/locale_store.dart';
@@ -21,6 +22,10 @@ import 'package:bugamed/ui/design_system/app_theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Catch framework + uncaught async errors and show a friendly fallback
+  // instead of Flutter's raw red error screen.
+  installGlobalErrorHandlers();
 
   // Load environment variables (skip on web if file doesn't exist)
   try {

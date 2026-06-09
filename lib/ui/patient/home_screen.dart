@@ -16,6 +16,7 @@ import 'package:bugamed/ui/shared/widgets/profile_avatar.dart';
 import 'package:bugamed/ui/shared/widgets/notification_bell.dart';
 import 'package:bugamed/ui/design_system/widgets/app_empty_state.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
+import 'package:bugamed/core/utils/error_handler.dart';
 import 'package:bugamed/ui/patient/widgets/ad_banner.dart';
 
 class PatientHomeScreen extends StatefulWidget {
@@ -102,7 +103,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
               child: AppEmptyState(
                 emotion: AppEmptyEmotion.error,
                 title: l10n.errorLoadingData,
-                subtitle: _homeStore.errorMessage ?? '',
+                subtitle: friendlyErrorMessage(l10n, _homeStore.errorMessage),
                 actionText: l10n.retry,
                 onAction: _homeStore.loadHomeData,
               ),

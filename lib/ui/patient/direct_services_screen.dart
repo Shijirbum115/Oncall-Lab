@@ -10,6 +10,7 @@ import 'package:bugamed/ui/patient/widgets/service_category_grid.dart';
 import 'package:bugamed/ui/design_system/widgets/app_empty_state.dart';
 import 'package:bugamed/ui/shared/widgets/skeleton_loader.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
+import 'package:bugamed/core/utils/error_handler.dart';
 
 class DirectServicesScreen extends StatefulWidget {
   const DirectServicesScreen({super.key});
@@ -80,7 +81,7 @@ class _DirectServicesScreenState extends State<DirectServicesScreen> {
               child: AppEmptyState(
                 emotion: AppEmptyEmotion.error,
                 title: l10n.errorLoadingServices,
-                subtitle: serviceStore.errorMessage ?? '',
+                subtitle: friendlyErrorMessage(l10n, serviceStore.errorMessage),
                 actionText: l10n.retry,
                 onAction: () => serviceStore.loadDirectServices(),
               ),

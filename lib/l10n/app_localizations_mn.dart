@@ -847,6 +847,22 @@ class AppLocalizationsMn extends AppLocalizations {
   String get networkError => 'Сүлжээний алдаа. Холболтоо шалгана уу';
 
   @override
+  String get connectionTimedOut =>
+      'Холболтын хугацаа дууслаа. Дахин оролдоно уу';
+
+  @override
+  String get serverError =>
+      'Сервертэй холбогдоход асуудал гарлаа. Түр хүлээгээд дахин оролдоно уу';
+
+  @override
+  String get sessionExpired =>
+      'Таны нэвтрэлтийн хугацаа дууссан. Дахин нэвтэрнэ үү';
+
+  @override
+  String get somethingWentWrong =>
+      'Алдаа гарлаа. Дахин оролдоно уу, эсвэл асуудал давтагдвал тусламжтай холбогдоно уу';
+
+  @override
   String get unknownError => 'Тодорхойгүй алдаа гарлаа';
 
   @override

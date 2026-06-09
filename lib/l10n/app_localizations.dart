@@ -1724,6 +1724,30 @@ abstract class AppLocalizations {
   /// **'Network error. Please check your connection'**
   String get networkError;
 
+  /// No description provided for @connectionTimedOut.
+  ///
+  /// In en, this message translates to:
+  /// **'The connection timed out. Please try again'**
+  String get connectionTimedOut;
+
+  /// No description provided for @serverError.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'re having trouble reaching our servers. Please try again shortly'**
+  String get serverError;
+
+  /// No description provided for @sessionExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session has expired. Please sign in again'**
+  String get sessionExpired;
+
+  /// No description provided for @somethingWentWrong.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again, or contact support if it keeps happening'**
+  String get somethingWentWrong;
+
   /// No description provided for @unknownError.
   ///
   /// In en, this message translates to:

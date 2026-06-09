@@ -847,6 +847,20 @@ class AppLocalizationsEn extends AppLocalizations {
   String get networkError => 'Network error. Please check your connection';
 
   @override
+  String get connectionTimedOut => 'The connection timed out. Please try again';
+
+  @override
+  String get serverError =>
+      'We\'re having trouble reaching our servers. Please try again shortly';
+
+  @override
+  String get sessionExpired => 'Your session has expired. Please sign in again';
+
+  @override
+  String get somethingWentWrong =>
+      'Something went wrong. Please try again, or contact support if it keeps happening';
+
+  @override
   String get unknownError => 'An unknown error occurred';
 
   @override
