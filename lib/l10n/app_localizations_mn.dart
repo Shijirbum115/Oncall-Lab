@@ -612,6 +612,9 @@ class AppLocalizationsMn extends AppLocalizations {
   String get myProfile => 'Миний профайл';
 
   @override
+  String get account => 'Бүртгэл';
+
+  @override
   String get editProfile => 'Профайл засах';
 
   @override

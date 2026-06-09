@@ -613,6 +613,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myProfile => 'My Profile';
 
   @override
+  String get account => 'Account';
+
+  @override
   String get editProfile => 'Edit Profile';
 
   @override

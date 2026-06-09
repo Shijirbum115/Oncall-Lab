@@ -1262,6 +1262,12 @@ abstract class AppLocalizations {
   /// **'My Profile'**
   String get myProfile;
 
+  /// No description provided for @account.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get account;
+
   /// No description provided for @editProfile.
   ///
   /// In en, this message translates to:

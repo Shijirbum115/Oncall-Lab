@@ -1,12 +1,17 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
 import 'package:bugamed/core/services/storage_service.dart';
 import 'package:bugamed/core/services/supabase_service.dart';
 import 'package:bugamed/data/models/profile_model.dart';
 import 'package:bugamed/stores/auth_store.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
+import 'package:bugamed/ui/design_system/widgets/app_card.dart';
+import 'package:bugamed/ui/patient/screens/edit_profile_screen.dart';
 import 'package:bugamed/ui/shared/widgets/profile_avatar.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
 import 'package:bugamed/ui/design_system/widgets/app_text_field.dart';
@@ -159,23 +164,17 @@ class PatientProfileScreen extends StatelessWidget {
                             ],
                           ),
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 16),
                         Text(
                           profile?.displayName ?? l10n.user,
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: AppTypography.heading.copyWith(fontSize: 24),
                         ),
-                        const SizedBox(height: 5),
+                        const SizedBox(height: 4),
                         Text(
                           profile?.phoneNumber ?? profile?.email ?? l10n.noPhoneNumber,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: AppColors.grey,
-                          ),
+                          style: AppTypography.bodyMedium,
                         ),
-                        const SizedBox(height: 10),
+                        const SizedBox(height: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           decoration: BoxDecoration(
@@ -190,136 +189,75 @@ class PatientProfileScreen extends StatelessWidget {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 40),
+                        const SizedBox(height: 16),
+                        const LanguageSegmentedPill(),
+                        const SizedBox(height: 32),
+                        _buildSectionHeader(l10n.account),
+                        const SizedBox(height: 8),
                         _buildProfileOption(
-                          icon: Icons.person_outline,
+                          icon: Iconsax.user_edit,
                           title: l10n.editProfile,
                           onTap: () {
                             final userProfile = authStore.currentProfile;
                             if (userProfile != null) {
-                              showModalBottomSheet(
-                                context: context,
-                                isScrollControlled: true,
-                                backgroundColor: Colors.white,
-                                shape: const RoundedRectangleBorder(
-                                  borderRadius:
-                                      BorderRadius.vertical(top: Radius.circular(24)),
+                              Navigator.push(
+                                context,
+                                CupertinoPageRoute(
+                                  builder: (_) =>
+                                      EditProfileScreen(profile: userProfile),
                                 ),
-                                builder: (ctx) => EditProfileSheet(profile: userProfile),
                               );
                             }
                           },
                         ),
+                        const SizedBox(height: 24),
+                        _buildSectionHeader(l10n.requestHistory),
+                        const SizedBox(height: 8),
                         _buildProfileOption(
-                          icon: Icons.history,
+                          icon: Iconsax.clock,
                           title: l10n.requestHistory,
                           onTap: () {
                             NotificationHelper.show(context, l10n.viewAll);
                           },
                         ),
+                        const SizedBox(height: 24),
+                        _buildSectionHeader(l10n.notifications),
+                        const SizedBox(height: 8),
                         _buildProfileOption(
-                          icon: Icons.language,
-                          title: 'Language / Хэл',
-                          onTap: () {
-                            showModalBottomSheet(
-                              context: context,
-                              backgroundColor: Colors.white,
-                              shape: const RoundedRectangleBorder(
-                                borderRadius:
-                                    BorderRadius.vertical(top: Radius.circular(24)),
-                              ),
-                              builder: (_) => const LanguageSettingsSheet(),
-                            );
-                          },
-                        ),
-                        _buildProfileOption(
-                          icon: Icons.notifications_outlined,
+                          icon: Iconsax.notification,
                           title: l10n.notifications,
                           onTap: () {
                             NotificationHelper.show(context, '${l10n.notifications} ${l10n.adminComingSoon}');
                           },
                         ),
-                        const Spacer(),
+                        const SizedBox(height: 32),
                         Padding(
                           padding: const EdgeInsets.only(bottom: 20),
                           child: OutlinedButton.icon(
-                            onPressed: () async {
-                              showModalBottomSheet(
+                            onPressed: () {
+                              showDialog<bool>(
                                 context: context,
-                                backgroundColor: Colors.white,
-                                shape: const RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-                                ),
-                                builder: (context) {
-                                  final dialogL10n = AppLocalizations.of(context)!;
-                                  return Padding(
-                                    padding: const EdgeInsets.all(24.0),
-                                    child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                        Container(
-                                          width: 40,
-                                          height: 4,
-                                          margin: const EdgeInsets.only(bottom: 24),
-                                          decoration: BoxDecoration(
-                                            color: AppColors.grey.withValues(alpha: 0.3),
-                                            borderRadius: BorderRadius.circular(2),
-                                          ),
+                                builder: (ctx) {
+                                  final dialogL10n = AppLocalizations.of(ctx)!;
+                                  return AlertDialog(
+                                    title: Text(dialogL10n.signOut),
+                                    content: Text(
+                                        '${dialogL10n.yes}? ${dialogL10n.signOut}'),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.of(ctx).pop(false),
+                                        child: Text(dialogL10n.cancel),
+                                      ),
+                                      TextButton(
+                                        onPressed: () =>
+                                            Navigator.of(ctx).pop(true),
+                                        style: TextButton.styleFrom(
+                                          foregroundColor: AppColors.error,
                                         ),
-                                        Text(
-                                          dialogL10n.signOut,
-                                          style: const TextStyle(
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
-                                            color: AppColors.error,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 12),
-                                        Text(
-                                          '${dialogL10n.yes}? ${dialogL10n.signOut}',
-                                          style: const TextStyle(
-                                            fontSize: 16,
-                                            color: AppColors.grey,
-                                          ),
-                                          textAlign: TextAlign.center,
-                                        ),
-                                        const SizedBox(height: 32),
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                              child: OutlinedButton(
-                                                onPressed: () => Navigator.pop(context),
-                                                style: OutlinedButton.styleFrom(
-                                                  padding: const EdgeInsets.symmetric(vertical: 16),
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius: BorderRadius.circular(12),
-                                                  ),
-                                                ),
-                                                child: Text(dialogL10n.cancel),
-                                              ),
-                                            ),
-                                            const SizedBox(width: 16),
-                                            Expanded(
-                                              child: ElevatedButton(
-                                                onPressed: () {
-                                                  Navigator.pop(context, true);
-                                                },
-                                                style: ElevatedButton.styleFrom(
-                                                  backgroundColor: AppColors.error,
-                                                  foregroundColor: Colors.white,
-                                                  padding: const EdgeInsets.symmetric(vertical: 16),
-                                                  shape: RoundedRectangleBorder(
-                                                    borderRadius: BorderRadius.circular(12),
-                                                  ),
-                                                ),
-                                                child: Text(dialogL10n.signOut),
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        const SizedBox(height: 20),
-                                      ],
-                                    ),
+                                        child: Text(dialogL10n.signOut),
+                                      ),
+                                    ],
                                   );
                                 },
                               ).then((shouldSignOut) async {
@@ -362,47 +300,47 @@ class PatientProfileScreen extends StatelessWidget {
     );
   }
 
-Widget _buildProfileOption({
-  required IconData icon,
-  required String title,
-  required VoidCallback onTap,
-}) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 10),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.grey.withValues(alpha: 0.1),
-            blurRadius: 5,
-            offset: const Offset(0, 2),
-          ),
-        ],
+  Widget _buildSectionHeader(String title) {
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Text(
+        title.toUpperCase(),
+        style: AppTypography.labelSmall.copyWith(
+          letterSpacing: 1.2,
+          color: AppColors.textSecondary,
+        ),
       ),
-      child: ListTile(
-        onTap: onTap,
-        leading: Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: AppColors.primary.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
+    );
+  }
+
+  Widget _buildProfileOption({
+    required IconData icon,
+    required String title,
+    required VoidCallback onTap,
+  }) {
+    return AppCard(
+      onTap: onTap,
+      margin: const EdgeInsets.only(bottom: 10),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppColors.primary.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: AppColors.primary, size: 20),
           ),
-          child: Icon(
-            icon,
-            color: AppColors.primary,
+          const SizedBox(width: 14),
+          Expanded(
+            child: Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
           ),
-        ),
-        title: Text(
-          title,
-          style: const TextStyle(
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        trailing: const Icon(
-          Icons.chevron_right,
-          color: AppColors.grey,
-        ),
+          const Icon(Icons.chevron_right, color: AppColors.grey, size: 20),
+        ],
       ),
     );
   }
