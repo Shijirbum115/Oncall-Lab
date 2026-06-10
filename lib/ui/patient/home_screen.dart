@@ -140,29 +140,31 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                   // ----- Booking entry points -----
                   Padding(
                     padding: AppPadding.screenH,
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Expanded(
-                          child: _HeroActionCard(
-                            gradient: true,
-                            icon: Iconsax.drop,
-                            title: l10n.bookLabTest,
-                            subtitle: l10n.bookLabTestSubtitle,
-                            onTap: () => _push(const AllLabServicesScreen()),
+                    child: IntrinsicHeight(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          Expanded(
+                            child: _HeroActionCard(
+                              gradient: true,
+                              icon: Iconsax.drop,
+                              title: l10n.bookLabTest,
+                              subtitle: l10n.bookLabTestSubtitle,
+                              onTap: () => _push(const AllLabServicesScreen()),
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: _HeroActionCard(
-                            gradient: false,
-                            icon: Iconsax.home_2,
-                            title: l10n.callDoctor,
-                            subtitle: l10n.callTheDoctorHome,
-                            onTap: () => _push(const DirectServicesScreen()),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: _HeroActionCard(
+                              gradient: false,
+                              icon: Iconsax.home_2,
+                              title: l10n.callDoctor,
+                              subtitle: l10n.callTheDoctorHome,
+                              onTap: () => _push(const DirectServicesScreen()),
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                   const SizedBox(height: AppSpacing.md),
