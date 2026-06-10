@@ -189,6 +189,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                         children: [
                           Expanded(
                             child: _HeroActionCard(
+                              filled: true,
                               imageAsset: 'assets/icons/hero/lab_test.png',
                               fallbackIcon: Iconsax.drop,
                               tint: AppColors.red50,
@@ -441,6 +442,7 @@ class _HeroActionCard extends StatelessWidget {
     required this.title,
     required this.subtitle,
     required this.onTap,
+    this.filled = false,
   });
 
   final String imageAsset;
@@ -452,18 +454,28 @@ class _HeroActionCard extends StatelessWidget {
   final String subtitle;
   final VoidCallback onTap;
 
+  /// Filled = full brand-gradient power statement (white text, image on a
+  /// white plate). Otherwise a light tinted card.
+  final bool filled;
+
   @override
   Widget build(BuildContext context) {
+    final titleColor = filled ? Colors.white : AppColors.textPrimary;
+    final subtitleColor =
+        filled ? Colors.white.withValues(alpha: 0.88) : AppColors.textSecondary;
+    final bubbleColor = filled ? Colors.white : accent;
+
     return AppCard(
       onTap: onTap,
       borderRadius: AppRadius.lg,
       padding: EdgeInsets.zero,
-      backgroundColor: tint,
-      borderColor: borderColor,
+      backgroundColor: filled ? Colors.transparent : tint,
+      gradient: filled ? AppColors.brandGradient : null,
+      borderColor: filled ? null : borderColor,
       // Tinted glow lifts the two primary actions off the white page.
       shadow: [
         BoxShadow(
-          color: accent.withValues(alpha: 0.16),
+          color: accent.withValues(alpha: filled ? 0.35 : 0.16),
           blurRadius: 18,
           offset: const Offset(0, 8),
         ),
@@ -476,12 +488,14 @@ class _HeroActionCard extends StatelessWidget {
             Positioned(
               top: -30,
               right: -26,
-              child: BlurBubble(size: 130, color: accent, alpha: 0.28),
+              child: BlurBubble(
+                  size: 130, color: bubbleColor, alpha: filled ? 0.22 : 0.28),
             ),
             Positioned(
               bottom: -34,
               left: -30,
-              child: BlurBubble(size: 120, color: accent, alpha: 0.18),
+              child: BlurBubble(
+                  size: 120, color: bubbleColor, alpha: filled ? 0.14 : 0.18),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
@@ -494,20 +508,20 @@ class _HeroActionCard extends StatelessWidget {
                     children: [
                       Text(
                         title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 15,
                           fontWeight: FontWeight.w700,
                           height: 1.25,
-                          color: AppColors.textPrimary,
+                          color: titleColor,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         subtitle,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 12,
                           height: 1.35,
-                          color: AppColors.textSecondary,
+                          color: subtitleColor,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -527,7 +541,8 @@ class _HeroActionCard extends StatelessWidget {
                           shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
-                              color: accent.withValues(alpha: 0.3),
+                              color: (filled ? Colors.black : accent)
+                                  .withValues(alpha: filled ? 0.15 : 0.3),
                               blurRadius: 8,
                               offset: const Offset(0, 3),
                             ),
@@ -536,22 +551,27 @@ class _HeroActionCard extends StatelessWidget {
                         child: Icon(Iconsax.arrow_right_3,
                             size: 16, color: accent),
                       ),
-                      Image.asset(
-                        imageAsset,
-                        width: 64,
-                        height: 64,
-                        errorBuilder: (_, _, _) => Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius:
-                                BorderRadius.circular(AppRadius.sm),
-                          ),
-                          child: Icon(fallbackIcon,
-                              color: AppColors.primary, size: 22),
-                        ),
-                      ),
+                      // On the gradient, the illustration sits on a white
+                      // plate so it stays crisp.
+                      filled
+                          ? Container(
+                              padding: const EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius:
+                                    BorderRadius.circular(AppRadius.md),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color:
+                                        Colors.black.withValues(alpha: 0.12),
+                                    blurRadius: 8,
+                                    offset: const Offset(0, 3),
+                                  ),
+                                ],
+                              ),
+                              child: _illustration(52),
+                            )
+                          : _illustration(64),
                     ],
                   ),
                 ],
@@ -559,6 +579,23 @@ class _HeroActionCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _illustration(double size) {
+    return Image.asset(
+      imageAsset,
+      width: size,
+      height: size,
+      errorBuilder: (_, _, _) => Container(
+        width: 44,
+        height: 44,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(AppRadius.sm),
+        ),
+        child: Icon(fallbackIcon, color: AppColors.primary, size: 22),
       ),
     );
   }

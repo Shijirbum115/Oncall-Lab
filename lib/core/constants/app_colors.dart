@@ -11,32 +11,32 @@ class AppColors {
   // ---------------------------------------------------------------------
   // Brand
   // ---------------------------------------------------------------------
-  static const Color primary = Color(0xFFE2334F); // CallCare Coral
-  static const Color primaryDark = Color(0xFFC2253E); // pressed / emphasis
-  static const Color secondary = Color(0xFFF97C92); // CallCare Pink
+  static const Color primary = Color(0xFFE3243B); // CallCare Red (scarlet)
+  static const Color primaryDark = Color(0xFFB81B30); // pressed / emphasis
+  static const Color secondary = Color(0xFFC8102E); // deep crimson
   static const Color accent = Color(0xFFFFB84D); // warm highlight (sparingly)
 
-  /// Hero gradient: coral → pink. Used on primary CTAs and hero surfaces.
+  /// Hero gradient: bright scarlet → deep crimson. Powerful, not pink.
   static const Gradient brandGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [primary, secondary],
+    colors: [Color(0xFFF03D54), Color(0xFFC8102E)],
   );
 
   /// Soft variant for large background surfaces (subtle, not loud).
   static const Gradient brandGradientSoft = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
-    colors: [Color(0xFFFDE2E7), Color(0xFFFEF1F3)],
+    colors: [Color(0xFFFBE3E6), Color(0xFFFEF3F4)],
   );
 
-  // Coral tonal ramp
-  static const Color red50 = Color(0xFFFEF1F3);
-  static const Color red100 = Color(0xFFFDE2E7);
-  static const Color red200 = Color(0xFFFBC0CB);
+  // Red tonal ramp
+  static const Color red50 = Color(0xFFFEF2F3);
+  static const Color red100 = Color(0xFFFBDFE3);
+  static const Color red200 = Color(0xFFF5B7C0);
   static const Color red500 = primary;
-  static const Color red700 = Color(0xFFA81F38);
-  static const Color red900 = Color(0xFF7A1226);
+  static const Color red700 = Color(0xFF9F1528);
+  static const Color red900 = Color(0xFF70101F);
 
   // ---------------------------------------------------------------------
   // Neutrals & text (WCAG AA on white)
@@ -147,7 +147,7 @@ class AppColors {
 
   /// Colors for service category grid icons
   static const List<Color> serviceCategoryColors = [
-    Color(0xFFE2334F), // brand coral
+    Color(0xFFE3243B), // brand red
     Color(0xFF3B82F6), // blue
     Color(0xFF8B5CF6), // violet
     Color(0xFFF97316), // orange
