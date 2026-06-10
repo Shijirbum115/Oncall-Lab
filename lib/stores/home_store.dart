@@ -74,6 +74,7 @@ abstract class _HomeStore with Store {
                   .map((c) => <String, dynamic>{
                         'id': c.id,
                         'name': c.name,
+                        'name_mn': c.nameMn,
                         'icon': c.iconName,
                       })
                   .toList(),

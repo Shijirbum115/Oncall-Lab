@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
 import 'package:bugamed/ui/design_system/app_theme.dart';
-import 'package:bugamed/ui/design_system/widgets/app_card.dart';
-import 'package:bugamed/ui/design_system/app_shadows.dart';
 import 'package:bugamed/ui/shared/widgets/category_icon.dart';
 
 /// Horizontal scrollable row of service category cards for the home screen.
@@ -31,13 +29,17 @@ class ServiceCategoryRow extends StatelessWidget {
         separatorBuilder: (_, _) => const SizedBox(width: 12),
         itemBuilder: (context, index) {
           final category = categories[index];
-          final name = category['name'] as String? ?? '';
+          final isMn =
+              Localizations.localeOf(context).languageCode == 'mn';
+          final name = (isMn
+                  ? (category['name_mn'] as String? ??
+                      category['name'] as String?)
+                  : category['name'] as String?) ??
+              '';
 
-          return AppCard(
+          return GestureDetector(
             onTap: () => onCategoryTap(category),
-            padding: EdgeInsets.zero,
-            shadow: AppShadows.none,
-            borderColor: AppColors.grey.withValues(alpha: 0.12),
+            behavior: HitTestBehavior.opaque,
             child: SizedBox(
               width: 80,
               child: Column(
@@ -46,7 +48,7 @@ class ServiceCategoryRow extends StatelessWidget {
                   CategoryIcon(
                     categoryName: category['name'] as String?,
                     iconName: category['icon'] as String?,
-                    size: 48,
+                    size: 54,
                   ),
                   const SizedBox(height: 8),
                   Padding(

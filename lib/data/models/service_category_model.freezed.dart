@@ -23,11 +23,17 @@ mixin _$ServiceCategoryModel {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   ServiceCategoryType get type => throw _privateConstructorUsedError;
-  String? get description => throw _privateConstructorUsedError;
+  String? get description =>
+      throw _privateConstructorUsedError; // ignore: invalid_annotation_target
+  @JsonKey(name: 'name_mn')
+  String? get nameMn =>
+      throw _privateConstructorUsedError; // ignore: invalid_annotation_target
   @JsonKey(name: 'icon_name')
-  String? get iconName => throw _privateConstructorUsedError;
+  String? get iconName =>
+      throw _privateConstructorUsedError; // ignore: invalid_annotation_target
   @JsonKey(name: 'created_at')
-  DateTime get createdAt => throw _privateConstructorUsedError;
+  DateTime get createdAt =>
+      throw _privateConstructorUsedError; // ignore: invalid_annotation_target
   @JsonKey(name: 'updated_at')
   DateTime get updatedAt => throw _privateConstructorUsedError;
 
@@ -48,6 +54,7 @@ abstract class $ServiceCategoryModelCopyWith<$Res> {
       String name,
       ServiceCategoryType type,
       String? description,
+      @JsonKey(name: 'name_mn') String? nameMn,
       @JsonKey(name: 'icon_name') String? iconName,
       @JsonKey(name: 'created_at') DateTime createdAt,
       @JsonKey(name: 'updated_at') DateTime updatedAt});
@@ -71,6 +78,7 @@ class _$ServiceCategoryModelCopyWithImpl<$Res,
     Object? name = null,
     Object? type = null,
     Object? description = freezed,
+    Object? nameMn = freezed,
     Object? iconName = freezed,
     Object? createdAt = null,
     Object? updatedAt = null,
@@ -91,6 +99,10 @@ class _$ServiceCategoryModelCopyWithImpl<$Res,
       description: freezed == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
+              as String?,
+      nameMn: freezed == nameMn
+          ? _value.nameMn
+          : nameMn // ignore: cast_nullable_to_non_nullable
               as String?,
       iconName: freezed == iconName
           ? _value.iconName
@@ -121,6 +133,7 @@ abstract class _$$ServiceCategoryModelImplCopyWith<$Res>
       String name,
       ServiceCategoryType type,
       String? description,
+      @JsonKey(name: 'name_mn') String? nameMn,
       @JsonKey(name: 'icon_name') String? iconName,
       @JsonKey(name: 'created_at') DateTime createdAt,
       @JsonKey(name: 'updated_at') DateTime updatedAt});
@@ -141,6 +154,7 @@ class __$$ServiceCategoryModelImplCopyWithImpl<$Res>
     Object? name = null,
     Object? type = null,
     Object? description = freezed,
+    Object? nameMn = freezed,
     Object? iconName = freezed,
     Object? createdAt = null,
     Object? updatedAt = null,
@@ -161,6 +175,10 @@ class __$$ServiceCategoryModelImplCopyWithImpl<$Res>
       description: freezed == description
           ? _value.description
           : description // ignore: cast_nullable_to_non_nullable
+              as String?,
+      nameMn: freezed == nameMn
+          ? _value.nameMn
+          : nameMn // ignore: cast_nullable_to_non_nullable
               as String?,
       iconName: freezed == iconName
           ? _value.iconName
@@ -186,6 +204,7 @@ class _$ServiceCategoryModelImpl implements _ServiceCategoryModel {
       required this.name,
       required this.type,
       this.description,
+      @JsonKey(name: 'name_mn') this.nameMn,
       @JsonKey(name: 'icon_name') this.iconName,
       @JsonKey(name: 'created_at') required this.createdAt,
       @JsonKey(name: 'updated_at') required this.updatedAt});
@@ -201,19 +220,26 @@ class _$ServiceCategoryModelImpl implements _ServiceCategoryModel {
   final ServiceCategoryType type;
   @override
   final String? description;
+// ignore: invalid_annotation_target
+  @override
+  @JsonKey(name: 'name_mn')
+  final String? nameMn;
+// ignore: invalid_annotation_target
   @override
   @JsonKey(name: 'icon_name')
   final String? iconName;
+// ignore: invalid_annotation_target
   @override
   @JsonKey(name: 'created_at')
   final DateTime createdAt;
+// ignore: invalid_annotation_target
   @override
   @JsonKey(name: 'updated_at')
   final DateTime updatedAt;
 
   @override
   String toString() {
-    return 'ServiceCategoryModel(id: $id, name: $name, type: $type, description: $description, iconName: $iconName, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'ServiceCategoryModel(id: $id, name: $name, type: $type, description: $description, nameMn: $nameMn, iconName: $iconName, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -226,6 +252,7 @@ class _$ServiceCategoryModelImpl implements _ServiceCategoryModel {
             (identical(other.type, type) || other.type == type) &&
             (identical(other.description, description) ||
                 other.description == description) &&
+            (identical(other.nameMn, nameMn) || other.nameMn == nameMn) &&
             (identical(other.iconName, iconName) ||
                 other.iconName == iconName) &&
             (identical(other.createdAt, createdAt) ||
@@ -236,8 +263,8 @@ class _$ServiceCategoryModelImpl implements _ServiceCategoryModel {
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType, id, name, type, description, iconName, createdAt, updatedAt);
+  int get hashCode => Object.hash(runtimeType, id, name, type, description,
+      nameMn, iconName, createdAt, updatedAt);
 
   @JsonKey(ignore: true)
   @override
@@ -261,6 +288,7 @@ abstract class _ServiceCategoryModel implements ServiceCategoryModel {
           required final String name,
           required final ServiceCategoryType type,
           final String? description,
+          @JsonKey(name: 'name_mn') final String? nameMn,
           @JsonKey(name: 'icon_name') final String? iconName,
           @JsonKey(name: 'created_at') required final DateTime createdAt,
           @JsonKey(name: 'updated_at') required final DateTime updatedAt}) =
@@ -277,13 +305,16 @@ abstract class _ServiceCategoryModel implements ServiceCategoryModel {
   ServiceCategoryType get type;
   @override
   String? get description;
-  @override
+  @override // ignore: invalid_annotation_target
+  @JsonKey(name: 'name_mn')
+  String? get nameMn;
+  @override // ignore: invalid_annotation_target
   @JsonKey(name: 'icon_name')
   String? get iconName;
-  @override
+  @override // ignore: invalid_annotation_target
   @JsonKey(name: 'created_at')
   DateTime get createdAt;
-  @override
+  @override // ignore: invalid_annotation_target
   @JsonKey(name: 'updated_at')
   DateTime get updatedAt;
   @override

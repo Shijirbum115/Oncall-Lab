@@ -20,6 +20,8 @@ class ServiceCategoryModel with _$ServiceCategoryModel {
     required ServiceCategoryType type,
     String? description,
     // ignore: invalid_annotation_target
+    @JsonKey(name: 'name_mn') String? nameMn,
+    // ignore: invalid_annotation_target
     @JsonKey(name: 'icon_name') String? iconName,
     // ignore: invalid_annotation_target
     @JsonKey(name: 'created_at') required DateTime createdAt,

@@ -164,6 +164,10 @@ class _PatientRequestsScreenState extends State<PatientRequestsScreen> {
       );
     }
 
+    // Active requests get the full journey card; finished ones collapse
+    // into compact history rows so ongoing work stands out.
+    final isActiveSegment = _segment == 0;
+
     return RefreshIndicator(
       onRefresh: _refreshRequests,
       child: ListView.separated(
@@ -172,9 +176,11 @@ class _PatientRequestsScreenState extends State<PatientRequestsScreen> {
         ),
         padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
         itemCount: requests.length,
-        itemBuilder: (context, index) =>
-            _RequestCard(request: requests[index], l10n: l10n),
-        separatorBuilder: (_, _) => const SizedBox(height: 14),
+        itemBuilder: (context, index) => isActiveSegment
+            ? _RequestCard(request: requests[index], l10n: l10n)
+            : _CompactRequestCard(request: requests[index], l10n: l10n),
+        separatorBuilder: (_, _) =>
+            SizedBox(height: isActiveSegment ? 14 : 10),
       ),
     );
   }
@@ -272,26 +278,7 @@ class _RequestCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              Container(
-                width: 42,
-                height: 42,
-                decoration: BoxDecoration(
-                  gradient: AppColors.brandGradient,
-                  borderRadius: BorderRadius.circular(AppRadius.sm),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primary.withValues(alpha: 0.3),
-                      blurRadius: 10,
-                      offset: const Offset(0, 4),
-                    ),
-                  ],
-                ),
-                child: Icon(
-                  isLab ? Iconsax.drop : Iconsax.home_2,
-                  color: Colors.white,
-                  size: 20,
-                ),
-              ),
+              _RequestTypeIcon(isLab: isLab, size: 46),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
@@ -370,16 +357,132 @@ class _RequestCard extends StatelessWidget {
     );
   }
 
-  static String _statusKey(RequestStatus status) {
-    return switch (status) {
-      RequestStatus.pending => 'pending',
-      RequestStatus.accepted => 'accepted',
-      RequestStatus.onTheWay => 'on_the_way',
-      RequestStatus.sampleCollected => 'sample_collected',
-      RequestStatus.deliveredToLab => 'delivered_to_lab',
-      RequestStatus.completed => 'completed',
-      RequestStatus.cancelled => 'cancelled',
-    };
+}
+
+String _statusKey(RequestStatus status) {
+  return switch (status) {
+    RequestStatus.pending => 'pending',
+    RequestStatus.accepted => 'accepted',
+    RequestStatus.onTheWay => 'on_the_way',
+    RequestStatus.sampleCollected => 'sample_collected',
+    RequestStatus.deliveredToLab => 'delivered_to_lab',
+    RequestStatus.completed => 'completed',
+    RequestStatus.cancelled => 'cancelled',
+  };
+}
+
+/// 3D illustration marking the request type (lab collection vs home visit).
+class _RequestTypeIcon extends StatelessWidget {
+  const _RequestTypeIcon({required this.isLab, required this.size});
+
+  final bool isLab;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      isLab
+          ? 'assets/icons/hero/lab_test.png'
+          : 'assets/icons/hero/doctor.png',
+      width: size,
+      height: size,
+      errorBuilder: (_, _, _) => Icon(
+        isLab ? Iconsax.drop : Iconsax.home_2,
+        color: AppColors.primary,
+        size: size * 0.5,
+      ),
+    );
+  }
+}
+
+/// Compact history row for finished requests — intentionally quieter than
+/// the active journey card.
+class _CompactRequestCard extends StatelessWidget {
+  const _CompactRequestCard({required this.request, required this.l10n});
+
+  final TestRequestModel request;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    final isLab = request.requestType == RequestType.labService;
+    final title = isLab ? l10n.labTestCollection : l10n.homeServiceRequest;
+    final statusColor = AppColors.getStatusColor(_statusKey(request.status));
+
+    return AppCard(
+      borderRadius: AppRadius.md,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      shadow: AppShadows.none,
+      borderColor: AppColors.grey.withValues(alpha: 0.12),
+      child: Row(
+        children: [
+          _RequestTypeIcon(isLab: isLab, size: 36),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  request.scheduledDate,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textTertiary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                l10n.priceInMNT(request.priceMnt),
+                style: const TextStyle(
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 3),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 6,
+                    height: 6,
+                    decoration: BoxDecoration(
+                      color: statusColor,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 5),
+                  Text(
+                    RequestJourney.label(request.status, l10n),
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: statusColor,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 }
 

@@ -6,6 +6,7 @@ import 'package:bugamed/ui/design_system/widgets/app_text_field.dart';
 import 'package:bugamed/ui/patient/laboratories_screen.dart';
 import 'package:bugamed/ui/patient/widgets/service_category_grid.dart';
 import 'package:bugamed/ui/patient/widgets/category_filter_bar.dart';
+import 'package:bugamed/ui/shared/widgets/category_icon.dart';
 import 'package:bugamed/ui/design_system/widgets/app_empty_state.dart';
 import 'package:bugamed/ui/shared/widgets/skeleton_loader.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
@@ -47,13 +48,35 @@ class _AllLabServicesScreenState extends State<AllLabServicesScreen> {
     return cats.toList();
   }
 
+  /// One entry per category, preserving both names and the icon key.
+  List<Map<String, String?>> _categoryTiles() {
+    final seen = <String, Map<String, String?>>{};
+    for (final s in allServices) {
+      final en = s['category_name'] as String?;
+      if (en == null || en.isEmpty || seen.containsKey(en)) continue;
+      seen[en] = {
+        'name': en,
+        'name_mn': s['category_name_mn'] as String?,
+        'icon': s['category_icon'] as String?,
+      };
+    }
+    return seen.values.toList();
+  }
+
+  /// Browse mode: nothing selected, nothing searched — show categories
+  /// instead of dumping every service in one list.
+  bool get _browsing => _selectedCategory == null && _searchQuery.isEmpty;
+
   void _applyFilters(bool isMn) {
     var result = allServices;
 
     if (_selectedCategory != null) {
-      result = result
-          .where((s) => _categoryNameOf(s, isMn) == _selectedCategory)
-          .toList();
+      // Match either language so navigation sources that only know one
+      // name (e.g. the home row) can never land on an empty list.
+      result = result.where((s) {
+        return s['category_name'] == _selectedCategory ||
+            s['category_name_mn'] == _selectedCategory;
+      }).toList();
     }
 
     if (_searchQuery.isNotEmpty) {
@@ -208,48 +231,123 @@ class _AllLabServicesScreenState extends State<AllLabServicesScreen> {
                         ),
                       ),
                     ),
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 8, bottom: 4),
-                        child: CategoryFilterBar(
-                          categories: _categoriesFor(isMn),
-                          selectedCategory: _selectedCategory,
-                          onCategorySelected: (c) => _selectCategory(c, isMn),
-                          allLabel: l10n.all,
-                        ),
-                      ),
-                    ),
-                    SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
-                        child: Text(
-                          '${filteredServices.length} ${l10n.services.toLowerCase()}',
-                          style: AppTypography.bodySmall.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                      ),
-                    ),
-                    if (filteredServices.isEmpty && !isLoading)
-                      SliverFillRemaining(
-                        child: Center(
-                          child: AppEmptyState(
-                            emotion: AppEmptyEmotion.searching,
-                            title: l10n.noServicesMatchSearch,
-                            subtitle: l10n.tryDifferentKeywords,
-                          ),
+                    if (_browsing)
+                      // Category browse grid: pick a category first, then
+                      // drill into its services.
+                      SliverPadding(
+                        padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+                        sliver: _CategoryBrowseGrid(
+                          categories: _categoryTiles(),
+                          isMn: isMn,
+                          onCategoryTap: (label) =>
+                              _selectCategory(label, isMn),
                         ),
                       )
-                    else
-                      ServiceCategoryGrid(
-                        services: filteredServices,
-                        onServiceTap: _navigateToLaboratories,
+                    else ...[
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 8, bottom: 4),
+                          child: CategoryFilterBar(
+                            categories: _categoriesFor(isMn),
+                            selectedCategory: _selectedCategory,
+                            onCategorySelected: (c) =>
+                                _selectCategory(c, isMn),
+                            allLabel: l10n.all,
+                          ),
+                        ),
                       ),
+                      SliverToBoxAdapter(
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
+                          child: Text(
+                            '${filteredServices.length} ${l10n.services.toLowerCase()}',
+                            style: AppTypography.bodySmall.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                        ),
+                      ),
+                      if (filteredServices.isEmpty && !isLoading)
+                        SliverFillRemaining(
+                          child: Center(
+                            child: AppEmptyState(
+                              emotion: AppEmptyEmotion.searching,
+                              title: l10n.noServicesMatchSearch,
+                              subtitle: l10n.tryDifferentKeywords,
+                            ),
+                          ),
+                        )
+                      else
+                        ServiceCategoryGrid(
+                          services: filteredServices,
+                          onServiceTap: _navigateToLaboratories,
+                        ),
+                    ],
                     const SliverToBoxAdapter(
                       child: SizedBox(height: 40),
                     ),
                   ],
                 ),
+    );
+  }
+}
+
+/// 3-column grid of category tiles (gradient icon + label, borderless).
+class _CategoryBrowseGrid extends StatelessWidget {
+  const _CategoryBrowseGrid({
+    required this.categories,
+    required this.isMn,
+    required this.onCategoryTap,
+  });
+
+  final List<Map<String, String?>> categories;
+  final bool isMn;
+  final void Function(String localizedName) onCategoryTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverGrid(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        mainAxisSpacing: 20,
+        crossAxisSpacing: 12,
+        childAspectRatio: 0.88,
+      ),
+      delegate: SliverChildBuilderDelegate(
+        (context, index) {
+          final cat = categories[index];
+          final label =
+              (isMn ? (cat['name_mn'] ?? cat['name']) : cat['name']) ?? '';
+
+          return GestureDetector(
+            onTap: () => onCategoryTap(label),
+            behavior: HitTestBehavior.opaque,
+            child: Column(
+              children: [
+                CategoryIcon(
+                  categoryName: cat['name'],
+                  iconName: cat['icon'],
+                  size: 62,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  label,
+                  style: const TextStyle(
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w600,
+                    height: 1.2,
+                    color: AppColors.textPrimary,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          );
+        },
+        childCount: categories.length,
+      ),
     );
   }
 }

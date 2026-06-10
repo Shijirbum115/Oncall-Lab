@@ -275,33 +275,24 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
 
   Widget _buildHeader(AppLocalizations l10n) {
     final profile = authStore.currentProfile;
-    final displayName = (profile?.firstName?.isNotEmpty ?? false)
-        ? profile!.firstName
-        : profile?.displayName;
 
     return Padding(
       padding: AppPadding.screenH,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  displayName != null ? l10n.welcome : 'CallCare',
-                  style: AppTypography.labelSmall,
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  displayName ?? l10n.healthcareAtYourDoorstep,
-                  style: displayName != null
-                      ? AppTypography.titleLarge
-                      : AppTypography.titleMedium,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
+          // Brand wordmark (placeholder until the app icon asset lands).
+          ShaderMask(
+            blendMode: BlendMode.srcIn,
+            shaderCallback: (bounds) =>
+                AppColors.brandGradient.createShader(bounds),
+            child: const Text(
+              'CallCare',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.5,
+              ),
             ),
           ),
           Row(
@@ -551,25 +542,22 @@ class _HeroActionCard extends StatelessWidget {
                         child: Icon(Iconsax.arrow_right_3,
                             size: 16, color: accent),
                       ),
-                      // On the gradient, the illustration sits on a white
-                      // plate so it stays crisp.
+                      // On the gradient the illustration sits directly on the
+                      // card; a soft radial glow keeps it readable on red.
                       filled
                           ? Container(
-                              padding: const EdgeInsets.all(5),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius:
-                                    BorderRadius.circular(AppRadius.md),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color:
-                                        Colors.black.withValues(alpha: 0.12),
-                                    blurRadius: 8,
-                                    offset: const Offset(0, 3),
-                                  ),
-                                ],
+                              width: 80,
+                              height: 80,
+                              decoration: const BoxDecoration(
+                                shape: BoxShape.circle,
+                                gradient: RadialGradient(
+                                  colors: [
+                                    Color(0x73FFFFFF),
+                                    Color(0x00FFFFFF),
+                                  ],
+                                ),
                               ),
-                              child: _illustration(52),
+                              child: Center(child: _illustration(70)),
                             )
                           : _illustration(64),
                     ],
@@ -616,57 +604,101 @@ class _AssistantCard extends StatelessWidget {
     return AppCard(
       onTap: onTap,
       borderRadius: AppRadius.lg,
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.zero,
       backgroundColor: Colors.transparent,
       gradient: AppColors.brandGradientSoft,
-      shadow: AppShadows.none,
-      child: Row(
-        children: [
-          Image.asset(
-            'assets/icons/hero/assistant.png',
-            width: 54,
-            height: 54,
-            errorBuilder: (_, _, _) => Container(
-              width: 44,
-              height: 44,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(AppRadius.sm),
+      shadow: [
+        BoxShadow(
+          color: AppColors.primary.withValues(alpha: 0.10),
+          blurRadius: 16,
+          offset: const Offset(0, 6),
+        ),
+      ],
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        child: Stack(
+          children: [
+            Positioned(
+              top: -36,
+              right: -24,
+              child: BlurBubble(
+                  size: 120, color: AppColors.primary, alpha: 0.10),
+            ),
+            Positioned(
+              bottom: -40,
+              left: 70,
+              child: BlurBubble(size: 110, color: Colors.white, alpha: 0.5),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Row(
+                children: [
+                  Image.asset(
+                    'assets/icons/hero/assistant.png',
+                    width: 58,
+                    height: 58,
+                    errorBuilder: (_, _, _) => Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
+                      ),
+                      child: const Icon(Iconsax.message_question,
+                          color: AppColors.primary, size: 22),
+                    ),
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.assistantIntroTitle,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                            height: 1.3,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          l10n.assistantIntroSubtitle,
+                          style: const TextStyle(
+                            fontSize: 12,
+                            height: 1.35,
+                            color: AppColors.textSecondary,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Container(
+                    width: 30,
+                    height: 30,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppColors.primary.withValues(alpha: 0.25),
+                          blurRadius: 8,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(Iconsax.arrow_right_3,
+                        size: 15, color: AppColors.primary),
+                  ),
+                ],
               ),
-              child: const Icon(Iconsax.message_question,
-                  color: AppColors.primary, size: 22),
             ),
-          ),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  l10n.assistantIntroTitle,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
-                    height: 1.3,
-                    color: AppColors.red900,
-                  ),
-                ),
-                const SizedBox(height: 3),
-                Text(
-                  l10n.assistantIntroSubtitle,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    height: 1.35,
-                    color: AppColors.red700,
-                  ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-          const Icon(Iconsax.arrow_right_3, size: 18, color: AppColors.red700),
-        ],
+          ],
+        ),
       ),
     );
   }

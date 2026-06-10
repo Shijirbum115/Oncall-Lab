@@ -52,3 +52,6 @@ supabase/.temp/
 .env.*
 !.env.example
 tmpclaude-*
+
+# Purchased icon pack archives (extract locally, ship only resized assets)
+assets/icons/*.zip
