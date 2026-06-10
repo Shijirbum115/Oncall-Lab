@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
 import 'package:bugamed/ui/design_system/app_theme.dart';
 import 'package:bugamed/ui/design_system/widgets/app_button.dart';
+import 'package:bugamed/ui/design_system/widgets/blur_bubble.dart';
 import 'package:bugamed/ui/patient/all_lab_services_screen.dart';
 import 'package:bugamed/ui/patient/direct_services_screen.dart';
 
@@ -214,20 +215,68 @@ class _CallCareAiBotScreenState extends State<CallCareAiBotScreen> {
         foregroundColor: Colors.white,
         elevation: 0,
         titleSpacing: widget.embedded ? 20 : 0,
+        shape: const RoundedRectangleBorder(
+          borderRadius:
+              BorderRadius.vertical(bottom: Radius.circular(AppRadius.lg)),
+        ),
         flexibleSpace: Container(
-          decoration: const BoxDecoration(gradient: AppColors.brandGradient),
+          decoration: const BoxDecoration(
+            gradient: AppColors.brandGradient,
+            borderRadius:
+                BorderRadius.vertical(bottom: Radius.circular(AppRadius.lg)),
+          ),
+          // Soft light bubbles make the header feel dimensional
+          child: ClipRRect(
+            borderRadius:
+                const BorderRadius.vertical(bottom: Radius.circular(AppRadius.lg)),
+            child: const Stack(
+              children: [
+                Positioned(
+                  top: -36,
+                  right: -20,
+                  child: BlurBubble(size: 140, color: Colors.white, alpha: 0.35),
+                ),
+                Positioned(
+                  bottom: -40,
+                  left: 60,
+                  child: BlurBubble(size: 110, color: Colors.white, alpha: 0.2),
+                ),
+              ],
+            ),
+          ),
         ),
         title: Row(
           children: [
-            Container(
-              width: 36,
-              height: 36,
-              decoration: BoxDecoration(
-                color: Colors.white.withValues(alpha: 0.2),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(Iconsax.message_question,
-                  color: Colors.white, size: 18),
+            Stack(
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.22),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.6), width: 1.5),
+                  ),
+                  child: const Icon(Iconsax.message_question,
+                      color: Colors.white, size: 18),
+                ),
+                // Online presence dot
+                Positioned(
+                  right: 0,
+                  bottom: 0,
+                  child: Container(
+                    width: 11,
+                    height: 11,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF4ADE80),
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 2),
+                    ),
+                  ),
+                ),
+              ],
             ),
             const SizedBox(width: 10),
             const Column(
@@ -720,6 +769,21 @@ class _MessageBubble extends StatelessWidget {
               bottomRight: Radius.circular(isUser ? 4 : AppRadius.md),
             ),
             border: isUser ? null : Border.all(color: AppColors.outline),
+            boxShadow: isUser
+                ? [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.25),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ]
+                : [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.04),
+                      blurRadius: 8,
+                      offset: const Offset(0, 2),
+                    ),
+                  ],
           ),
           child: Text(
             message.text,
@@ -779,9 +843,16 @@ class _QuickReplyChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
         decoration: BoxDecoration(
-          color: AppColors.red50,
+          color: Colors.white,
           borderRadius: BorderRadius.circular(AppRadius.pill),
           border: Border.all(color: AppColors.red200),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primary.withValues(alpha: 0.12),
+              blurRadius: 8,
+              offset: const Offset(0, 3),
+            ),
+          ],
         ),
         child: Text(
           label,
@@ -813,16 +884,38 @@ class _RecommendationCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: AppColors.primary.withValues(alpha: 0.25)),
+        border: Border.all(color: AppColors.red100),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.12),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Icon(Iconsax.clipboard_tick,
-                  color: AppColors.primary, size: 20),
-              const SizedBox(width: 8),
+              Container(
+                width: 34,
+                height: 34,
+                decoration: BoxDecoration(
+                  gradient: AppColors.brandGradient,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.3),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: const Icon(Iconsax.clipboard_tick,
+                    color: Colors.white, size: 17),
+              ),
+              const SizedBox(width: 10),
               Expanded(
                 child: Text(r.summary,
                     style: const TextStyle(
@@ -943,7 +1036,14 @@ class _TypingBubble extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(AppRadius.md),
-          border: Border.all(color: AppColors.grey.withValues(alpha: 0.15)),
+          border: Border.all(color: AppColors.outline),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.04),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
         ),
         child: const Text('• • •',
             style: TextStyle(color: AppColors.grey, fontSize: 14)),
@@ -967,10 +1067,16 @@ class _InputBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.fromLTRB(
-          12, 8, 12, 8 + MediaQuery.of(context).padding.bottom),
-      decoration: const BoxDecoration(
+          12, 10, 12, 10 + MediaQuery.of(context).padding.bottom),
+      decoration: BoxDecoration(
         color: Colors.white,
-        border: Border(top: BorderSide(color: Color(0x11000000))),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.06),
+            blurRadius: 16,
+            offset: const Offset(0, -4),
+          ),
+        ],
       ),
       child: Row(
         children: [
@@ -1002,9 +1108,16 @@ class _InputBar extends StatelessWidget {
               child: Container(
                 width: 46,
                 height: 46,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   gradient: AppColors.brandGradient,
                   shape: BoxShape.circle,
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.35),
+                      blurRadius: 12,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
                 child:
                     const Icon(Iconsax.send_15, color: Colors.white, size: 20),

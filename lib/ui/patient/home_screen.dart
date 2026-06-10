@@ -12,6 +12,7 @@ import 'package:bugamed/ui/design_system/app_theme.dart';
 import 'package:bugamed/ui/design_system/widgets/app_card.dart';
 import 'package:bugamed/ui/design_system/widgets/app_empty_state.dart';
 import 'package:bugamed/ui/design_system/widgets/app_icon_button.dart';
+import 'package:bugamed/ui/design_system/widgets/blur_bubble.dart';
 import 'package:bugamed/ui/design_system/widgets/status_timeline.dart';
 import 'package:bugamed/ui/patient/all_lab_services_screen.dart';
 import 'package:bugamed/ui/patient/direct_services_screen.dart';
@@ -192,6 +193,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                               fallbackIcon: Iconsax.drop,
                               tint: AppColors.red50,
                               borderColor: AppColors.red100,
+                              accent: AppColors.primary,
                               title: l10n.bookLabTest,
                               subtitle: l10n.bookLabTestSubtitle,
                               onTap: () => _push(const AllLabServicesScreen()),
@@ -204,6 +206,7 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                               fallbackIcon: Iconsax.home_2,
                               tint: const Color(0xFFF0F4F8),
                               borderColor: const Color(0xFFE2E9F0),
+                              accent: const Color(0xFF5B82A6),
                               title: l10n.callDoctor,
                               subtitle: l10n.callTheDoctorHome,
                               onTap: () => _push(const DirectServicesScreen()),
@@ -360,6 +363,13 @@ class _ActiveCareCard extends StatelessWidget {
                 decoration: BoxDecoration(
                   gradient: AppColors.brandGradient,
                   borderRadius: BorderRadius.circular(AppRadius.sm),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.35),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
                 child: const Icon(Iconsax.activity,
                     color: Colors.white, size: 20),
@@ -427,6 +437,7 @@ class _HeroActionCard extends StatelessWidget {
     required this.fallbackIcon,
     required this.tint,
     required this.borderColor,
+    required this.accent,
     required this.title,
     required this.subtitle,
     required this.onTap,
@@ -436,6 +447,7 @@ class _HeroActionCard extends StatelessWidget {
   final IconData fallbackIcon;
   final Color tint;
   final Color borderColor;
+  final Color accent;
   final String title;
   final String subtitle;
   final VoidCallback onTap;
@@ -445,60 +457,108 @@ class _HeroActionCard extends StatelessWidget {
     return AppCard(
       onTap: onTap,
       borderRadius: AppRadius.lg,
-      padding: const EdgeInsets.fromLTRB(14, 14, 14, 10),
+      padding: EdgeInsets.zero,
       backgroundColor: tint,
       borderColor: borderColor,
-      shadow: AppShadows.none,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.w700,
-                  height: 1.25,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                subtitle,
-                style: const TextStyle(
-                  fontSize: 12,
-                  height: 1.35,
-                  color: AppColors.textSecondary,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-              const SizedBox(height: 8),
-            ],
-          ),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: Image.asset(
-              imageAsset,
-              width: 66,
-              height: 66,
-              errorBuilder: (_, _, _) => Container(
-                width: 44,
-                height: 44,
-                margin: const EdgeInsets.only(bottom: 8, right: 8),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(AppRadius.sm),
-                ),
-                child:
-                    Icon(fallbackIcon, color: AppColors.primary, size: 22),
+      // Tinted glow lifts the two primary actions off the white page.
+      shadow: [
+        BoxShadow(
+          color: accent.withValues(alpha: 0.16),
+          blurRadius: 18,
+          offset: const Offset(0, 8),
+        ),
+      ],
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        child: Stack(
+          children: [
+            // Blurred accent bubbles bleeding off the edges
+            Positioned(
+              top: -30,
+              right: -26,
+              child: BlurBubble(size: 130, color: accent, alpha: 0.28),
+            ),
+            Positioned(
+              bottom: -34,
+              left: -30,
+              child: BlurBubble(size: 120, color: accent, alpha: 0.18),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(14, 14, 14, 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: const TextStyle(
+                          fontSize: 15,
+                          fontWeight: FontWeight.w700,
+                          height: 1.25,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        subtitle,
+                        style: const TextStyle(
+                          fontSize: 12,
+                          height: 1.35,
+                          color: AppColors.textSecondary,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 10),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: accent.withValues(alpha: 0.3),
+                              blurRadius: 8,
+                              offset: const Offset(0, 3),
+                            ),
+                          ],
+                        ),
+                        child: Icon(Iconsax.arrow_right_3,
+                            size: 16, color: accent),
+                      ),
+                      Image.asset(
+                        imageAsset,
+                        width: 64,
+                        height: 64,
+                        errorBuilder: (_, _, _) => Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius:
+                                BorderRadius.circular(AppRadius.sm),
+                          ),
+                          child: Icon(fallbackIcon,
+                              color: AppColors.primary, size: 22),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
