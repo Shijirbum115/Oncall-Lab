@@ -52,9 +52,9 @@ class AppColors {
   static const Color grey = Color(0xFF8B92A0);
 
   static const Color outline = Color(0xFFE6E8EC);
-  static const Color background = Color(0xFFFAF8F9);
+  static const Color background = Colors.white;
   static const Color cardBackground = Colors.white;
-  static const Color scaffoldBackground = Color(0xFFFAF8F9);
+  static const Color scaffoldBackground = Colors.white;
 
   // ---------------------------------------------------------------------
   // Semantic (distinct from brand)

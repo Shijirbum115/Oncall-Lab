@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
 import 'package:bugamed/ui/design_system/app_shadows.dart';
 import 'package:bugamed/ui/design_system/app_theme.dart';
 
@@ -80,14 +81,22 @@ class _AppCardState extends State<AppCard>
     final radius = widget.borderRadius ?? AppRadius.md;
     final resolvedShadow = widget.shadow ?? AppShadows.sm;
 
+    // On the pure-white scaffold, white cards need an edge to read as
+    // surfaces — default to the outline border unless the caller opted out
+    // with a tint, gradient, or explicit border.
+    final resolvedBorderColor = widget.borderColor ??
+        (widget.backgroundColor == Colors.white && widget.gradient == null
+            ? AppColors.outline
+            : null);
+
     Widget content = Container(
       padding: widget.padding,
       decoration: BoxDecoration(
         color: widget.gradient == null ? widget.backgroundColor : null,
         gradient: widget.gradient,
         borderRadius: BorderRadius.circular(radius),
-        border: widget.borderColor != null
-            ? Border.all(color: widget.borderColor!, width: widget.borderWidth)
+        border: resolvedBorderColor != null
+            ? Border.all(color: resolvedBorderColor, width: widget.borderWidth)
             : null,
         boxShadow: resolvedShadow,
       ),
