@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
 import 'package:bugamed/ui/design_system/app_theme.dart';
 import 'package:bugamed/ui/design_system/widgets/app_card.dart';
 import 'package:bugamed/ui/design_system/app_shadows.dart';
+import 'package:bugamed/ui/shared/widgets/category_icon.dart';
 
 /// Horizontal scrollable row of service category cards for the home screen.
 /// Replaces the auto-scrolling carousel (a UX anti-pattern).
@@ -31,9 +31,7 @@ class ServiceCategoryRow extends StatelessWidget {
         separatorBuilder: (_, _) => const SizedBox(width: 12),
         itemBuilder: (context, index) {
           final category = categories[index];
-          final color = AppColors.getServiceCategoryColor(index);
           final name = category['name'] as String? ?? '';
-          final icon = _getCategoryIcon(category['icon'] as String?);
 
           return AppCard(
             onTap: () => onCategoryTap(category),
@@ -45,14 +43,10 @@ class ServiceCategoryRow extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Container(
-                    width: 48,
-                    height: 48,
-                    decoration: BoxDecoration(
-                      color: color.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(AppRadius.sm),
-                    ),
-                    child: Icon(icon, color: color, size: 22),
+                  CategoryIcon(
+                    categoryName: category['name'] as String?,
+                    iconName: category['icon'] as String?,
+                    size: 48,
                   ),
                   const SizedBox(height: 8),
                   Padding(
@@ -78,17 +72,4 @@ class ServiceCategoryRow extends StatelessWidget {
     );
   }
 
-  static IconData _getCategoryIcon(String? iconName) {
-    return switch (iconName) {
-      'heart' => Iconsax.heart,
-      'activity' => Iconsax.activity,
-      'health' => Iconsax.health,
-      'hospital' => Iconsax.hospital,
-      'blood' => Iconsax.drop,
-      'microscope' => Iconsax.microscope,
-      'shield' => Iconsax.shield_tick,
-      'flask' => Iconsax.filter,
-      _ => Iconsax.health,
-    };
-  }
 }

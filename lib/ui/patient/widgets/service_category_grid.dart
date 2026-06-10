@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:iconsax/iconsax.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
 import 'package:bugamed/ui/design_system/app_theme.dart';
 import 'package:bugamed/ui/design_system/widgets/app_card.dart';
 import 'package:bugamed/ui/design_system/app_shadows.dart';
+import 'package:bugamed/ui/shared/widgets/category_icon.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
 
 /// Displays services in a 3-column grid of square buttons, grouped by category.
@@ -48,9 +48,6 @@ class ServiceCategoryGrid extends StatelessWidget {
               ? (firstService['category_name_mn'] as String? ?? category)
               : category;
 
-          final colorIndex = categories.indexOf(category);
-          final categoryColor = AppColors.getServiceCategoryColor(colorIndex);
-
           return Padding(
             padding: const EdgeInsets.only(bottom: 24),
             child: Column(
@@ -81,7 +78,6 @@ class ServiceCategoryGrid extends StatelessWidget {
                       final service = categoryServices[index];
                       return _ServiceSquareTile(
                         service: service,
-                        color: categoryColor,
                         isMn: isMn,
                         onTap: () => onServiceTap(service),
                       );
@@ -100,13 +96,11 @@ class ServiceCategoryGrid extends StatelessWidget {
 
 class _ServiceSquareTile extends StatelessWidget {
   final Map<String, dynamic> service;
-  final Color color;
   final bool isMn;
   final VoidCallback onTap;
 
   const _ServiceSquareTile({
     required this.service,
-    required this.color,
     required this.isMn,
     required this.onTap,
   });
@@ -126,18 +120,10 @@ class _ServiceSquareTile extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            width: 48,
-            height: 48,
-            decoration: BoxDecoration(
-              color: color.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(AppRadius.sm),
-            ),
-            child: Icon(
-              _getServiceIcon(service['category_icon'] as String?),
-              color: color,
-              size: 22,
-            ),
+          CategoryIcon(
+            categoryName: service['category_name'] as String?,
+            iconName: service['category_icon'] as String?,
+            size: 48,
           ),
           const SizedBox(height: 8),
           Padding(
@@ -160,26 +146,4 @@ class _ServiceSquareTile extends StatelessWidget {
     );
   }
 
-  static IconData _getServiceIcon(String? iconName) {
-    switch (iconName) {
-      case 'heart':
-        return Iconsax.heart;
-      case 'activity':
-        return Iconsax.activity;
-      case 'health':
-        return Iconsax.health;
-      case 'hospital':
-        return Iconsax.hospital;
-      case 'blood':
-        return Iconsax.drop;
-      case 'microscope':
-        return Iconsax.microscope;
-      case 'shield':
-        return Iconsax.shield_tick;
-      case 'flask':
-        return Iconsax.filter;
-      default:
-        return Iconsax.health;
-    }
-  }
 }
