@@ -104,7 +104,6 @@ class _FriendlyErrorView extends StatelessWidget {
               message,
               textAlign: TextAlign.center,
               style: const TextStyle(
-                fontFamily: 'SFPro',
                 fontSize: 15,
                 color: AppColors.textSecondary,
                 height: 1.4,

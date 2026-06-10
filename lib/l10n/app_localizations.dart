@@ -2785,6 +2785,90 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All Categories'**
   String get allCategories;
+
+  /// No description provided for @assistantIntroTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Not sure which test you need?'**
+  String get assistantIntroTitle;
+
+  /// No description provided for @assistantIntroSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat with the CallCare assistant and get a grounded suggestion'**
+  String get assistantIntroSubtitle;
+
+  /// No description provided for @bookLabTest.
+  ///
+  /// In en, this message translates to:
+  /// **'Order a lab test'**
+  String get bookLabTest;
+
+  /// No description provided for @bookLabTestSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sample collected at your home'**
+  String get bookLabTestSubtitle;
+
+  /// No description provided for @callDoctor.
+  ///
+  /// In en, this message translates to:
+  /// **'Call a doctor'**
+  String get callDoctor;
+
+  /// No description provided for @activeBooking.
+  ///
+  /// In en, this message translates to:
+  /// **'Active booking'**
+  String get activeBooking;
+
+  /// No description provided for @bookAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Book again'**
+  String get bookAgain;
+
+  /// No description provided for @contactSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact support'**
+  String get contactSupport;
+
+  /// No description provided for @forgotPasswordHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'To reset your password, please contact our support team:'**
+  String get forgotPasswordHelp;
+
+  /// No description provided for @signInPromptBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to view your bookings, profile and chat with the assistant.'**
+  String get signInPromptBody;
+
+  /// No description provided for @noAccountYet.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t have an account yet?'**
+  String get noAccountYet;
+
+  /// No description provided for @areDoctor.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you a doctor?'**
+  String get areDoctor;
+
+  /// No description provided for @assistantTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Assistant'**
+  String get assistantTab;
+
+  /// No description provided for @bookingsTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Bookings'**
+  String get bookingsTab;
 }
 
 class _AppLocalizationsDelegate

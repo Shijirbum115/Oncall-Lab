@@ -1,13 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
 import 'package:bugamed/stores/auth_store.dart';
 import 'package:bugamed/stores/test_request_store.dart';
 import 'package:bugamed/data/models/test_request_model.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
+import 'package:bugamed/ui/design_system/app_shadows.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
 import 'package:bugamed/ui/design_system/widgets/app_card.dart';
 import 'package:bugamed/ui/design_system/widgets/app_empty_state.dart';
+import 'package:bugamed/ui/design_system/widgets/status_timeline.dart';
+import 'package:bugamed/ui/patient/widgets/request_journey.dart';
 
+/// Bookings tab: the patient's request history built around the
+/// status journey.
 class PatientRequestsScreen extends StatefulWidget {
   const PatientRequestsScreen({super.key});
 
@@ -16,6 +23,8 @@ class PatientRequestsScreen extends StatefulWidget {
 }
 
 class _PatientRequestsScreenState extends State<PatientRequestsScreen> {
+  int _segment = 0;
+
   @override
   void initState() {
     super.initState();
@@ -25,22 +34,19 @@ class _PatientRequestsScreenState extends State<PatientRequestsScreen> {
   void _subscribeToRequests() {
     final user = authStore.currentUser;
     if (user != null) {
-      // Subscribe to real-time updates
       testRequestStore.subscribeToPatientRequests(user.id);
     }
   }
 
   Future<void> _refreshRequests() async {
-    _subscribeToRequests();
-    // Wait a bit for the stream to fetch initial data
-    await Future.delayed(const Duration(milliseconds: 500));
+    final user = authStore.currentUser;
+    if (user != null) {
+      await testRequestStore.loadPatientRequests(user.id);
+    }
   }
 
-  @override
-  void dispose() {
-    testRequestStore.dispose();
-    super.dispose();
-  }
+  // NOTE: testRequestStore is an app-wide singleton — it must not be
+  // disposed here (home shares the same subscription).
 
   @override
   Widget build(BuildContext context) {
@@ -48,161 +54,37 @@ class _PatientRequestsScreenState extends State<PatientRequestsScreen> {
 
     return Observer(
       builder: (_) {
-        if (testRequestStore.isLoading) {
-          return const Center(
-            child: CircularProgressIndicator(
-              color: AppColors.primary,
-            ),
-          );
-        }
-
-        if (testRequestStore.errorMessage != null) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.error_outline,
-                    size: 60,
-                    color: AppColors.error,
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    testRequestStore.errorMessage!,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(color: AppColors.grey),
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: _refreshRequests,
-                    child: Text(l10n.retry),
-                  ),
-                ],
-              ),
-            ),
-          );
-        }
-
         return SafeArea(
+          bottom: false,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 24, 20, 8),
+                padding: const EdgeInsets.fromLTRB(20, 20, 20, 4),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      l10n.myRequests,
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.black,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      l10n.requestHistory,
-                      style: const TextStyle(
-                        color: AppColors.grey,
-                        fontSize: 14,
-                      ),
-                    ),
+                    Text(l10n.myRequests, style: AppTypography.titleLarge),
+                    const SizedBox(height: 4),
+                    Text(l10n.requestHistory, style: AppTypography.bodySmall),
                   ],
                 ),
               ),
-              Expanded(
-                child: DefaultTabController(
-                  length: 3,
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: TabBar(
-                          indicator: BoxDecoration(
-                            color: AppColors.primary,
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          indicatorPadding:
-                              const EdgeInsets.symmetric(horizontal: 4),
-                          labelPadding: EdgeInsets.zero,
-                          labelColor: Colors.white,
-                          unselectedLabelColor:
-                              AppColors.black.withValues(alpha: 0.6),
-                          labelStyle: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          dividerColor: Colors.transparent,
-                          tabs: [
-                            Tab(
-                              child: SizedBox(
-                                height: 40,
-                                child: Center(
-                                  child: Text(
-                                    l10n.activeRequests,
-                                    textAlign: TextAlign.center,
-                                    maxLines: 2,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Tab(
-                              child: SizedBox(
-                                height: 40,
-                                child: Center(
-                                  child: Text(
-                                    l10n.completedRequests,
-                                    textAlign: TextAlign.center,
-                                    maxLines: 2,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            Tab(
-                              child: SizedBox(
-                                height: 40,
-                                child: Center(
-                                  child: Text(
-                                    l10n.cancelledCount,
-                                    textAlign: TextAlign.center,
-                                    maxLines: 2,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Expanded(
-                        child: TabBarView(
-                          physics: const BouncingScrollPhysics(),
-                          children: [
-                            _buildRequestsList(
-                              testRequestStore.activeRequests,
-                              'active',
-                              l10n,
-                            ),
-                            _buildRequestsList(
-                              testRequestStore.completedRequests,
-                              'completed',
-                              l10n,
-                            ),
-                            _buildRequestsList(
-                              testRequestStore.cancelledRequests,
-                              'cancelled',
-                              l10n,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+              const SizedBox(height: AppSpacing.sm),
+              Padding(
+                padding: AppPadding.screenH,
+                child: _SegmentedFilter(
+                  segments: [
+                    l10n.activeRequests,
+                    l10n.completed,
+                    l10n.cancelled,
+                  ],
+                  selected: _segment,
+                  onChanged: (i) => setState(() => _segment = i),
                 ),
               ),
+              const SizedBox(height: AppSpacing.md),
+              Expanded(child: _buildBody(l10n)),
             ],
           ),
         );
@@ -210,31 +92,63 @@ class _PatientRequestsScreenState extends State<PatientRequestsScreen> {
     );
   }
 
-  Widget _buildRequestsList(
-    List<TestRequestModel> requests,
-    String type,
-    AppLocalizations l10n,
-  ) {
-    if (requests.isEmpty) {
-      final emotion = switch (type) {
-        'active' => AppEmptyEmotion.empty,
-        'completed' => AppEmptyEmotion.sleeping,
-        _ => AppEmptyEmotion.canceled,
-      };
+  Widget _buildBody(AppLocalizations l10n) {
+    if (testRequestStore.isLoading && testRequestStore.patientRequests.isEmpty) {
+      return Center(
+        child: AppEmptyState(
+          emotion: AppEmptyEmotion.loading,
+          title: l10n.loading,
+        ),
+      );
+    }
 
-      final title = switch (type) {
-        'active' => l10n.noActiveRequests,
-        'completed' => l10n.noCompletedRequests,
-        _ => l10n.noCancelledRequests,
-      };
-
+    if (testRequestStore.errorMessage != null &&
+        testRequestStore.patientRequests.isEmpty) {
       return Center(
         child: SingleChildScrollView(
           child: AppEmptyState(
-            emotion: emotion,
-            title: title,
-            subtitle: l10n.requestHomeServicePrompt,
+            emotion: AppEmptyEmotion.error,
+            title: l10n.somethingWentWrong,
+            subtitle: l10n.pleaseTryAgainLater,
+            actionText: l10n.retry,
+            onAction: _refreshRequests,
           ),
+        ),
+      );
+    }
+
+    final requests = switch (_segment) {
+      0 => testRequestStore.activeRequests,
+      1 => testRequestStore.completedRequests,
+      _ => testRequestStore.cancelledRequests,
+    };
+
+    if (requests.isEmpty) {
+      final emotion = switch (_segment) {
+        0 => AppEmptyEmotion.empty,
+        1 => AppEmptyEmotion.sleeping,
+        _ => AppEmptyEmotion.canceled,
+      };
+      final title = switch (_segment) {
+        0 => l10n.noActiveRequests,
+        1 => l10n.noCompletedRequests,
+        _ => l10n.noCancelledRequests,
+      };
+
+      return RefreshIndicator(
+        onRefresh: _refreshRequests,
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: BouncingScrollPhysics(),
+          ),
+          children: [
+            const SizedBox(height: 40),
+            AppEmptyState(
+              emotion: emotion,
+              title: title,
+              subtitle: l10n.requestHomeServicePrompt,
+            ),
+          ],
         ),
       );
     }
@@ -242,48 +156,121 @@ class _PatientRequestsScreenState extends State<PatientRequestsScreen> {
     return RefreshIndicator(
       onRefresh: _refreshRequests,
       child: ListView.separated(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(16, 4, 16, 110), // Extra padding for floating navbar
+        physics: const AlwaysScrollableScrollPhysics(
+          parent: BouncingScrollPhysics(),
+        ),
+        padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
         itemCount: requests.length,
         itemBuilder: (context, index) =>
             _RequestCard(request: requests[index], l10n: l10n),
-        separatorBuilder: (_, unused) => const SizedBox(height: 14),
+        separatorBuilder: (_, _) => const SizedBox(height: 14),
       ),
     );
   }
-
 }
 
-class _RequestCard extends StatelessWidget {
-  const _RequestCard({
-    required this.request,
-    required this.l10n,
+// ---------------------------------------------------------------------------
+//  Segmented filter
+// ---------------------------------------------------------------------------
+
+class _SegmentedFilter extends StatelessWidget {
+  const _SegmentedFilter({
+    required this.segments,
+    required this.selected,
+    required this.onChanged,
   });
+
+  final List<String> segments;
+  final int selected;
+  final ValueChanged<int> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 44,
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF0F1F3),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+      ),
+      child: Row(
+        children: List.generate(segments.length, (i) {
+          final isSelected = i == selected;
+          return Expanded(
+            child: Semantics(
+              button: true,
+              selected: isSelected,
+              child: GestureDetector(
+                onTap: () => onChanged(i),
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  curve: Curves.easeOutCubic,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: isSelected ? Colors.white : Colors.transparent,
+                    borderRadius: BorderRadius.circular(AppRadius.xs),
+                    boxShadow: isSelected ? AppShadows.sm : null,
+                  ),
+                  child: Text(
+                    segments[i],
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight:
+                          isSelected ? FontWeight.w700 : FontWeight.w500,
+                      color: isSelected
+                          ? AppColors.primary
+                          : AppColors.textSecondary,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        }),
+      ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+//  Request card
+// ---------------------------------------------------------------------------
+
+class _RequestCard extends StatelessWidget {
+  const _RequestCard({required this.request, required this.l10n});
 
   final TestRequestModel request;
   final AppLocalizations l10n;
 
   @override
   Widget build(BuildContext context) {
-    final statusKey = _statusString(request.status);
-    final statusColor = AppColors.getStatusColor(statusKey);
-    final statusLabel = _statusLabel(request.status, l10n);
-    final typeInfo = _RequestTypeInfo.fromRequest(request, l10n);
+    final isLab = request.requestType == RequestType.labService;
+    final title = isLab ? l10n.labTestCollection : l10n.homeServiceRequest;
+    final typeLabel =
+        isLab ? l10n.labTestServiceLabel : l10n.directHomeServiceLabel;
 
     return AppCard(
-      borderRadius: 18,
+      borderRadius: AppRadius.lg,
+      padding: const EdgeInsets.all(18),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Container(
-                padding: const EdgeInsets.all(10),
+                width: 40,
+                height: 40,
                 decoration: BoxDecoration(
-                  color: typeInfo.tint,
-                  borderRadius: BorderRadius.circular(12),
+                  color: AppColors.red50,
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
-                child: Icon(typeInfo.icon, color: typeInfo.iconColor, size: 20),
+                child: Icon(
+                  isLab ? Iconsax.drop : Iconsax.home_2,
+                  color: AppColors.primary,
+                  size: 20,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -291,186 +278,83 @@ class _RequestCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _title(l10n),
+                      title,
                       style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.black,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      typeInfo.label,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: typeInfo.iconColor,
-                      ),
-                    ),
+                    const SizedBox(height: 2),
+                    Text(typeLabel, style: AppTypography.labelSmall),
                   ],
                 ),
               ),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: statusColor.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                child: Text(
-                  statusLabel,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 12,
-                    color: statusColor,
-                  ),
+              const SizedBox(width: 8),
+              Text(
+                l10n.priceInMNT(request.priceMnt),
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 16),
-          _RequestMetaRow(
-            icon: Icons.calendar_month_outlined,
+          StatusTimeline(
+            steps: RequestJourney.steps(l10n),
+            currentIndex: RequestJourney.indexOf(request.status),
+            cancelled: RequestJourney.isCancelled(request.status),
+            cancelledLabel:
+                '${l10n.cancelled}${request.cancellationReason != null ? ' · ${request.cancellationReason}' : ''}',
+            compact: true,
+          ),
+          const SizedBox(height: 14),
+          _MetaRow(
+            icon: Iconsax.calendar_1,
             label: l10n.scheduledAt(
               request.scheduledDate,
               request.scheduledTimeSlot ?? '',
             ),
           ),
           const SizedBox(height: 8),
-          _RequestMetaRow(
-            icon: Icons.location_on_outlined,
-            label: request.patientAddress,
-          ),
-          const SizedBox(height: 8),
-          _RequestMetaRow(
-            icon: Icons.payments_outlined,
-            label: l10n.priceInMNT(request.priceMnt),
-            valueStyle: const TextStyle(
-              fontWeight: FontWeight.w700,
-              color: AppColors.black,
-            ),
-          ),
+          _MetaRow(icon: Iconsax.location, label: request.patientAddress),
           if (request.patientNotes != null &&
               request.patientNotes!.trim().isNotEmpty) ...[
             const SizedBox(height: 8),
-            _RequestMetaRow(
-              icon: Icons.note_alt_outlined,
-              label: request.patientNotes!,
-            ),
+            _MetaRow(icon: Iconsax.note_1, label: request.patientNotes!),
           ],
         ],
       ),
     );
   }
-
-  String _title(AppLocalizations l10n) {
-    return request.requestType == RequestType.labService
-        ? l10n.labTestCollection
-        : l10n.homeServiceRequest;
-  }
-
-  static String _statusString(RequestStatus status) {
-    switch (status) {
-      case RequestStatus.pending:
-        return 'pending';
-      case RequestStatus.accepted:
-        return 'accepted';
-      case RequestStatus.onTheWay:
-        return 'on_the_way';
-      case RequestStatus.sampleCollected:
-        return 'sample_collected';
-      case RequestStatus.deliveredToLab:
-        return 'delivered_to_lab';
-      case RequestStatus.completed:
-        return 'completed';
-      case RequestStatus.cancelled:
-        return 'cancelled';
-    }
-  }
-
-  static String _statusLabel(RequestStatus status, AppLocalizations l10n) {
-    switch (status) {
-      case RequestStatus.pending:
-        return l10n.pending;
-      case RequestStatus.accepted:
-        return l10n.accepted;
-      case RequestStatus.onTheWay:
-        return l10n.onTheWay;
-      case RequestStatus.sampleCollected:
-        return l10n.sampleCollected;
-      case RequestStatus.deliveredToLab:
-        return l10n.deliveredToLab;
-      case RequestStatus.completed:
-        return l10n.completed;
-      case RequestStatus.cancelled:
-        return l10n.cancelled;
-    }
-  }
 }
 
-class _RequestMetaRow extends StatelessWidget {
-  const _RequestMetaRow({
-    required this.icon,
-    required this.label,
-    this.valueStyle,
-  });
+class _MetaRow extends StatelessWidget {
+  const _MetaRow({required this.icon, required this.label});
 
   final IconData icon;
   final String label;
-  final TextStyle? valueStyle;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 18, color: AppColors.grey),
-        const SizedBox(width: 10),
+        Icon(icon, size: 15, color: AppColors.textTertiary),
+        const SizedBox(width: 8),
         Expanded(
           child: Text(
             label,
-            style: valueStyle ??
-                const TextStyle(
-                  fontSize: 14,
-                  color: AppColors.grey,
-                ),
+            style: AppTypography.bodySmall,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
           ),
         ),
       ],
-    );
-  }
-}
-
-class _RequestTypeInfo {
-  final String label;
-  final IconData icon;
-  final Color tint;
-  final Color iconColor;
-
-  _RequestTypeInfo({
-    required this.label,
-    required this.icon,
-    required this.tint,
-    required this.iconColor,
-  });
-
-  factory _RequestTypeInfo.fromRequest(
-    TestRequestModel request,
-    AppLocalizations l10n,
-  ) {
-    if (request.requestType == RequestType.labService) {
-      return _RequestTypeInfo(
-        label: l10n.labTestServiceLabel,
-        icon: Icons.biotech_outlined,
-        tint: Colors.blue.withValues(alpha: 0.1),
-        iconColor: Colors.blue[700]!,
-      );
-    }
-
-    return _RequestTypeInfo(
-      label: l10n.directHomeServiceLabel,
-      icon: Icons.home_work_outlined,
-      tint: Colors.purple.withValues(alpha: 0.12),
-      iconColor: Colors.purple[600]!,
     );
   }
 }

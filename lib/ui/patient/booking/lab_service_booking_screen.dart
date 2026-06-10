@@ -88,28 +88,29 @@ class _LabServiceBookingScreenState extends State<LabServiceBookingScreen> {
       ),
     );
 
-    if (result != null) {
+    if (result != null && mounted) {
+      final l10n = AppLocalizations.of(context)!;
       setState(() {
         selectedLocation = result;
         useSavedAddress = false;
         showManualAddressField = false;
 
-        // Build full address string
+        // Build full address string (labels follow the app locale)
         final parts = <String>[result['address_line']];
         if (result['building_name']?.isNotEmpty == true) {
           parts.add(result['building_name']);
         }
         if (result['entrance']?.isNotEmpty == true) {
-          parts.add('Entrance: ${result['entrance']}');
+          parts.add(l10n.entranceLabel(result['entrance']));
         }
         if (result['floor']?.isNotEmpty == true) {
-          parts.add('Floor: ${result['floor']}');
+          parts.add(l10n.floorLabel(result['floor']));
         }
         if (result['apartment_number']?.isNotEmpty == true) {
-          parts.add('Apt: ${result['apartment_number']}');
+          parts.add(l10n.apartmentLabel(result['apartment_number']));
         }
         if (result['door_number']?.isNotEmpty == true) {
-          parts.add('Door: ${result['door_number']}');
+          parts.add(l10n.doorLabel(result['door_number']));
         }
 
         _addressController.text = parts.join(', ');

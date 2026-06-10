@@ -592,5 +592,19 @@
   "prep": "Бэлтгэл",
   "searchHome": "Үйлчилгээ, лаборатори хайх...",
   "popularServices": "Эрэлттэй үйлчилгээ",
-  "allCategories": "Бүх ангилал"
+  "allCategories": "Бүх ангилал",
+  "assistantIntroTitle": "Ямар шинжилгээ хэрэгтэйгээ мэдэхгүй байна уу?",
+  "assistantIntroSubtitle": "CallCare туслахтай ярилцаад өөрт тохирох шинжилгээгээ олоорой",
+  "bookLabTest": "Шинжилгээ захиалах",
+  "bookLabTestSubtitle": "Дээжийг гэрээс тань авна",
+  "callDoctor": "Эмч дуудах",
+  "activeBooking": "Идэвхтэй захиалга",
+  "bookAgain": "Дахин захиалах",
+  "contactSupport": "Тусламжтай холбогдох",
+  "forgotPasswordHelp": "Нууц үгээ сэргээхийн тулд манай тусламжийн багтай холбогдоно уу:",
+  "signInPromptBody": "Захиалга, профайлаа харах болон туслахтай чатлахын тулд нэвтэрнэ үү.",
+  "noAccountYet": "Бүртгэл байхгүй юу?",
+  "areDoctor": "Та эмч үү?",
+  "assistantTab": "Туслах",
+  "bookingsTab": "Захиалга"
 }

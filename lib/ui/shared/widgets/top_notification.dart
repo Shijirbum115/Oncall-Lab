@@ -18,7 +18,7 @@ class TopNotification extends StatelessWidget {
     final color = type == NotificationType.error
         ? AppColors.error
         : type == NotificationType.success
-            ? AppColors.primary // Assuming primary is green/success-like or brand color
+            ? AppColors.success
             : AppColors.info;
 
     return Material(

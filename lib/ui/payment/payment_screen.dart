@@ -5,6 +5,7 @@ import 'package:bugamed/core/constants/app_colors.dart';
 import 'package:bugamed/core/utils/auth_context.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
 import 'package:bugamed/stores/auth_store.dart';
+import 'package:bugamed/core/utils/notification_helper.dart';
 import 'package:bugamed/ui/payment/payment_method_screen.dart';
 
 class PaymentScreen extends StatefulWidget {
@@ -39,32 +40,26 @@ class _PaymentScreenState extends State<PaymentScreen> {
   }
 
   Future<void> _showLoginRequiredDialog() async {
+    final l10n = AppLocalizations.of(context)!;
     final result = await showDialog<bool>(
       context: context,
-      barrierDismissible: false, // Force user to click the button
       builder: (context) => AlertDialog(
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Iconsax.lock, color: AppColors.primary, size: 24),
-            SizedBox(width: 12),
-            Text('Нэвтрэх шаардлагатай'),
+            const Icon(Iconsax.lock, color: AppColors.primary, size: 24),
+            const SizedBox(width: 12),
+            Expanded(child: Text(l10n.signInToContinue)),
           ],
         ),
-        content: const Text(
-          'Төлбөр төлөхийн тулд эхлээд системд нэвтэрнэ үү.',
-          style: TextStyle(fontSize: 16, height: 1.5),
-        ),
+        content: Text(l10n.signInPromptBody),
         actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text(l10n.cancel),
+          ),
           ElevatedButton(
-            onPressed: () async {
-              Navigator.pop(context, true);
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            ),
-            child: const Text('Нэвтрэх'),
+            onPressed: () => Navigator.pop(context, true),
+            child: Text(l10n.signIn),
           ),
         ],
       ),
@@ -102,11 +97,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
     // Verify we have userId
     if (_userId == null) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Хэрэглэгчийн мэдээлэл олдсонгүй. Дахин нэвтэрнэ үү.'),
-            backgroundColor: Colors.red,
-          ),
+        NotificationHelper.showError(
+          context,
+          AppLocalizations.of(context)!.sessionExpired,
         );
       }
       return;

@@ -13,7 +13,11 @@ import 'package:bugamed/core/utils/error_handler.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AllLabServicesScreen extends StatefulWidget {
-  const AllLabServicesScreen({super.key});
+  const AllLabServicesScreen({super.key, this.initialCategory});
+
+  /// Pre-selected category (localized name), e.g. when the user taps a
+  /// category on home — their selection must survive the navigation.
+  final String? initialCategory;
 
   @override
   State<AllLabServicesScreen> createState() => _AllLabServicesScreenState();
@@ -77,6 +81,7 @@ class _AllLabServicesScreenState extends State<AllLabServicesScreen> {
   @override
   void initState() {
     super.initState();
+    _selectedCategory = widget.initialCategory;
     _loadServices();
   }
 
@@ -96,23 +101,7 @@ class _AllLabServicesScreenState extends State<AllLabServicesScreen> {
     try {
       final response = await Supabase.instance.client
           .from('services')
-          .select('''
-            id,
-            name,
-            name_mn,
-            description,
-            description_mn,
-            sample_type,
-            preparation_instructions,
-            preparation_instructions_mn,
-            service_categories!inner(
-              id,
-              name,
-              name_mn,
-              type,
-              icon
-            )
-          ''')
+          .select('*, service_categories!inner(*)')
           .eq('service_categories.type', 'lab_test')
           .eq('is_active', true)
           .order('name');
@@ -133,13 +122,14 @@ class _AllLabServicesScreenState extends State<AllLabServicesScreen> {
           'category_name': category['name'],
           'category_name_mn': category['name_mn'],
           'category_type': category['type'],
-          'category_icon': category['icon'],
+          'category_icon': category['icon_name'] ?? category['icon'],
         };
       }).toList();
 
+      final isMn = Localizations.localeOf(context).languageCode == 'mn';
       setState(() {
         allServices = services;
-        filteredServices = services;
+        _applyFilters(isMn);
         isLoading = false;
       });
     } catch (e) {

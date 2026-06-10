@@ -10,6 +10,7 @@ import 'package:bugamed/core/services/supabase_service.dart';
 import 'package:bugamed/data/models/profile_model.dart';
 import 'package:bugamed/stores/auth_store.dart';
 import 'package:bugamed/ui/design_system/app_theme.dart';
+import 'package:bugamed/ui/design_system/widgets/app_button.dart';
 import 'package:bugamed/ui/design_system/widgets/app_card.dart';
 import 'package:bugamed/ui/patient/screens/edit_profile_screen.dart';
 import 'package:bugamed/ui/shared/widgets/profile_avatar.dart';
@@ -21,6 +22,83 @@ import 'package:bugamed/core/utils/notification_helper.dart'; // Import Notifica
 
 class PatientProfileScreen extends StatelessWidget {
   const PatientProfileScreen({super.key});
+
+  /// Pick a photo, preview it in one bottom sheet, then upload.
+  Future<void> _changeProfilePhoto(
+      BuildContext context, AppLocalizations l10n) async {
+    final user = authStore.currentUser;
+    if (user == null) return;
+
+    final File? file = await StorageService.pickImage();
+    if (file == null || !context.mounted) return;
+
+    final confirm = await showModalBottomSheet<bool>(
+      context: context,
+      builder: (ctx) {
+        final sheetL10n = AppLocalizations.of(ctx)!;
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(24, 8, 24, 32),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(sheetL10n.useThisPhoto, style: AppTypography.sectionHeader),
+              const SizedBox(height: 20),
+              CircleAvatar(radius: 56, backgroundImage: FileImage(file)),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: AppButton(
+                      label: sheetL10n.cancel,
+                      variant: AppButtonVariant.secondary,
+                      onPressed: () => Navigator.of(ctx).pop(false),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: AppButton(
+                      label: sheetL10n.save,
+                      onPressed: () => Navigator.of(ctx).pop(true),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (confirm != true || !context.mounted) return;
+
+    try {
+      final url = await StorageService.uploadProfilePhoto(
+        userId: user.id,
+        file: file,
+      );
+      if (url == null) {
+        throw Exception('Failed to upload photo');
+      }
+
+      final cacheBustedUrl =
+          '$url?t=${DateTime.now().millisecondsSinceEpoch}';
+
+      await supabase.from('profiles').update({
+        'avatar_url': cacheBustedUrl,
+        'updated_at': DateTime.now().toIso8601String(),
+      }).eq('id', user.id);
+
+      await authStore.loadCurrentProfile();
+
+      if (context.mounted) {
+        NotificationHelper.showSuccess(context, l10n.profilePhotoUpdated);
+      }
+    } catch (_) {
+      if (context.mounted) {
+        NotificationHelper.showError(context, l10n.failedToUpdatePhoto);
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,104 +121,7 @@ class PatientProfileScreen extends StatelessWidget {
                       children: [
                         const SizedBox(height: 20),
                         GestureDetector(
-                          onTap: () async {
-                            final user = authStore.currentUser;
-                            if (user == null) return;
-
-                            final change = await showDialog<bool>(
-                              context: context,
-                              builder: (ctx) {
-                                final dialogL10n = AppLocalizations.of(ctx)!;
-                                return AlertDialog(
-                                  title: Text(dialogL10n.changeProfilePhoto),
-                                  content: Text(dialogL10n.changeProfilePhotoConfirm),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.of(ctx).pop(false),
-                                      child: Text(dialogL10n.cancel),
-                                    ),
-                                    ElevatedButton(
-                                      onPressed: () => Navigator.of(ctx).pop(true),
-                                      child: Text(dialogL10n.change),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-
-                            if (change != true || !context.mounted) return;
-
-                            final File? file = await StorageService.pickImage();
-                            if (file == null || !context.mounted) return;
-
-                            final confirm = await showDialog<bool>(
-                              context: context,
-                              builder: (ctx) {
-                                final dialogL10n = AppLocalizations.of(ctx)!;
-                                return AlertDialog(
-                                  title: Text(dialogL10n.useThisPhoto),
-                                  content: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      CircleAvatar(
-                                        radius: 40,
-                                        backgroundImage: FileImage(file),
-                                      ),
-                                      const SizedBox(height: 12),
-                                      Text(
-                                        dialogL10n.profilePhotoPreview,
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ],
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed: () => Navigator.of(ctx).pop(false),
-                                      child: Text(dialogL10n.cancel),
-                                    ),
-                                    ElevatedButton(
-                                      onPressed: () => Navigator.of(ctx).pop(true),
-                                      child: Text(dialogL10n.save),
-                                    ),
-                                  ],
-                                );
-                              },
-                            );
-
-                            if (confirm != true || !context.mounted) return;
-
-                            try {
-                              final url = await StorageService.uploadProfilePhoto(
-                                userId: user.id,
-                                file: file,
-                              );
-
-                              if (url == null) {
-                                throw Exception('Failed to upload photo');
-                              }
-
-                              final cacheBustedUrl =
-                                  '$url?t=${DateTime.now().millisecondsSinceEpoch}';
-
-                              await supabase
-                                  .from('profiles')
-                                  .update({
-                                    'avatar_url': cacheBustedUrl,
-                                    'updated_at': DateTime.now().toIso8601String(),
-                                  })
-                                  .eq('id', user.id);
-
-                              await authStore.loadCurrentProfile();
-
-                              if (context.mounted) {
-                                NotificationHelper.showSuccess(context, l10n.profilePhotoUpdated);
-                              }
-                            } catch (e) {
-                              if (context.mounted) {
-                                NotificationHelper.showError(context, '${l10n.failedToUpdatePhoto}: $e');
-                              }
-                            }
-                          },
+                          onTap: () => _changeProfilePhoto(context, l10n),
                           child: Stack(
                             alignment: Alignment.bottomRight,
                             children: [
@@ -156,7 +137,7 @@ class PatientProfileScreen extends StatelessWidget {
                                   shape: BoxShape.circle,
                                 ),
                                 child: const Icon(
-                                  Icons.camera_alt,
+                                  Iconsax.camera,
                                   size: 18,
                                   color: AppColors.primary,
                                 ),

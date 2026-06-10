@@ -1429,4 +1429,49 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get allCategories => 'All Categories';
+
+  @override
+  String get assistantIntroTitle => 'Not sure which test you need?';
+
+  @override
+  String get assistantIntroSubtitle =>
+      'Chat with the CallCare assistant and get a grounded suggestion';
+
+  @override
+  String get bookLabTest => 'Order a lab test';
+
+  @override
+  String get bookLabTestSubtitle => 'Sample collected at your home';
+
+  @override
+  String get callDoctor => 'Call a doctor';
+
+  @override
+  String get activeBooking => 'Active booking';
+
+  @override
+  String get bookAgain => 'Book again';
+
+  @override
+  String get contactSupport => 'Contact support';
+
+  @override
+  String get forgotPasswordHelp =>
+      'To reset your password, please contact our support team:';
+
+  @override
+  String get signInPromptBody =>
+      'Sign in to view your bookings, profile and chat with the assistant.';
+
+  @override
+  String get noAccountYet => 'Don\'t have an account yet?';
+
+  @override
+  String get areDoctor => 'Are you a doctor?';
+
+  @override
+  String get assistantTab => 'Assistant';
+
+  @override
+  String get bookingsTab => 'Bookings';
 }

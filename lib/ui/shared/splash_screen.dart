@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
 
 class SplashWrapper extends StatefulWidget {
   const SplashWrapper({super.key, required this.child});
@@ -49,33 +51,49 @@ class _SplashWrapperState extends State<SplashWrapper> {
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
 
-  // Background color matching the dark icon
-  static const Color _bgColor = Color(0xFF00300F);
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _bgColor,
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Image.asset(
-              'assets/images/bugamed_icon_dark.png',
-              width: 160,
-              height: 160,
-            ),
-            const SizedBox(height: 24),
-            const Text(
-              'BUGAMED',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-                letterSpacing: 4,
+      body: Container(
+        decoration: const BoxDecoration(gradient: AppColors.brandGradient),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 96,
+                height: 96,
+                decoration: BoxDecoration(
+                  color: Colors.white.withValues(alpha: 0.16),
+                  borderRadius: BorderRadius.circular(28),
+                ),
+                child: const Icon(
+                  Iconsax.health5,
+                  size: 52,
+                  color: Colors.white,
+                ),
               ),
-            ),
-          ],
+              const SizedBox(height: 28),
+              const Text(
+                'CallCare',
+                style: TextStyle(
+                  fontSize: 34,
+                  fontWeight: FontWeight.w800,
+                  color: Colors.white,
+                  letterSpacing: -0.5,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Эрүүл мэнд таны гэрт',
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w500,
+                  color: Colors.white.withValues(alpha: 0.85),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

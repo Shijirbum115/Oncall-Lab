@@ -641,5 +641,19 @@
   "prep": "Prep",
   "searchHome": "Search services, laboratories...",
   "popularServices": "Popular Services",
-  "allCategories": "All Categories"
+  "allCategories": "All Categories",
+  "assistantIntroTitle": "Not sure which test you need?",
+  "assistantIntroSubtitle": "Chat with the CallCare assistant and get a grounded suggestion",
+  "bookLabTest": "Order a lab test",
+  "bookLabTestSubtitle": "Sample collected at your home",
+  "callDoctor": "Call a doctor",
+  "activeBooking": "Active booking",
+  "bookAgain": "Book again",
+  "contactSupport": "Contact support",
+  "forgotPasswordHelp": "To reset your password, please contact our support team:",
+  "signInPromptBody": "Sign in to view your bookings, profile and chat with the assistant.",
+  "noAccountYet": "Don't have an account yet?",
+  "areDoctor": "Are you a doctor?",
+  "assistantTab": "Assistant",
+  "bookingsTab": "Bookings"
 }

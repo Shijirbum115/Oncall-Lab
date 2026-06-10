@@ -104,7 +104,7 @@ class PushNotificationService {
       const NotificationDetails(
         android: AndroidNotificationDetails(
           'bugamed_channel',
-          'BUGAMED Notifications',
+          'CallCare Notifications',
           channelDescription: 'Notifications for test requests and updates',
           importance: Importance.high,
           priority: Priority.high,

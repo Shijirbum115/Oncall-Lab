@@ -19,6 +19,7 @@ class AppCard extends StatefulWidget {
     this.borderWidth = 1,
     this.borderRadius,
     this.shadow,
+    this.gradient,
   });
 
   final Widget child;
@@ -30,6 +31,10 @@ class AppCard extends StatefulWidget {
   final double borderWidth;
   final double? borderRadius;
   final List<BoxShadow>? shadow;
+
+  /// When set, the card surface uses this gradient instead of
+  /// [backgroundColor].
+  final Gradient? gradient;
 
   @override
   State<AppCard> createState() => _AppCardState();
@@ -78,7 +83,8 @@ class _AppCardState extends State<AppCard>
     Widget content = Container(
       padding: widget.padding,
       decoration: BoxDecoration(
-        color: widget.backgroundColor,
+        color: widget.gradient == null ? widget.backgroundColor : null,
+        gradient: widget.gradient,
         borderRadius: BorderRadius.circular(radius),
         border: widget.borderColor != null
             ? Border.all(color: widget.borderColor!, width: widget.borderWidth)

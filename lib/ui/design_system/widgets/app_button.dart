@@ -30,18 +30,30 @@ class AppButton extends StatelessWidget {
       height: 52,
       width: fullWidth ? double.infinity : null,
       child: switch (variant) {
-        AppButtonVariant.primary => ElevatedButton(
-            onPressed: isDisabled ? null : onPressed,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-              elevation: 0,
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppRadius.md),
-              ),
+        // Primary CTA: CallCare red→pink gradient surface.
+        AppButtonVariant.primary => DecoratedBox(
+            decoration: BoxDecoration(
+              gradient: isDisabled ? null : AppColors.brandGradient,
+              color: isDisabled ? AppColors.red100 : null,
+              borderRadius: BorderRadius.circular(AppRadius.sm),
             ),
-            child: _buildChild(Colors.white),
+            child: ElevatedButton(
+              onPressed: isDisabled ? null : onPressed,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.transparent,
+                disabledBackgroundColor: Colors.transparent,
+                foregroundColor: Colors.white,
+                disabledForegroundColor:
+                    AppColors.red700.withValues(alpha: 0.45),
+                shadowColor: Colors.transparent,
+                elevation: 0,
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
+                ),
+              ),
+              child: _buildChild(Colors.white),
+            ),
           ),
         AppButtonVariant.secondary => OutlinedButton(
             onPressed: isDisabled ? null : onPressed,
@@ -50,7 +62,7 @@ class AppButton extends StatelessWidget {
               side: const BorderSide(color: AppColors.primary),
               padding: const EdgeInsets.symmetric(horizontal: 24),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppRadius.md),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
             ),
             child: _buildChild(AppColors.primary),
@@ -61,7 +73,7 @@ class AppButton extends StatelessWidget {
               foregroundColor: AppColors.primary,
               padding: const EdgeInsets.symmetric(horizontal: 24),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppRadius.md),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
             ),
             child: _buildChild(AppColors.primary),
@@ -74,7 +86,7 @@ class AppButton extends StatelessWidget {
               elevation: 0,
               padding: const EdgeInsets.symmetric(horizontal: 24),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppRadius.md),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
             ),
             child: _buildChild(Colors.white),

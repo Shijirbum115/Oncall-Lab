@@ -1,14 +1,10 @@
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:http/http.dart' as http;
+import 'package:iconsax/iconsax.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
 import 'package:bugamed/ui/design_system/app_theme.dart';
 import 'package:bugamed/ui/design_system/widgets/app_button.dart';
-import 'package:bugamed/ui/patient/ai_assistant/callcare_ai_prompt.dart';
 import 'package:bugamed/ui/patient/all_lab_services_screen.dart';
 import 'package:bugamed/ui/patient/direct_services_screen.dart';
 
@@ -116,10 +112,13 @@ abstract class CallCareAiService {
 // ============================================================================
 
 class CallCareAiBotScreen extends StatefulWidget {
-  const CallCareAiBotScreen({super.key, this.service});
+  const CallCareAiBotScreen({super.key, this.service, this.embedded = false});
 
   /// Inject a real service in production; defaults to the mock for the POC.
   final CallCareAiService? service;
+
+  /// True when rendered as a tab inside MainPage (no back button).
+  final bool embedded;
 
   @override
   State<CallCareAiBotScreen> createState() => _CallCareAiBotScreenState();
@@ -135,10 +134,10 @@ class _CallCareAiBotScreenState extends State<CallCareAiBotScreen> {
   @override
   void initState() {
     super.initState();
-    // Defaults to Gemini (gemini-2.5-flash) called directly with the .env key.
-    // Alternatives: `LiveCallCareAiService()` (Claude via Supabase edge fn,
-    // key server-side) or `MockCallCareAiService()` (offline scripted flow).
-    _service = widget.service ?? GeminiCallCareAiService();
+    // Defaults to the Supabase edge function (callcare-ai-chat) so the LLM
+    // key stays server-side. `MockCallCareAiService()` remains available for
+    // offline demos.
+    _service = widget.service ?? LiveCallCareAiService();
     // STATE: greeting — the first bot turn appears immediately.
     final intro = _service.greeting();
     _messages.add(ChatMessage.bot(
@@ -210,10 +209,14 @@ class _CallCareAiBotScreenState extends State<CallCareAiBotScreen> {
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
       appBar: AppBar(
-        backgroundColor: AppColors.primary,
+        automaticallyImplyLeading: !widget.embedded,
+        backgroundColor: Colors.transparent,
         foregroundColor: Colors.white,
         elevation: 0,
-        titleSpacing: 0,
+        titleSpacing: widget.embedded ? 20 : 0,
+        flexibleSpace: Container(
+          decoration: const BoxDecoration(gradient: AppColors.brandGradient),
+        ),
         title: Row(
           children: [
             Container(
@@ -223,8 +226,8 @@ class _CallCareAiBotScreenState extends State<CallCareAiBotScreen> {
                 color: Colors.white.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(Icons.smart_toy_outlined,
-                  color: Colors.white, size: 20),
+              child: const Icon(Iconsax.message_question,
+                  color: Colors.white, size: 18),
             ),
             const SizedBox(width: 10),
             const Column(
@@ -679,154 +682,6 @@ class LiveCallCareAiService implements CallCareAiService {
 }
 
 // ============================================================================
-//  Gemini service — calls gemini-2.5-flash directly from the app.
-//
-//  Reads GEMINI_API_KEY from .env (flutter_dotenv). NOTE: a key bundled in the
-//  app is extractable — fine for a POC, but for production move this call into
-//  a server (e.g. the callcare-ai-chat edge function) and keep the key there.
-// ============================================================================
-
-class GeminiCallCareAiService implements CallCareAiService {
-  // Try the primary model first; fall back to the more available one if the
-  // primary is overloaded (503/429). Both are kept current.
-  static const _models = ['gemini-2.5-flash', 'gemini-2.0-flash'];
-  static final _bookTag = RegExp(r'\[\[BOOK:(lab|diagnostic|nursing)\]\]');
-
-  // Reuse the scripted greeting + Q1 chips for an instant first turn; Gemini
-  // takes over from the user's first answer.
-  @override
-  BotReply greeting() => MockCallCareAiService().greeting();
-
-  @override
-  Future<BotReply> respond({
-    required String userInput,
-    required List<ChatMessage> history,
-  }) async {
-    final apiKey = dotenv.env['GEMINI_API_KEY'];
-    if (apiKey == null || apiKey.isEmpty) {
-      return const BotReply(
-        text: 'AI тохиргоо дутуу байна (GEMINI_API_KEY олдсонгүй).',
-      );
-    }
-
-    // Gemini "contents" use roles user / model. The first turn must be a user
-    // turn, so drop the leading local greeting (a model turn).
-    final contents = history
-        .map((m) => {
-              'role': m.isUser ? 'user' : 'model',
-              'parts': [
-                {'text': m.text}
-              ],
-            })
-        .toList();
-    while (contents.isNotEmpty && contents.first['role'] == 'model') {
-      contents.removeAt(0);
-    }
-    if (contents.isEmpty) {
-      contents.add({
-        'role': 'user',
-        'parts': [
-          {'text': userInput}
-        ],
-      });
-    }
-
-    try {
-      final headers = {
-        'content-type': 'application/json',
-        'x-goog-api-key': apiKey,
-      };
-      final payload = jsonEncode({
-        'systemInstruction': {
-          'parts': [
-            {'text': callCareSystemPrompt}
-          ],
-        },
-        'contents': contents,
-        'generationConfig': {
-          'temperature': 0.6,
-          // These are thinking models: maxOutputTokens covers BOTH thinking and
-          // the reply, so cap thinking and leave room for the visible text.
-          'maxOutputTokens': 2048,
-          'thinkingConfig': {'thinkingBudget': 512},
-        },
-      });
-
-      bool isTransient(int code) => code == 503 || code == 429 || code == 500;
-
-      // Per model: retry briefly on transient errors. Across models: fall back
-      // to the next model if the current one stays overloaded.
-      late http.Response res;
-      for (final model in _models) {
-        final uri = Uri.parse(
-          'https://generativelanguage.googleapis.com/v1beta/models/'
-          '$model:generateContent',
-        );
-        res = await http.post(uri, headers: headers, body: payload);
-        for (var attempt = 0;
-            attempt < 2 && isTransient(res.statusCode);
-            attempt++) {
-          await Future.delayed(Duration(milliseconds: 900 * (attempt + 1)));
-          res = await http.post(uri, headers: headers, body: payload);
-        }
-        // Stop early on success or a non-transient error (no point trying the
-        // fallback for e.g. a 400/401).
-        if (!isTransient(res.statusCode)) break;
-      }
-
-      if (res.statusCode != 200) {
-        debugPrint('CallCare AI: Gemini HTTP ${res.statusCode}');
-        final busy = res.statusCode == 503 || res.statusCode == 429;
-        return BotReply(
-          text: busy
-              ? 'AI туслах түр завгүй байна. Хэсэг хүлээгээд дахин оролдоно уу.'
-              : 'Уучлаарай, AI туслахтай холбогдоход алдаа гарлаа. Дараа дахин '
-                  'оролдоно уу.',
-        );
-      }
-
-      final data = jsonDecode(utf8.decode(res.bodyBytes)) as Map<String, dynamic>;
-      final candidates = data['candidates'] as List?;
-      final reply = (candidates != null && candidates.isNotEmpty)
-          ? _extractText(candidates.first)
-          : '';
-
-      if (reply.trim().isEmpty) {
-        return const BotReply(
-          text: 'Уучлаарай, хариу авахад алдаа гарлаа. Дахин оролдоно уу.',
-        );
-      }
-      return _parse(reply.trim());
-    } catch (e) {
-      debugPrint('CallCare AI: request failed: $e');
-      return const BotReply(
-        text:
-            'Уучлаарай, AI туслахтай холбогдоход алдаа гарлаа. Сүлжээгээ шалгаад '
-            'дахин оролдоно уу.',
-      );
-    }
-  }
-
-  String _extractText(dynamic candidate) {
-    final parts = candidate?['content']?['parts'] as List?;
-    if (parts == null) return '';
-    return parts.map((p) => (p?['text'] ?? '') as String).join('\n');
-  }
-
-  BotReply _parse(String reply) {
-    final match = _bookTag.firstMatch(reply);
-    if (match == null) return BotReply(text: reply);
-    final text = reply.replaceAll(_bookTag, '').trim();
-    final modality = switch (match.group(1)) {
-      'diagnostic' => ServiceModality.diagnostic,
-      'nursing' => ServiceModality.nursing,
-      _ => ServiceModality.lab,
-    };
-    return BotReply(text: text, bookModality: modality);
-  }
-}
-
-// ============================================================================
 //  UI widgets
 // ============================================================================
 
@@ -856,16 +711,15 @@ class _MessageBubble extends StatelessWidget {
           constraints: BoxConstraints(
               maxWidth: MediaQuery.of(context).size.width * 0.8),
           decoration: BoxDecoration(
-            color: isUser ? AppColors.primary : Colors.white,
+            gradient: isUser ? AppColors.brandGradient : null,
+            color: isUser ? null : Colors.white,
             borderRadius: BorderRadius.only(
               topLeft: const Radius.circular(AppRadius.md),
               topRight: const Radius.circular(AppRadius.md),
               bottomLeft: Radius.circular(isUser ? AppRadius.md : 4),
               bottomRight: Radius.circular(isUser ? 4 : AppRadius.md),
             ),
-            border: isUser
-                ? null
-                : Border.all(color: AppColors.grey.withValues(alpha: 0.15)),
+            border: isUser ? null : Border.all(color: AppColors.outline),
           ),
           child: Text(
             message.text,
@@ -890,7 +744,7 @@ class _MessageBubble extends StatelessWidget {
               width: 220,
               child: AppButton(
                 label: 'Үйлчилгээ захиалах',
-                icon: Icons.arrow_forward,
+                icon: Iconsax.arrow_right_3,
                 onPressed: () => onBook(message.bookModality!),
               ),
             ),
@@ -925,9 +779,9 @@ class _QuickReplyChip extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
         decoration: BoxDecoration(
-          color: AppColors.primary.withValues(alpha: 0.08),
+          color: AppColors.red50,
           borderRadius: BorderRadius.circular(AppRadius.pill),
-          border: Border.all(color: AppColors.primary.withValues(alpha: 0.3)),
+          border: Border.all(color: AppColors.red200),
         ),
         child: Text(
           label,
@@ -966,7 +820,7 @@ class _RecommendationCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const Icon(Icons.recommend_outlined,
+              const Icon(Iconsax.clipboard_tick,
                   color: AppColors.primary, size: 20),
               const SizedBox(width: 8),
               Expanded(
@@ -995,7 +849,7 @@ class _RecommendationCard extends StatelessWidget {
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.info_outline,
+                  const Icon(Iconsax.info_circle,
                       size: 16, color: AppColors.warning),
                   const SizedBox(width: 6),
                   Expanded(
@@ -1017,7 +871,7 @@ class _RecommendationCard extends StatelessWidget {
           const SizedBox(height: 12),
           AppButton(
             label: 'Үйлчилгээ захиалах',
-            icon: Icons.arrow_forward,
+            icon: Iconsax.arrow_right_3,
             onPressed: () => onBook(r.modality),
           ),
         ],
@@ -1045,7 +899,7 @@ class _SuggestionRow extends StatelessWidget {
               color: AppColors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Icon(Icons.science_outlined,
+            child: const Icon(Iconsax.microscope,
                 size: 16, color: AppColors.primary),
           ),
           const SizedBox(width: 10),
@@ -1140,16 +994,21 @@ class _InputBar extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          GestureDetector(
-            onTap: enabled ? () => onSend(controller.text) : null,
-            child: Container(
-              width: 46,
-              height: 46,
-              decoration: const BoxDecoration(
-                color: AppColors.primary,
-                shape: BoxShape.circle,
+          Semantics(
+            button: true,
+            label: 'Send',
+            child: GestureDetector(
+              onTap: enabled ? () => onSend(controller.text) : null,
+              child: Container(
+                width: 46,
+                height: 46,
+                decoration: const BoxDecoration(
+                  gradient: AppColors.brandGradient,
+                  shape: BoxShape.circle,
+                ),
+                child:
+                    const Icon(Iconsax.send_15, color: Colors.white, size: 20),
               ),
-              child: const Icon(Icons.send_rounded, color: Colors.white, size: 20),
             ),
           ),
         ],

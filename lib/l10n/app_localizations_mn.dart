@@ -1433,4 +1433,50 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get allCategories => 'Бүх ангилал';
+
+  @override
+  String get assistantIntroTitle =>
+      'Ямар шинжилгээ хэрэгтэйгээ мэдэхгүй байна уу?';
+
+  @override
+  String get assistantIntroSubtitle =>
+      'CallCare туслахтай ярилцаад өөрт тохирох шинжилгээгээ олоорой';
+
+  @override
+  String get bookLabTest => 'Шинжилгээ захиалах';
+
+  @override
+  String get bookLabTestSubtitle => 'Дээжийг гэрээс тань авна';
+
+  @override
+  String get callDoctor => 'Эмч дуудах';
+
+  @override
+  String get activeBooking => 'Идэвхтэй захиалга';
+
+  @override
+  String get bookAgain => 'Дахин захиалах';
+
+  @override
+  String get contactSupport => 'Тусламжтай холбогдох';
+
+  @override
+  String get forgotPasswordHelp =>
+      'Нууц үгээ сэргээхийн тулд манай тусламжийн багтай холбогдоно уу:';
+
+  @override
+  String get signInPromptBody =>
+      'Захиалга, профайлаа харах болон туслахтай чатлахын тулд нэвтэрнэ үү.';
+
+  @override
+  String get noAccountYet => 'Бүртгэл байхгүй юу?';
+
+  @override
+  String get areDoctor => 'Та эмч үү?';
+
+  @override
+  String get assistantTab => 'Туслах';
+
+  @override
+  String get bookingsTab => 'Захиалга';
 }

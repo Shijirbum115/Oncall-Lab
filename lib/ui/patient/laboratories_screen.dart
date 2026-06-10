@@ -4,6 +4,7 @@ import 'package:iconsax/iconsax.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
 import 'package:bugamed/core/services/supabase_service.dart';
 import 'package:bugamed/ui/patient/laboratory_detail_screen_new.dart';
+import 'package:bugamed/core/utils/error_handler.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
 import 'package:bugamed/ui/design_system/app_theme.dart';
 
@@ -91,7 +92,6 @@ class _LaboratoriesScreenState extends State<LaboratoriesScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final showBackButton = widget.preSelectedServiceId != null;
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -100,21 +100,6 @@ class _LaboratoriesScreenState extends State<LaboratoriesScreen> {
         surfaceTintColor: Colors.transparent,
         scrolledUnderElevation: 0,
         elevation: 0,
-        automaticallyImplyLeading: showBackButton,
-        leading: showBackButton
-            ? IconButton(
-                icon: const Icon(
-                  Icons.arrow_back_ios,
-                  size: 20,
-                  color: AppColors.black,
-                ),
-                onPressed: () {
-                  if (mounted) {
-                    Navigator.of(context).pop();
-                  }
-                },
-              )
-            : null,
         title: Text(
           widget.serviceName ?? l10n.laboratories,
           style: const TextStyle(
@@ -244,7 +229,7 @@ class _LaboratoriesScreenState extends State<LaboratoriesScreen> {
               ),
               const SizedBox(height: 8),
               Text(
-                errorMessage!,
+                friendlyErrorMessage(l10n, errorMessage),
                 textAlign: TextAlign.center,
                 style: AppTypography.bodyMedium,
               ),

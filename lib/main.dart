@@ -78,17 +78,17 @@ void main() async {
     }
   }
 
-  runApp(const BugamedApp());
+  runApp(const CallCareApp());
 }
 
-class BugamedApp extends StatelessWidget {
-  const BugamedApp({super.key});
+class CallCareApp extends StatelessWidget {
+  const CallCareApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Observer(
       builder: (_) => MaterialApp(
-        title: 'BUGAMED',
+        title: 'CallCare',
         debugShowCheckedModeBanner: false,
         navigatorKey: navigatorKey, // Global navigator key for push notifications
         // Localization support
