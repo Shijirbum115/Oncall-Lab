@@ -12,6 +12,7 @@ import 'package:bugamed/ui/design_system/widgets/app_card.dart';
 import 'package:bugamed/ui/design_system/widgets/app_empty_state.dart';
 import 'package:bugamed/ui/design_system/widgets/status_timeline.dart';
 import 'package:bugamed/ui/patient/widgets/request_journey.dart';
+import 'package:bugamed/ui/shared/widgets/notification_bell.dart';
 
 /// Bookings tab: the patient's request history built around the
 /// status journey.
@@ -60,13 +61,23 @@ class _PatientRequestsScreenState extends State<PatientRequestsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 20, 20, 4),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(l10n.myRequests, style: AppTypography.titleLarge),
-                    const SizedBox(height: 4),
-                    Text(l10n.requestHistory, style: AppTypography.bodySmall),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(l10n.myRequests,
+                              style: AppTypography.titleLarge),
+                          const SizedBox(height: 4),
+                          Text(l10n.requestHistory,
+                              style: AppTypography.bodySmall),
+                        ],
+                      ),
+                    ),
+                    const NotificationBell(),
                   ],
                 ),
               ),
@@ -265,12 +276,19 @@ class _RequestCard extends StatelessWidget {
                 width: 42,
                 height: 42,
                 decoration: BoxDecoration(
-                  color: AppColors.red50,
+                  gradient: AppColors.brandGradient,
                   borderRadius: BorderRadius.circular(AppRadius.sm),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withValues(alpha: 0.3),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
                 ),
                 child: Icon(
                   isLab ? Iconsax.drop : Iconsax.home_2,
-                  color: AppColors.primary,
+                  color: Colors.white,
                   size: 20,
                 ),
               ),

@@ -12,6 +12,8 @@ import 'package:bugamed/stores/auth_store.dart';
 import 'package:bugamed/ui/design_system/app_theme.dart';
 import 'package:bugamed/ui/design_system/widgets/app_button.dart';
 import 'package:bugamed/ui/design_system/widgets/app_card.dart';
+import 'package:bugamed/ui/design_system/widgets/blur_bubble.dart';
+import 'package:bugamed/ui/shared/notifications_screen.dart';
 import 'package:bugamed/ui/patient/screens/edit_profile_screen.dart';
 import 'package:bugamed/ui/shared/widgets/profile_avatar.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
@@ -120,59 +122,15 @@ class PatientProfileScreen extends StatelessWidget {
                     return Column(
                       children: [
                         const SizedBox(height: 20),
-                        GestureDetector(
-                          onTap: () => _changeProfilePhoto(context, l10n),
-                          child: Stack(
-                            alignment: Alignment.bottomRight,
-                            children: [
-                              ProfileAvatar(
-                                avatarUrl: profile?.getAvatarUrl(),
-                                initials: profile?.initials ?? 'U',
-                                radius: 50,
-                              ),
-                              Container(
-                                padding: const EdgeInsets.all(6),
-                                decoration: const BoxDecoration(
-                                  color: Colors.white,
-                                  shape: BoxShape.circle,
-                                ),
-                                child: const Icon(
-                                  Iconsax.camera,
-                                  size: 18,
-                                  color: AppColors.primary,
-                                ),
-                              ),
-                            ],
-                          ),
+                        _ProfileHeaderCard(
+                          profile: profile,
+                          l10n: l10n,
+                          onChangePhoto: () =>
+                              _changeProfilePhoto(context, l10n),
                         ),
-                        const SizedBox(height: 16),
-                        Text(
-                          profile?.displayName ?? l10n.user,
-                          style: AppTypography.heading.copyWith(fontSize: 24),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          profile?.phoneNumber ?? profile?.email ?? l10n.noPhoneNumber,
-                          style: AppTypography.bodyMedium,
-                        ),
-                        const SizedBox(height: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: AppColors.primary.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(
-                            l10n.patient,
-                            style: const TextStyle(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
+                        const SizedBox(height: AppSpacing.md),
                         const LanguageSegmentedPill(),
-                        const SizedBox(height: 32),
+                        const SizedBox(height: AppSpacing.lg),
                         _buildSectionHeader(l10n.account),
                         const SizedBox(height: 8),
                         _buildProfileOption(
@@ -192,23 +150,18 @@ class PatientProfileScreen extends StatelessWidget {
                           },
                         ),
                         const SizedBox(height: 24),
-                        _buildSectionHeader(l10n.requestHistory),
-                        const SizedBox(height: 8),
-                        _buildProfileOption(
-                          icon: Iconsax.clock,
-                          title: l10n.requestHistory,
-                          onTap: () {
-                            NotificationHelper.show(context, l10n.viewAll);
-                          },
-                        ),
-                        const SizedBox(height: 24),
                         _buildSectionHeader(l10n.notifications),
                         const SizedBox(height: 8),
                         _buildProfileOption(
                           icon: Iconsax.notification,
                           title: l10n.notifications,
                           onTap: () {
-                            NotificationHelper.show(context, '${l10n.notifications} ${l10n.adminComingSoon}');
+                            Navigator.push(
+                              context,
+                              CupertinoPageRoute(
+                                builder: (_) => const NotificationsScreen(),
+                              ),
+                            );
                           },
                         ),
                         const SizedBox(height: 32),
@@ -222,8 +175,7 @@ class PatientProfileScreen extends StatelessWidget {
                                   final dialogL10n = AppLocalizations.of(ctx)!;
                                   return AlertDialog(
                                     title: Text(dialogL10n.signOut),
-                                    content: Text(
-                                        '${dialogL10n.yes}? ${dialogL10n.signOut}'),
+                                    content: Text(dialogL10n.areYouSureLogout),
                                     actions: [
                                       TextButton(
                                         onPressed: () =>
@@ -250,7 +202,7 @@ class PatientProfileScreen extends StatelessWidget {
                                 }
                               });
                             },
-                            icon: const Icon(Icons.logout),
+                            icon: const Icon(Iconsax.logout, size: 18),
                             label: Text(l10n.signOut),
                             style: OutlinedButton.styleFrom(
                               foregroundColor: AppColors.error,
@@ -263,9 +215,9 @@ class PatientProfileScreen extends StatelessWidget {
                           ),
                         ),
                         const Text(
-                          'OnCall Lab v1.0.0',
+                          'CallCare v1.0.0',
                           style: TextStyle(
-                            color: AppColors.grey,
+                            color: AppColors.textTertiary,
                             fontSize: 12,
                           ),
                         ),
@@ -306,12 +258,13 @@ class PatientProfileScreen extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            padding: const EdgeInsets.all(8),
+            width: 38,
+            height: 38,
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(8),
+              color: AppColors.red50,
+              borderRadius: BorderRadius.circular(AppRadius.sm),
             ),
-            child: Icon(icon, color: AppColors.primary, size: 20),
+            child: Icon(icon, color: AppColors.primary, size: 19),
           ),
           const SizedBox(width: 14),
           Expanded(
@@ -320,8 +273,163 @@ class PatientProfileScreen extends StatelessWidget {
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
           ),
-          const Icon(Icons.chevron_right, color: AppColors.grey, size: 20),
+          const Icon(Iconsax.arrow_right_3, color: AppColors.grey, size: 16),
         ],
+      ),
+    );
+  }
+}
+
+/// Gradient hero header: the profile's power statement, matching home.
+class _ProfileHeaderCard extends StatelessWidget {
+  const _ProfileHeaderCard({
+    required this.profile,
+    required this.l10n,
+    required this.onChangePhoto,
+  });
+
+  final ProfileModel? profile;
+  final AppLocalizations l10n;
+  final VoidCallback onChangePhoto;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        gradient: AppColors.brandGradient,
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.primary.withValues(alpha: 0.3),
+            blurRadius: 18,
+            offset: const Offset(0, 8),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        child: Stack(
+          children: [
+            const Positioned(
+              top: -36,
+              right: -28,
+              child: BlurBubble(size: 140, color: Colors.white, alpha: 0.25),
+            ),
+            const Positioned(
+              bottom: -40,
+              left: -24,
+              child: BlurBubble(size: 120, color: Colors.white, alpha: 0.15),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(18),
+              child: Row(
+                children: [
+                  Semantics(
+                    button: true,
+                    label: l10n.changeProfilePhoto,
+                    child: GestureDetector(
+                      onTap: onChangePhoto,
+                      child: Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(2.5),
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.white.withValues(alpha: 0.75),
+                                width: 2.5,
+                              ),
+                            ),
+                            child: ProfileAvatar(
+                              avatarUrl: profile?.getAvatarUrl(),
+                              initials: profile?.initials ?? 'U',
+                              radius: 34,
+                            ),
+                          ),
+                          Positioned(
+                            right: -2,
+                            bottom: -2,
+                            child: Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                                boxShadow: [
+                                  BoxShadow(
+                                    color:
+                                        Colors.black.withValues(alpha: 0.15),
+                                    blurRadius: 6,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ],
+                              ),
+                              child: const Icon(
+                                Iconsax.camera,
+                                size: 14,
+                                color: AppColors.primary,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          profile?.displayName ?? l10n.user,
+                          style: const TextStyle(
+                            fontSize: 19,
+                            fontWeight: FontWeight.w800,
+                            color: Colors.white,
+                            letterSpacing: -0.2,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          profile?.phoneNumber ??
+                              profile?.email ??
+                              l10n.noPhoneNumber,
+                          style: TextStyle(
+                            fontSize: 13,
+                            color: Colors.white.withValues(alpha: 0.88),
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 10),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 5),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius:
+                                BorderRadius.circular(AppRadius.pill),
+                          ),
+                          child: Text(
+                            l10n.patient,
+                            style: const TextStyle(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
