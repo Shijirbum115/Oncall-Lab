@@ -178,7 +178,8 @@ class _NotificationCard extends StatelessWidget {
                       children: [
                         Expanded(
                           child: Text(
-                            notification.title,
+                            notification.localizedTitle(
+                                Localizations.localeOf(context).languageCode),
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: notification.isRead ? FontWeight.w500 : FontWeight.w600,
@@ -199,7 +200,8 @@ class _NotificationCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      notification.message,
+                      notification.localizedMessage(
+                          Localizations.localeOf(context).languageCode),
                       style: TextStyle(
                         fontSize: 14,
                         color: Colors.grey[600],

@@ -25,6 +25,8 @@ class NotificationModel with _$NotificationModel {
     required NotificationType type,
     required String title,
     required String message,
+    @JsonKey(name: 'title_mn') String? titleMn,
+    @JsonKey(name: 'message_mn') String? messageMn,
     @JsonKey(name: 'is_read') @Default(false) bool isRead,
     @JsonKey(name: 'related_request_id') String? relatedRequestId,
     Map<String, dynamic>? metadata,
@@ -33,4 +35,19 @@ class NotificationModel with _$NotificationModel {
 
   factory NotificationModel.fromJson(Map<String, dynamic> json) =>
       _$NotificationModelFromJson(json);
+}
+
+/// Locale-aware accessors: Mongolian copy when available, English otherwise.
+extension NotificationL10n on NotificationModel {
+  String localizedTitle(String localeCode) {
+    if (localeCode == 'mn' && (titleMn?.isNotEmpty ?? false)) return titleMn!;
+    return title;
+  }
+
+  String localizedMessage(String localeCode) {
+    if (localeCode == 'mn' && (messageMn?.isNotEmpty ?? false)) {
+      return messageMn!;
+    }
+    return message;
+  }
 }

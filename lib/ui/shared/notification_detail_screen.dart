@@ -165,7 +165,8 @@ class NotificationDetailScreen extends StatelessWidget {
                       delay: const Duration(milliseconds: 300),
                       duration: const Duration(milliseconds: 600),
                       child: Text(
-                        notification.title,
+                        notification.localizedTitle(
+                            Localizations.localeOf(context).languageCode),
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -182,7 +183,8 @@ class NotificationDetailScreen extends StatelessWidget {
                       delay: const Duration(milliseconds: 400),
                       duration: const Duration(milliseconds: 600),
                       child: Text(
-                        notification.message,
+                        notification.localizedMessage(
+                            Localizations.localeOf(context).languageCode),
                         style: const TextStyle(
                           fontSize: 16,
                           color: AppColors.textSecondary,

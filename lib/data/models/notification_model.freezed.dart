@@ -26,6 +26,10 @@ mixin _$NotificationModel {
   NotificationType get type => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
   String get message => throw _privateConstructorUsedError;
+  @JsonKey(name: 'title_mn')
+  String? get titleMn => throw _privateConstructorUsedError;
+  @JsonKey(name: 'message_mn')
+  String? get messageMn => throw _privateConstructorUsedError;
   @JsonKey(name: 'is_read')
   bool get isRead => throw _privateConstructorUsedError;
   @JsonKey(name: 'related_request_id')
@@ -52,6 +56,8 @@ abstract class $NotificationModelCopyWith<$Res> {
       NotificationType type,
       String title,
       String message,
+      @JsonKey(name: 'title_mn') String? titleMn,
+      @JsonKey(name: 'message_mn') String? messageMn,
       @JsonKey(name: 'is_read') bool isRead,
       @JsonKey(name: 'related_request_id') String? relatedRequestId,
       Map<String, dynamic>? metadata,
@@ -76,6 +82,8 @@ class _$NotificationModelCopyWithImpl<$Res, $Val extends NotificationModel>
     Object? type = null,
     Object? title = null,
     Object? message = null,
+    Object? titleMn = freezed,
+    Object? messageMn = freezed,
     Object? isRead = null,
     Object? relatedRequestId = freezed,
     Object? metadata = freezed,
@@ -102,6 +110,14 @@ class _$NotificationModelCopyWithImpl<$Res, $Val extends NotificationModel>
           ? _value.message
           : message // ignore: cast_nullable_to_non_nullable
               as String,
+      titleMn: freezed == titleMn
+          ? _value.titleMn
+          : titleMn // ignore: cast_nullable_to_non_nullable
+              as String?,
+      messageMn: freezed == messageMn
+          ? _value.messageMn
+          : messageMn // ignore: cast_nullable_to_non_nullable
+              as String?,
       isRead: null == isRead
           ? _value.isRead
           : isRead // ignore: cast_nullable_to_non_nullable
@@ -136,6 +152,8 @@ abstract class _$$NotificationModelImplCopyWith<$Res>
       NotificationType type,
       String title,
       String message,
+      @JsonKey(name: 'title_mn') String? titleMn,
+      @JsonKey(name: 'message_mn') String? messageMn,
       @JsonKey(name: 'is_read') bool isRead,
       @JsonKey(name: 'related_request_id') String? relatedRequestId,
       Map<String, dynamic>? metadata,
@@ -158,6 +176,8 @@ class __$$NotificationModelImplCopyWithImpl<$Res>
     Object? type = null,
     Object? title = null,
     Object? message = null,
+    Object? titleMn = freezed,
+    Object? messageMn = freezed,
     Object? isRead = null,
     Object? relatedRequestId = freezed,
     Object? metadata = freezed,
@@ -184,6 +204,14 @@ class __$$NotificationModelImplCopyWithImpl<$Res>
           ? _value.message
           : message // ignore: cast_nullable_to_non_nullable
               as String,
+      titleMn: freezed == titleMn
+          ? _value.titleMn
+          : titleMn // ignore: cast_nullable_to_non_nullable
+              as String?,
+      messageMn: freezed == messageMn
+          ? _value.messageMn
+          : messageMn // ignore: cast_nullable_to_non_nullable
+              as String?,
       isRead: null == isRead
           ? _value.isRead
           : isRead // ignore: cast_nullable_to_non_nullable
@@ -213,6 +241,8 @@ class _$NotificationModelImpl implements _NotificationModel {
       required this.type,
       required this.title,
       required this.message,
+      @JsonKey(name: 'title_mn') this.titleMn,
+      @JsonKey(name: 'message_mn') this.messageMn,
       @JsonKey(name: 'is_read') this.isRead = false,
       @JsonKey(name: 'related_request_id') this.relatedRequestId,
       final Map<String, dynamic>? metadata,
@@ -233,6 +263,12 @@ class _$NotificationModelImpl implements _NotificationModel {
   final String title;
   @override
   final String message;
+  @override
+  @JsonKey(name: 'title_mn')
+  final String? titleMn;
+  @override
+  @JsonKey(name: 'message_mn')
+  final String? messageMn;
   @override
   @JsonKey(name: 'is_read')
   final bool isRead;
@@ -255,7 +291,7 @@ class _$NotificationModelImpl implements _NotificationModel {
 
   @override
   String toString() {
-    return 'NotificationModel(id: $id, userId: $userId, type: $type, title: $title, message: $message, isRead: $isRead, relatedRequestId: $relatedRequestId, metadata: $metadata, createdAt: $createdAt)';
+    return 'NotificationModel(id: $id, userId: $userId, type: $type, title: $title, message: $message, titleMn: $titleMn, messageMn: $messageMn, isRead: $isRead, relatedRequestId: $relatedRequestId, metadata: $metadata, createdAt: $createdAt)';
   }
 
   @override
@@ -268,6 +304,9 @@ class _$NotificationModelImpl implements _NotificationModel {
             (identical(other.type, type) || other.type == type) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.message, message) || other.message == message) &&
+            (identical(other.titleMn, titleMn) || other.titleMn == titleMn) &&
+            (identical(other.messageMn, messageMn) ||
+                other.messageMn == messageMn) &&
             (identical(other.isRead, isRead) || other.isRead == isRead) &&
             (identical(other.relatedRequestId, relatedRequestId) ||
                 other.relatedRequestId == relatedRequestId) &&
@@ -285,6 +324,8 @@ class _$NotificationModelImpl implements _NotificationModel {
       type,
       title,
       message,
+      titleMn,
+      messageMn,
       isRead,
       relatedRequestId,
       const DeepCollectionEquality().hash(_metadata),
@@ -312,6 +353,8 @@ abstract class _NotificationModel implements NotificationModel {
           required final NotificationType type,
           required final String title,
           required final String message,
+          @JsonKey(name: 'title_mn') final String? titleMn,
+          @JsonKey(name: 'message_mn') final String? messageMn,
           @JsonKey(name: 'is_read') final bool isRead,
           @JsonKey(name: 'related_request_id') final String? relatedRequestId,
           final Map<String, dynamic>? metadata,
@@ -332,6 +375,12 @@ abstract class _NotificationModel implements NotificationModel {
   String get title;
   @override
   String get message;
+  @override
+  @JsonKey(name: 'title_mn')
+  String? get titleMn;
+  @override
+  @JsonKey(name: 'message_mn')
+  String? get messageMn;
   @override
   @JsonKey(name: 'is_read')
   bool get isRead;
