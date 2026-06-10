@@ -75,7 +75,7 @@ class _PatientRequestsScreenState extends State<PatientRequestsScreen> {
                 padding: AppPadding.screenH,
                 child: _SegmentedFilter(
                   segments: [
-                    l10n.activeRequests,
+                    l10n.activeShort,
                     l10n.completed,
                     l10n.cancelled,
                   ],
@@ -251,17 +251,19 @@ class _RequestCard extends StatelessWidget {
     final typeLabel =
         isLab ? l10n.labTestServiceLabel : l10n.directHomeServiceLabel;
 
+    final statusColor = AppColors.getStatusColor(_statusKey(request.status));
+
     return AppCard(
       borderRadius: AppRadius.lg,
-      padding: const EdgeInsets.all(18),
+      padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Container(
-                width: 40,
-                height: 40,
+                width: 42,
+                height: 42,
                 decoration: BoxDecoration(
                   color: AppColors.red50,
                   borderRadius: BorderRadius.circular(AppRadius.sm),
@@ -292,18 +294,27 @@ class _RequestCard extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(width: 8),
-              Text(
-                l10n.priceInMNT(request.priceMnt),
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  color: AppColors.textPrimary,
-                ),
+            ],
+          ),
+          const SizedBox(height: 14),
+
+          // Status badge + date chip (scannable order-state row)
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _StatusBadge(
+                label: RequestJourney.label(request.status, l10n),
+                color: statusColor,
+              ),
+              _InfoChip(
+                icon: Iconsax.calendar_1,
+                label: '${request.scheduledDate}'
+                    '${request.scheduledTimeSlot != null ? ' · ${request.scheduledTimeSlot}' : ''}',
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 14),
           StatusTimeline(
             steps: RequestJourney.steps(l10n),
             currentIndex: RequestJourney.indexOf(request.status),
@@ -313,20 +324,113 @@ class _RequestCard extends StatelessWidget {
             compact: true,
           ),
           const SizedBox(height: 14),
-          _MetaRow(
-            icon: Iconsax.calendar_1,
-            label: l10n.scheduledAt(
-              request.scheduledDate,
-              request.scheduledTimeSlot ?? '',
-            ),
-          ),
-          const SizedBox(height: 8),
           _MetaRow(icon: Iconsax.location, label: request.patientAddress),
           if (request.patientNotes != null &&
               request.patientNotes!.trim().isNotEmpty) ...[
             const SizedBox(height: 8),
             _MetaRow(icon: Iconsax.note_1, label: request.patientNotes!),
           ],
+          const SizedBox(height: 12),
+          const Divider(),
+          const SizedBox(height: 10),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(l10n.totalAmount, style: AppTypography.bodySmall),
+              Text(
+                l10n.priceInMNT(request.priceMnt),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  static String _statusKey(RequestStatus status) {
+    return switch (status) {
+      RequestStatus.pending => 'pending',
+      RequestStatus.accepted => 'accepted',
+      RequestStatus.onTheWay => 'on_the_way',
+      RequestStatus.sampleCollected => 'sample_collected',
+      RequestStatus.deliveredToLab => 'delivered_to_lab',
+      RequestStatus.completed => 'completed',
+      RequestStatus.cancelled => 'cancelled',
+    };
+  }
+}
+
+/// FreshPack-style state pill: solid dot + uppercase label on a tonal bg.
+class _StatusBadge extends StatelessWidget {
+  const _StatusBadge({required this.label, required this.color});
+
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(AppRadius.xs),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 7,
+            height: 7,
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            label.toUpperCase(),
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.3,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _InfoChip extends StatelessWidget {
+  const _InfoChip({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF0F1F3),
+        borderRadius: BorderRadius.circular(AppRadius.xs),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: AppColors.textSecondary),
+          const SizedBox(width: 5),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textSecondary,
+            ),
+          ),
         ],
       ),
     );

@@ -11,6 +11,7 @@ import 'package:bugamed/ui/design_system/app_shadows.dart';
 import 'package:bugamed/ui/design_system/app_theme.dart';
 import 'package:bugamed/ui/design_system/widgets/app_card.dart';
 import 'package:bugamed/ui/design_system/widgets/app_empty_state.dart';
+import 'package:bugamed/ui/design_system/widgets/app_icon_button.dart';
 import 'package:bugamed/ui/design_system/widgets/status_timeline.dart';
 import 'package:bugamed/ui/patient/all_lab_services_screen.dart';
 import 'package:bugamed/ui/patient/direct_services_screen.dart';
@@ -122,7 +123,48 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                 children: [
                   const SizedBox(height: AppSpacing.md),
                   _buildHeader(l10n),
-                  const SizedBox(height: AppSpacing.lg),
+                  const SizedBox(height: AppSpacing.md),
+
+                  // ----- Search -----
+                  Padding(
+                    padding: AppPadding.screenH,
+                    child: Semantics(
+                      button: true,
+                      label: l10n.searchHome,
+                      child: GestureDetector(
+                        onTap: () => _push(const AllLabServicesScreen()),
+                        child: Container(
+                          height: 50,
+                          padding:
+                              const EdgeInsets.symmetric(horizontal: 16),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF0F1F3),
+                            borderRadius:
+                                BorderRadius.circular(AppRadius.md),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Iconsax.search_normal,
+                                  size: 20, color: AppColors.textTertiary),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  l10n.searchHome,
+                                  style: const TextStyle(
+                                    fontSize: 15,
+                                    color: AppColors.textTertiary,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
 
                   // ----- Active booking: always first when present -----
                   if (activeRequest != null) ...[
@@ -146,8 +188,10 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                         children: [
                           Expanded(
                             child: _HeroActionCard(
-                              gradient: true,
-                              icon: Iconsax.drop,
+                              imageAsset: 'assets/icons/hero/lab_test.png',
+                              fallbackIcon: Iconsax.drop,
+                              tint: AppColors.red50,
+                              borderColor: AppColors.red100,
                               title: l10n.bookLabTest,
                               subtitle: l10n.bookLabTestSubtitle,
                               onTap: () => _push(const AllLabServicesScreen()),
@@ -156,8 +200,10 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
                           const SizedBox(width: 12),
                           Expanded(
                             child: _HeroActionCard(
-                              gradient: false,
-                              icon: Iconsax.home_2,
+                              imageAsset: 'assets/icons/hero/doctor.png',
+                              fallbackIcon: Iconsax.home_2,
+                              tint: const Color(0xFFF0F4F8),
+                              borderColor: const Color(0xFFE2E9F0),
                               title: l10n.callDoctor,
                               subtitle: l10n.callTheDoctorHome,
                               onTap: () => _push(const DirectServicesScreen()),
@@ -258,12 +304,15 @@ class _PatientHomeScreenState extends State<PatientHomeScreen> {
             children: [
               const NotificationBell(),
               const SizedBox(width: 10),
-              GestureDetector(
+              AppIconButton(
                 onTap: widget.onNavigateToProfile,
-                child: ProfileAvatar(
-                  avatarUrl: profile?.getAvatarUrl(),
-                  initials: profile?.initials ?? 'U',
-                  radius: 24,
+                semanticLabel: 'Profile',
+                child: Center(
+                  child: ProfileAvatar(
+                    avatarUrl: profile?.getAvatarUrl(),
+                    initials: profile?.initials ?? 'U',
+                    radius: 21,
+                  ),
                 ),
               ),
             ],
@@ -374,64 +423,80 @@ class _ActiveCareCard extends StatelessWidget {
 
 class _HeroActionCard extends StatelessWidget {
   const _HeroActionCard({
-    required this.gradient,
-    required this.icon,
+    required this.imageAsset,
+    required this.fallbackIcon,
+    required this.tint,
+    required this.borderColor,
     required this.title,
     required this.subtitle,
     required this.onTap,
   });
 
-  final bool gradient;
-  final IconData icon;
+  final String imageAsset;
+  final IconData fallbackIcon;
+  final Color tint;
+  final Color borderColor;
   final String title;
   final String subtitle;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final titleColor = gradient ? Colors.white : AppColors.textPrimary;
-    final subtitleColor =
-        gradient ? Colors.white.withValues(alpha: 0.85) : AppColors.textSecondary;
-
     return AppCard(
       onTap: onTap,
       borderRadius: AppRadius.lg,
-      padding: const EdgeInsets.all(16),
-      backgroundColor: gradient ? Colors.transparent : Colors.white,
-      shadow: gradient ? AppShadows.md : AppShadows.sm,
-      borderColor: gradient ? null : AppColors.outline,
-      gradient: gradient ? AppColors.brandGradient : null,
+      padding: const EdgeInsets.fromLTRB(14, 14, 14, 10),
+      backgroundColor: tint,
+      borderColor: borderColor,
+      shadow: AppShadows.none,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Container(
-            width: 42,
-            height: 42,
-            decoration: BoxDecoration(
-              color: gradient
-                  ? Colors.white.withValues(alpha: 0.2)
-                  : AppColors.red50,
-              borderRadius: BorderRadius.circular(AppRadius.sm),
-            ),
-            child: Icon(icon,
-                color: gradient ? Colors.white : AppColors.primary, size: 22),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w700,
+                  height: 1.25,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                subtitle,
+                style: const TextStyle(
+                  fontSize: 12,
+                  height: 1.35,
+                  color: AppColors.textSecondary,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              const SizedBox(height: 8),
+            ],
           ),
-          const SizedBox(height: 14),
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.w700,
-              height: 1.25,
-              color: titleColor,
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Image.asset(
+              imageAsset,
+              width: 66,
+              height: 66,
+              errorBuilder: (_, _, _) => Container(
+                width: 44,
+                height: 44,
+                margin: const EdgeInsets.only(bottom: 8, right: 8),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
+                ),
+                child:
+                    Icon(fallbackIcon, color: AppColors.primary, size: 22),
+              ),
             ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            subtitle,
-            style: TextStyle(fontSize: 12, height: 1.35, color: subtitleColor),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),
@@ -460,15 +525,20 @@ class _AssistantCard extends StatelessWidget {
       shadow: AppShadows.none,
       child: Row(
         children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(AppRadius.sm),
+          Image.asset(
+            'assets/icons/hero/assistant.png',
+            width: 54,
+            height: 54,
+            errorBuilder: (_, _, _) => Container(
+              width: 44,
+              height: 44,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(AppRadius.sm),
+              ),
+              child: const Icon(Iconsax.message_question,
+                  color: AppColors.primary, size: 22),
             ),
-            child: const Icon(Iconsax.message_question,
-                color: AppColors.primary, size: 22),
           ),
           const SizedBox(width: 14),
           Expanded(

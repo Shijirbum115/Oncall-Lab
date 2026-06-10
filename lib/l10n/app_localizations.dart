@@ -2869,6 +2869,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Bookings'**
   String get bookingsTab;
+
+  /// No description provided for @addressConfirmQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Is the delivery address correct?'**
+  String get addressConfirmQuestion;
+
+  /// No description provided for @activeShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get activeShort;
 }
 
 class _AppLocalizationsDelegate

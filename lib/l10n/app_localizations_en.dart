@@ -1474,4 +1474,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get bookingsTab => 'Bookings';
+
+  @override
+  String get addressConfirmQuestion => 'Is the delivery address correct?';
+
+  @override
+  String get activeShort => 'Active';
 }

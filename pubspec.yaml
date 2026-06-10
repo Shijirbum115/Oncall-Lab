@@ -88,6 +88,7 @@ flutter:
     - assets/images/mascot/
     - assets/avatars/
     - assets/icons/categories/
+    - assets/icons/hero/
 
   # fonts:
   #   - family: SFPro

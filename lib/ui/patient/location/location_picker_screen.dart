@@ -5,6 +5,8 @@ import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart' as geo;
 import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
+import 'package:bugamed/ui/design_system/widgets/app_button.dart';
 import 'package:bugamed/ui/design_system/widgets/app_text_field.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
 
@@ -294,27 +296,18 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                         ),
                       ),
 
-                    Text(
-                      l10n.addressDetails,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
+                    // Only what the visiting doctor actually needs to find
+                    // the door: address + building/entrance/floor/apartment.
+                    // Hint-only fields keep the sheet visually light; notes
+                    // live on the booking screen, not here.
+                    Text(l10n.addressDetails,
+                        style: AppTypography.titleMedium),
+                    const SizedBox(height: 14),
 
                     AppTextField(
                       controller: _addressController,
-                      label: l10n.streetAddressRequired,
                       hint: l10n.streetAddressHint,
                       maxLines: 2,
-                    ),
-                    const SizedBox(height: 12),
-
-                    AppTextField(
-                      controller: _labelController,
-                      label: l10n.labelOptional,
-                      hint: l10n.labelHint,
                     ),
                     const SizedBox(height: 12),
 
@@ -323,16 +316,14 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                         Expanded(
                           child: AppTextField(
                             controller: _buildingController,
-                            label: l10n.buildingName,
-                            hint: l10n.buildingNameHint,
+                            hint: l10n.buildingName,
                           ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: AppTextField(
                             controller: _entranceController,
-                            label: l10n.entrance,
-                            hint: l10n.entranceHint,
+                            hint: l10n.entrance,
                           ),
                         ),
                       ],
@@ -344,8 +335,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                         Expanded(
                           child: AppTextField(
                             controller: _floorController,
-                            label: l10n.floor,
-                            hint: 'e.g., 5',
+                            hint: l10n.floor,
                             keyboardType: TextInputType.number,
                           ),
                         ),
@@ -353,50 +343,16 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                         Expanded(
                           child: AppTextField(
                             controller: _apartmentController,
-                            label: l10n.apartmentNumberLabel,
-                            hint: l10n.apartmentNumberHint,
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: AppTextField(
-                            controller: _doorController,
-                            label: l10n.doorNumber,
-                            hint: l10n.doorNumberHint,
+                            hint: l10n.apartmentNumberLabel,
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
-
-                    AppTextField(
-                      controller: _additionalInfoController,
-                      label: l10n.additionalInfo,
-                      hint: l10n.specialInstructionsOrLandmarks,
-                      maxLines: 3,
-                    ),
                     const SizedBox(height: 20),
 
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: _saveLocation,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                        ),
-                        child: Text(
-                          l10n.save,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
+                    AppButton(
+                      label: l10n.save,
+                      onPressed: _saveLocation,
                     ),
                   ],
                 ),

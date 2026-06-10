@@ -606,5 +606,7 @@
   "noAccountYet": "Бүртгэл байхгүй юу?",
   "areDoctor": "Та эмч үү?",
   "assistantTab": "Туслах",
-  "bookingsTab": "Захиалга"
+  "bookingsTab": "Захиалга",
+  "addressConfirmQuestion": "Очих хаяг зөв үү?",
+  "activeShort": "Идэвхтэй"
 }

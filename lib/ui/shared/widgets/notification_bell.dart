@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
+import 'package:iconsax/iconsax.dart';
+import 'package:bugamed/core/constants/app_colors.dart';
 import 'package:bugamed/stores/notification_store.dart';
+import 'package:bugamed/ui/design_system/widgets/app_icon_button.dart';
 import 'package:bugamed/ui/shared/notifications_screen.dart';
 
-/// Simple notification bell icon with unread badge for AppBar
+/// Notification bell as a bordered square icon button with an unread badge.
 class NotificationBell extends StatelessWidget {
   const NotificationBell({super.key});
 
@@ -18,10 +21,12 @@ class NotificationBell extends StatelessWidget {
         final unreadCount = notificationStore.unreadCount;
 
         return Stack(
+          clipBehavior: Clip.none,
           children: [
-            IconButton(
-              icon: const Icon(Icons.notifications_outlined),
-              onPressed: () {
+            AppIconButton(
+              icon: Iconsax.notification,
+              semanticLabel: 'Notifications',
+              onTap: () {
                 Navigator.push(
                   context,
                   CupertinoPageRoute(
@@ -32,25 +37,24 @@ class NotificationBell extends StatelessWidget {
             ),
             if (unreadCount > 0)
               Positioned(
-                right: 8,
-                top: 8,
+                right: -4,
+                top: -4,
                 child: Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: const BoxDecoration(
-                    color: Colors.red,
-                    shape: BoxShape.circle,
+                  padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: Colors.white, width: 1.5),
                   ),
-                  constraints: const BoxConstraints(
-                    minWidth: 18,
-                    minHeight: 18,
-                  ),
+                  constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
                   child: Center(
                     child: Text(
                       unreadCount > 99 ? '99+' : '$unreadCount',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 10,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.w700,
+                        height: 1,
                       ),
                     ),
                   ),

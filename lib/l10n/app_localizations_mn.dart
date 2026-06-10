@@ -1479,4 +1479,10 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get bookingsTab => 'Захиалга';
+
+  @override
+  String get addressConfirmQuestion => 'Очих хаяг зөв үү?';
+
+  @override
+  String get activeShort => 'Идэвхтэй';
 }

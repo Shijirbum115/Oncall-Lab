@@ -10,7 +10,11 @@ import 'package:bugamed/ui/patient/location/location_picker_screen.dart';
 import 'package:bugamed/ui/design_system/widgets/app_text_field.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
 import 'package:bugamed/ui/design_system/widgets/app_card.dart';
+import 'package:bugamed/ui/design_system/widgets/app_button.dart';
 import 'package:bugamed/ui/design_system/app_shadows.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
+import 'package:bugamed/ui/auth/widgets/step_progress_bar.dart';
+import 'package:bugamed/core/utils/notification_helper.dart';
 import 'package:bugamed/ui/payment/payment_screen.dart';
 
 class LabServiceBookingScreen extends StatefulWidget {
@@ -118,19 +122,111 @@ class _LabServiceBookingScreenState extends State<LabServiceBookingScreen> {
     }
   }
 
+  /// FreshPack-style last-mile check: the address is the most expensive
+  /// thing to get wrong in a home-visit service, so confirm it explicitly.
+  Future<bool> _confirmAddress() async {
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showModalBottomSheet<bool>(
+      context: context,
+      builder: (ctx) => Padding(
+        padding: const EdgeInsets.fromLTRB(24, 8, 24, 28),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Text(
+                l10n.addressConfirmQuestion,
+                style: AppTypography.sectionHeader,
+                textAlign: TextAlign.center,
+              ),
+            ),
+            const SizedBox(height: 20),
+            Container(
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF0F1F3),
+                borderRadius: BorderRadius.circular(AppRadius.md),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    width: 38,
+                    height: 38,
+                    decoration: const BoxDecoration(
+                      gradient: AppColors.brandGradient,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Iconsax.location,
+                        color: Colors.white, size: 18),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(l10n.collectionAddress,
+                            style: AppTypography.labelSmall),
+                        const SizedBox(height: 3),
+                        Text(
+                          _addressController.text,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            height: 1.4,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.textPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          '${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')} · $selectedTimeSlot',
+                          style: AppTypography.bodySmall,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              children: [
+                Expanded(
+                  child: AppButton(
+                    label: l10n.no,
+                    variant: AppButtonVariant.secondary,
+                    onPressed: () => Navigator.of(ctx).pop(false),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: AppButton(
+                    label: l10n.yes,
+                    onPressed: () => Navigator.of(ctx).pop(true),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+    return confirmed == true;
+  }
+
   Future<void> _submitBooking() async {
     if (!_formKey.currentState!.validate()) return;
+    final l10n = AppLocalizations.of(context)!;
 
     // Validate location is selected
     if (selectedLocation == null && _addressController.text.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please select your location on the map'),
-          backgroundColor: AppColors.error,
-        ),
-      );
+      NotificationHelper.showError(context, l10n.pleaseSelectLocationOnMap);
       return;
     }
+
+    if (!await _confirmAddress()) return;
+    if (!mounted) return;
 
     setState(() => isSubmitting = true);
 
@@ -188,6 +284,15 @@ class _LabServiceBookingScreenState extends State<LabServiceBookingScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
+            // Where am I in the journey?
+            StepProgressBar(
+              totalSteps: 3,
+              currentStep: 1,
+              icons: const [Iconsax.health, Iconsax.location, Iconsax.card],
+              labels: [l10n.service, l10n.address, l10n.payment],
+            ),
+            const SizedBox(height: 24),
+
             // Service Info Card
             AppCard(
               shadow: AppShadows.none,
@@ -452,10 +557,10 @@ class _LabServiceBookingScreenState extends State<LabServiceBookingScreen> {
               Padding(
                 padding: const EdgeInsets.only(top: 8, left: 12),
                 child: Text(
-                  'Please select your location on the map',
-                  style: TextStyle(
+                  l10n.pleaseSelectLocationOnMap,
+                  style: const TextStyle(
                     fontSize: 12,
-                    color: AppColors.grey.withValues(alpha: 0.8),
+                    color: AppColors.textTertiary,
                   ),
                 ),
               ),
@@ -481,35 +586,10 @@ class _LabServiceBookingScreenState extends State<LabServiceBookingScreen> {
             const SizedBox(height: 32),
 
             // Submit Button
-            SizedBox(
-              height: 56,
-              child: ElevatedButton(
-                onPressed: isSubmitting ? null : _submitBooking,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-                child: isSubmitting
-                    ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.white),
-                        ),
-                      )
-                    : Text(
-                        l10n.confirmBooking,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-              ),
+            AppButton(
+              label: l10n.confirmBooking,
+              loading: isSubmitting,
+              onPressed: isSubmitting ? null : _submitBooking,
             ),
 
             const SizedBox(height: 16),

@@ -14,7 +14,10 @@
       "mcp__supabase__list_migrations",
       "Bash(flutter analyze:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "PowerShell($names = @\\('drop-of-blood','blood','blood-donation','blood-bag','bones','skeleton','lungs','brain','stomach','intestine','radiology','mri','ct-scanner','cancer-ribbon','awareness-ribbon','hormones','pill','pills','flask','laboratory','laboratory-flask','urine-sample','water','sugar','diabetes','stethoscope','doctor-male','hospital','heart-organ','anatomical-heart','protect','security-shield-green','spine','knee','muscle','tooth','clinic','thermometer','vaccine','petri-dish','micro-organisms','testosterone','estrogen','medical-doctor','xray','x-ray-view','body-scan','scanner'\\); foreach \\($n in $names\\) { try { $r = Invoke-WebRequest -Uri \"https://img.icons8.com/3d-fluency/100/$n.png\" -Method Head -UseBasicParsing -TimeoutSec 10; Write-Output \"$n : 200\" } catch { Write-Output \"$n : MISS\" } })",
+      "PowerShell(try { $r = Invoke-WebRequest -Uri \"https://healthicons.org/icons/meta-data.json\" -UseBasicParsing -TimeoutSec 15; Write-Output \"meta-data.json: $\\($r.StatusCode\\), length $\\($r.Content.Length\\)\" } catch { Write-Output \"meta-data.json MISS: $\\($_.Exception.Message\\)\" })",
+      "PowerShell($r = Invoke-WebRequest -Uri \"https://healthicons.org/icons/meta-data.json\" -UseBasicParsing -TimeoutSec 15; $icons = \\($r.Content | ConvertFrom-Json\\); $icons[0] | ConvertTo-Json -Depth 5)"
     ]
   },
   "enableAllProjectMcpServers": true,

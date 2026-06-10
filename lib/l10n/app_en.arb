@@ -655,5 +655,7 @@
   "noAccountYet": "Don't have an account yet?",
   "areDoctor": "Are you a doctor?",
   "assistantTab": "Assistant",
-  "bookingsTab": "Bookings"
+  "bookingsTab": "Bookings",
+  "addressConfirmQuestion": "Is the delivery address correct?",
+  "activeShort": "Active"
 }
