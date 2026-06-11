@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12+ system splash icon: white rounded tile with CallCare red cross.
+     The OS masks this into a 240dp circle; layers are sized to stay inside it. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:width="132dp"
+        android:height="132dp"
+        android:gravity="center">
+        <shape android:shape="rectangle">
+            <corners android:radius="36dp" />
+            <solid android:color="#FFFFFF" />
+        </shape>
+    </item>
+    <item
+        android:width="22dp"
+        android:height="72dp"
+        android:gravity="center">
+        <shape android:shape="rectangle">
+            <corners android:radius="11dp" />
+            <solid android:color="#E3243B" />
+        </shape>
+    </item>
+    <item
+        android:width="72dp"
+        android:height="22dp"
+        android:gravity="center">
+        <shape android:shape="rectangle">
+            <corners android:radius="11dp" />
+            <solid android:color="#E3243B" />
+        </shape>
+    </item>
+</layer-list>

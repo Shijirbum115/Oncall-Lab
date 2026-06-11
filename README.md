@@ -1,117 +1,87 @@
-# 🧪 CallCare – Гэрийн лабораторийн үйлчилгээний апп
+# 🩺 CallCare — Гэрийн эмчилгээ, шинжилгээний платформ
 
-**Callcare** нь Улаанбаатар хотын хэрэглэгчдэд лабораторийн шинжилгээ болон эмчийн гэрийн үзлэгийг **гар утаснаасаа захиалах** боломж олгох Flutter + Supabase дээр суурилсан систем юм.
+> **The one-line pitch:** «Дусал, тариа, шинжилгээ — гэртээ. Facebook-ээр сувилагч хайх хэрэггүй.»
 
-- 👩‍⚕️ **Patient апп** – хэрэглэгч лаборатори, үйлчилгээ сонгох, цаг захиалах, өөрийн хүсэлтүүдээ хянах
-- 👨‍⚕️ **Doctor апп** – эмч/лаборант шинээр ирсэн хүсэлт, өөрийн идэвхтэй болон дууссан захиалгуудыг хянах
-- 🗄 **Backend** – Supabase (PostgreSQL, Row Level Security, Realtime)
-- 🌐 **Admin panel (web)** – тусдаа `admin_panel_web` фолдерт хөгжүүлж байгаа
+**CallCare** нь Улаанбаатарын хүмүүст **сувилагч, эмч, лаборантыг гэрт нь, зөв цагт нь**
+хүргэдэг платформ. Замын түгжрэл, эмнэлгийн ачаалал, дараалал — эдгээрээс болж хүмүүс
+өнөөдөр Facebook групп дээр *«Хан-Уул орчимд дусал залгах сувилагч байна уу?»* гэж
+бичиж байна. CallCare яг энэ хэрэгцээг шийднэ: **баталгаажсан мэргэжилтэн, CallCare-ийн
+нийлүүлсэн хэрэгслээр (тариур, систем, дусал), тогтсон үнээр** гэрт очно.
+
+📖 **Бизнесийн бүрэн контекст, gap analysis, edge case policy:** [`docs/PRODUCT_VISION.md`](docs/PRODUCT_VISION.md)
+— *шинэ feature хийхээсээ өмнө заавал уншина уу (AI assistant-ууд ч мөн адил).*
+
+### Хоёр төрлийн хэрэгцээ, нэг л platform
+
+| | Товлосон шинжилгээ (lab) | Яаралтай гэрийн эмчилгээ (treatment) |
+|---|---|---|
+| Жишээ | Ээждээ маргааш 9:00-д цусны шинжилгээ | Дусал залгуулах — **одоо, өнөө шөнө** |
+| Хэн захиалдаг | Ихэвчлэн гэр бүлийн гишүүн (ахмад, хүүхдийн өмнөөс) | Өвчтөн өөрөө |
+| Төлбөр | QPay / шилжүүлэг | **Урьдчилсан төлбөр заавал** |
+| Match | Цагийн хуваарь | **Ойр байгаа, чөлөөтэй мэргэжилтэн, минут тутамд чухал** |
+
+Нэг сувилагч хоёуланг нь гүйцэтгэнэ: өдөр нь lab-ын тойрог, орой нь эмчилгээний дуудлага.
+
+### Систем юунаас бүтдэг вэ
+
+- 📱 **Patient апп** (Flutter, `lib/ui/patient`) — үйлчилгээ захиалах, хүсэлтээ хянах
+- 👨‍⚕️ **Provider апп** (Flutter, `lib/ui/doctor`) — сувилагч/эмч/лаборант хүсэлт хүлээн авах, статус ахиулах
+- 🌐 **Admin web** (`admin-web/`, Next.js + shadcn) — эмч баталгаажуулалт, төлбөр шалгалт, dashboard, intervention
+- 🗄 **Backend** — Supabase (PostgreSQL + RLS, Realtime, Edge Functions: QPay, push, AI chat)
+- 📦 **Supply chain** *(төлөвлөгдсөн)* — мэргэжилтнүүд хэрэгслээ CallCare-аас авна. Энэ нь чанарын хяналт + platform-аас гадуур ажиллахаас сэргийлэх moat.
+
+> ⚠️ Хуучин `admin_panel_web/` (Flutter web) нь `admin-web/` (Next.js)-ээр солигдсон.
 
 ---
 
-## 🚀 Тойм
+## 🧱 Архитектурын товч
 
-### Гол боломжууд
+### 📱 Mobile (Flutter 3)
 
-- 🏥 **Laboratory directory**
-  - Бүх бүртгэлтэй лаборатори, хаяг, утас, цагийн хуваарь харах
-  - Лаборатори бүрийн санал болгож буй **test services** жагсаалт, үнэ, хугацаа
-- 🧪 **Lab test booking (Clinic visit / Home visit)**
-  - Patient – шинжилгээний төрөл сонгоод лабораториас **home sample collection** захиалах
-  - Цагийн слот, байршлын хаяг, нэмэлт тэмдэглэл оруулах
-- 🩺 **Direct services (эмч/сувилагчийн шууд үйлчилгээ)**
-  - Эмчийн үйлчилгээний төрөл (ultrasound, ECG, nursing гэх мэт) сонгох
-  - “Any available doctor” эсвэл тодорхой эмч сонгох
-  - Адресээ хадгалаад дараагийн удаа шууд ашиглах
-- 📊 **Requests / Dashboard**
-  - Patient – хүсэлтүүдийг **Active / Completed / Cancelled** табуудаар харах
-  - Doctor – **Available / My Requests / Completed** табтай Dashboard
-  - Хүсэлтийн статусууд: `pending → accepted → on_the_way → sample_collected → delivered_to_lab → completed`
-  - Realtime шинэчлэлт (Supabase realtime)
-
----
-
-## 🧱 Архитектурын товч (High-level)
-
-### 📱 Frontend
-
-- Flutter 3 (Dart)
-- State management: `mobx`, `flutter_mobx`
-- Dependency injection: `get_it` (`lib/core/di/service_locator.dart` register-лэлтээр store, repository-гаа inject хийдэг)
-- Data models: `freezed`, `json_serializable`
-- Navigation: энгийн `Navigator` (template-д AutoRoute заавар байгаа ч одоогоор basic navigation)
-
-Фолдер бүтэц (mobile):
-
-- `lib/core` – color, strings, Supabase config, services
-- `lib/data` – models (`ProfileModel`, `DoctorProfileModel`, `LaboratoryModel`, `TestRequestModel` …), repositories
-- `lib/stores` – MobX stores (`AuthStore`, `HomeStore`, `ServiceStore`, `TestRequestStore`, `DoctorRequestStore`)
-- `lib/ui/patient` – patient аппийн бүх экраниуд
-- `lib/ui/doctor` – doctor аппийн бүх экраниуд
-- `lib/ui/shared` – splash screen, shared widgets
+- State: `mobx` / `flutter_mobx`, DI: `get_it` (`lib/core/di/service_locator.dart`)
+- Models: `freezed` + `json_serializable` (өөрчлөлт бүрийн дараа `build_runner`)
+- `lib/core` — constants, Supabase config, services (push, qpay)
+- `lib/data` — models, repositories
+- `lib/stores` — MobX stores
+- `lib/ui/{patient,doctor,shared,payment}` — экранууд
 
 ### 🗄 Backend (Supabase)
 
-Дэлгэрэнгүйг: `docs/BACKEND_SETUP.md` файлаас харна уу.
+Дэлгэрэнгүй: `docs/BACKEND_SETUP.md`. Гол хүснэгтүүд:
 
-Гол хүснэгтүүд:
+- `profiles` (role: patient/doctor/admin) + `doctor_profiles` (license, rating, **doctor_type: nurse/general/lab_technician/diagnostic_specialist**)
+- `laboratories`, `laboratory_services`, `services`, `service_categories` — үйлчилгээний каталог
+- `test_requests` — захиалгын гол хүснэгт (status machine: `pending → accepted → on_the_way → sample_collected → delivered_to_lab → completed`, direct_service-д `sample_collected → completed` шууд)
+- `qpay_payments`, `manual_payments` (+ status history) — төлбөр; `payments` хүснэгт устгагдсан (legacy)
+- `notifications` (хоёр хэлтэй) + push pipeline (pg_net → edge function → FCM)
+- `doctor_reviews`, `posts`, `audit_logs`, `request_status_history`
 
-- `profiles` – хэрэглэгчийн үндсэн мэдээлэл (patient / doctor / admin)
-- `doctor_profiles` – эмчийн мэргэжил, license, туршлага, rating
-- `laboratories` – лабораториудын бүртгэл, байршил
-- `test_types` – стандарт laboratory test жагсаалт
-- `services`, `laboratory_services`, `doctor_services` – үйлчилгээний төрөл, лаборатори / эмчийн санал болгож буй service-үүд
-- `test_requests` – бүх захиалгын үндсэн хүснэгт
-- `notifications`, `request_status_history`, `audit_logs` – notification, статусын түүх, audit
+Security: бүх хүснэгт RLS-тэй, admin эрх `is_admin()` функцээр. Нууц түлхүүрүүд
+(`supabase_config.dart`, `.env*`, service role key) **Git-д орохгүй**.
 
-Security:
+### 🌐 Admin web (`admin-web/`)
 
-- Row Level Security (RLS) бүх хүснэгт дээр идэвхтэй
-- Patient зөвхөн өөрийн `test_requests` болон өөрийн profile-г уншиж/засна
-- Doctor зөвхөн өөртэй нь холбогдсон patient-үүдийн profile-г харна
-- Admin бүрэн хандалттай (RLS functions `is_admin(...)` ашиглана)
+Next.js 16 + shadcn (Base UI). Нэвтрэлт: админ утасны дугаар + нууц үг.
+Dashboard, Doctors (нэмэх/засах/баталгаажуулах/устгах/нууц үг reset), Requests
+(хайлт, >24h aging, cancel), Payments (manual transfer review + proof файл),
+Patients (хайлт, disable, нууц үг reset).
 
-Realtime:
-
-- `test_requests` – статус өөрчлөгдөхөд realtime stream
-- `notifications` – notification store дээр realtime
+```bash
+cd admin-web && npm install && npm run dev   # SUPABASE_SECRET_KEY нэмбэл add/delete doctor ажиллана
+```
 
 ---
 
-## 🛠 Хөгжүүлэлтийн орчин тохируулах
-
-Доорх алхмууд Windows-д зориулсан, Mac дээр ч ерөнхийдөө ижил.
-Дэлгэрэнгүй: `CONTRIBUTING.md`.
-
-### 1. Шаардлагатай зүйлс
-
-- Flutter SDK (`flutter --version` ажилладаг байх)
-- Android Studio (эсвэл Xcode/эмулятор – Mac-д)
-- VS Code буюу IDE (IntelliJ / Android Studio ч байж болно)
-- Git
-
-### 2. Dependency татах
+## 🛠 Хөгжүүлэлт эхлүүлэх
 
 ```bash
 flutter pub get
-```
-
-### 3. Code generation (models, MobX, json)
-
-```bash
 dart run build_runner build --delete-conflicting-outputs
+flutter run
 ```
 
-Хөгжүүлж байх үед:
-
-```bash
-dart run build_runner watch --delete-conflicting-outputs
-```
-
-### 4. Supabase тохиргоо хийх
-
-1. Supabase project үүсгэж (эсвэл README_BACKEND_SETUP дээр өгсөн project ашиглаж)
-2. `lib/core/constants/supabase_config.dart` файлыг **локал** дээрээ үүсгэнэ (Git-т үл орох ёстой, `.gitignore`-д орсон):
+Supabase тохиргоо: `lib/core/constants/supabase_config.dart`-ийг локалдаа үүсгэнэ
+(`.gitignore`-д орсон):
 
 ```dart
 class SupabaseConfig {
@@ -120,107 +90,31 @@ class SupabaseConfig {
 }
 ```
 
-3. Supabase SQL редактор дээр `supabase/migrations/*.sql` файлуудыг ажиллуулж schema-г тохируулна (ялангуяа `fix_profiles_rls` migration).
+---
 
-Backend-ийн бүрэн тайлбар: `docs/BACKEND_SETUP.md`.
+## 📂 Баримтууд
+
+- **`docs/PRODUCT_VISION.md` — бизнесийн тархи. Эхлээд үүнийг унш.**
+- `docs/BACKEND_SETUP.md` — Supabase schema, seed
+- `docs/QPAY_READY.md` — QPay интеграц
+- `docs/NOTIFICATION_SYSTEM_SETUP.md` — push pipeline (FCM secrets шаардлагатай)
+- `docs/STORAGE_SETUP_GUIDE.md`, `docs/LOCALIZATION_GUIDE.md`, бусад
+- `CLAUDE.md` — AI assistant-д зориулсан заавар
+
+## 🎯 Одоогийн статус ба дараагийн алхам (2026.06)
+
+✅ Lab захиалгын бүрэн урсгал, төлбөр, админ удирдлага ажиллаж байна.
+❌ Үүсгэн байгуулагчийн гол хэрэгцээ — **яаралтай гэрийн эмчилгээ** — хараахан үйлчлэхгүй:
+
+1. Эмчилгээний каталог нэмэх («Дусал залгах», тариа, сувилахуйн тусламж)
+2. ASAP горим + 10 минутад match болохгүй бол админ руу escalation
+3. Дүүргээр matching (одоо хот даяар fan-out хийдэг)
+4. Бусдын өмнөөс захиалах (ахмад, хүүхэд — beneficiary)
+5. 2 минутын бүртгэл (одоогийн form хэт урт)
+6. Supply/kit модуль (admin CMS үе шат)
+
+Дэлгэрэнгүй үндэслэл: `docs/PRODUCT_VISION.md`.
 
 ---
 
-## ▶️ Апп ажилуулах
-
-```bash
-# Эмулятор эсвэл төхөөрөмж шалгах
-flutter devices
-
-# Android эсвэл iOS дээр ажиллуулах
-flutter run
-```
-
-Хөгжүүлэлт дээр:
-
-- `r` – hot reload
-- `R` – hot restart
-
----
-
-## 📱 Patient апп – гол экраниуд
-
-- 🏠 **Home screen**
-  - “Clinic visit” / “Home visit” сонголтуудтай modern hero хэсэг
-  - “Available tests” – Supabase-аас ирж буй test services carousel
-  - “Available doctors” – докторуудын grid
-- 🧪 **Laboratories**
-  - Лабораториудын жагсаалт + search
-  - Лаборатори detail – үйлчилгээ, үнэ, хаяг, утас
-  - Лаб service booking – цаг, хаяг, notes
-- 🧍‍♀️ **Direct services**
-  - Үйлчилгээний төрлөөр grouped list
-  - “Any available doctor” эсвэл тодорхой эмч сонгох
-  - Direct service booking – цаг, хаяг, notes
-- 📆 **My Requests**
-  - Tab-ууд: **Active / Completed / Cancelled**
-  - Статусын өнгө, үнэ, товч мэдээлэл
-- 👤 **Profile**
-  - Нэр, утас, role (Patient)
-  - Saved address – байршлаа хадгалах, өөрчлөх
-  - Sign out
-
----
-
-## 👨‍⚕️ Doctor апп – гол экраниуд
-
-- 📊 **My Dashboard**
-  - Tab-ууд: **Available / My Requests / Completed**
-  - Available – шинэ захиалгууд, “Accept” хийж идэвхтэй болгох
-  - My Requests – явж байгаа хүсэлтүүд
-  - Completed – дууссан хүсэлтүүд
-- 📄 **Request detail**
-  - Patient-ийн хаяг, цаг, үйлчилгээний төрөл, үнэ
-  - Статусын action-ууд: “On the way”, “Sample collected”, “Delivered to lab”, “Completed”, “Cancel”
-  - Cancellation reason авах диалог
-- 👤 **Doctor profile**
-  - Нэр, мэргэжил, rating, completed тоо
-  - Contact info, license, туршлага
-
----
-
-## 📂 Гол файлууд / баримтууд
-
-- `CONTRIBUTING.md` – хөгжүүлэлтийн орчин тохируулах, branch workflow, commit стандарт
-- `CLAUDE.md` – Claude Code (AI assistant) ашиглах заавар
-- `docs/BACKEND_SETUP.md` – Supabase backend-ийг анхнаасаа хэрхэн босгосон, project URL, seed data
-- `docs/ADMIN_PANEL_SETUP.md` – web admin panel-ийн тайлбар
-- `docs/FILE_STRUCTURE_GUIDE.md` – файлын бүтэц, директор зохион байгуулалт
-- `docs/LOCALIZATION_GUIDE.md` – mn/en хэлний орчуулга
-- `docs/REALTIME_IMPLEMENTATION_GUIDE.md`, `docs/MOBILE_APP_REALTIME.md` – Supabase realtime
-- `docs/QPAY_READY.md` – QPay payment integration
-- `docs/STORAGE_SETUP_GUIDE.md` – Supabase Storage (bucket-ууд, RLS)
-
----
-
-## 🔐 Нууц мэдээлэл, Git
-
-Git дээр commit хийхдээ дараах файлууд **огт орох ёсгүй**:
-
-- `lib/core/constants/supabase_config.dart` – Supabase URL, anon key
-- `.env` – env variables
-- Supabase service role key, JWT secret зэрэг бүх нууц
-
-Эдгээрийг `.gitignore` дээр аль хэдийн нэмсэн байгаа. Хэрвээ шинэ нууц файл нэмбэл заавал `.gitignore`-т нэмээрэй.
-
----
-
-## 🤝 Contribution
-
-Хэрвээ чи энэ project дээр үргэлжлүүлж хөгжүүлэх бол:
-
-1. Repo-г clone хийнэ (эсвэл өөр машин дээрээ pull хийнэ)
-2. `flutter pub get` + `build_runner` ажиллуулна
-3. Шинэ feature / bugfix-ээ `feature/...` branch дээр хийж, commit/push хийнэ
-
-Issue, idea байвал README доторх бүтэцтэй тааруулж файлуудыг update хийхэд л хангалттай.
-
----
-
-**OnCall Lab – “All you have to do is CALL US” 📞**  
-Гэрээсээ холгүйгээр, апп-аасаа лабораторийн шинжилгээ захиалж, эмчийн үзлэгийг дэргэдээ дуудъя. 🚑
+**CallCare — «All you have to do is CALL US» 📞**

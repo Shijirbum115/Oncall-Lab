@@ -4,7 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-OnCall Lab is a Flutter mobile application for home laboratory test sample collection in Ulaanbaatar, Mongolia. The app connects patients with doctors/lab technicians for at-home sample collection services.
+CallCare (repo name "OnCall Lab") is a home healthcare platform for Ulaanbaatar, Mongolia: verified nurses/doctors/lab technicians visit patients at home for **urgent treatments (IV drips — "Дусал залгах", injections, nursing care)** and **scheduled lab sample collection**. It replaces the current practice of finding nurses through Facebook groups. Providers receive medical supplies (kits, needles, IV systems) from CallCare itself — the supply chain is the business moat, not just logistics.
+
+**⚠️ Before building any feature, read `docs/PRODUCT_VISION.md`** — it contains the founding insight, actor flows, the honest gap analysis (the urgent-treatment use case is NOT yet served as of June 2026), edge-case policies, and the prioritized roadmap. The mobile apps are Flutter (`lib/`); the admin dashboard is Next.js (`admin-web/`); the old `admin_panel_web/` is superseded.
 
 ### Tech Stack
 - **Framework**: Flutter 3.10+
