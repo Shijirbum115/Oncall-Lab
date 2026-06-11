@@ -5,6 +5,7 @@ import 'package:bugamed/data/repositories/laboratory_repository.dart';
 import 'package:bugamed/data/repositories/service_repository.dart';
 import 'package:bugamed/data/repositories/test_request_repository.dart';
 import 'package:bugamed/data/repositories/notification_repository.dart';
+import 'package:bugamed/data/repositories/doctor_review_repository.dart';
 import 'package:bugamed/stores/auth_store.dart';
 import 'package:bugamed/stores/doctor_request_store.dart';
 import 'package:bugamed/stores/home_store.dart';
@@ -29,6 +30,9 @@ Future<void> setupServiceLocator() async {
   );
   locator.registerLazySingleton<NotificationRepository>(
     () => NotificationRepository(),
+  );
+  locator.registerLazySingleton<DoctorReviewRepository>(
+    () => DoctorReviewRepository(),
   );
   // Services
   locator.registerLazySingleton<PushNotificationService>(

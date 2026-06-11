@@ -64,6 +64,8 @@ mixin _$TestRequestModel {
   int get priceMnt => throw _privateConstructorUsedError;
   @JsonKey(name: 'doctor_commission_mnt')
   int? get doctorCommissionMnt => throw _privateConstructorUsedError;
+  @JsonKey(name: 'payment_status')
+  String? get paymentStatus => throw _privateConstructorUsedError;
   @JsonKey(name: 'cancellation_reason')
   String? get cancellationReason => throw _privateConstructorUsedError;
   @JsonKey(name: 'cancelled_by')
@@ -109,6 +111,7 @@ abstract class $TestRequestModelCopyWith<$Res> {
       @JsonKey(name: 'cancelled_at') String? cancelledAt,
       @JsonKey(name: 'price_mnt') int priceMnt,
       @JsonKey(name: 'doctor_commission_mnt') int? doctorCommissionMnt,
+      @JsonKey(name: 'payment_status') String? paymentStatus,
       @JsonKey(name: 'cancellation_reason') String? cancellationReason,
       @JsonKey(name: 'cancelled_by') String? cancelledBy,
       @JsonKey(name: 'created_at') String? createdAt,
@@ -151,6 +154,7 @@ class _$TestRequestModelCopyWithImpl<$Res, $Val extends TestRequestModel>
     Object? cancelledAt = freezed,
     Object? priceMnt = null,
     Object? doctorCommissionMnt = freezed,
+    Object? paymentStatus = freezed,
     Object? cancellationReason = freezed,
     Object? cancelledBy = freezed,
     Object? createdAt = freezed,
@@ -249,6 +253,10 @@ class _$TestRequestModelCopyWithImpl<$Res, $Val extends TestRequestModel>
           ? _value.doctorCommissionMnt
           : doctorCommissionMnt // ignore: cast_nullable_to_non_nullable
               as int?,
+      paymentStatus: freezed == paymentStatus
+          ? _value.paymentStatus
+          : paymentStatus // ignore: cast_nullable_to_non_nullable
+              as String?,
       cancellationReason: freezed == cancellationReason
           ? _value.cancellationReason
           : cancellationReason // ignore: cast_nullable_to_non_nullable
@@ -301,6 +309,7 @@ abstract class _$$TestRequestModelImplCopyWith<$Res>
       @JsonKey(name: 'cancelled_at') String? cancelledAt,
       @JsonKey(name: 'price_mnt') int priceMnt,
       @JsonKey(name: 'doctor_commission_mnt') int? doctorCommissionMnt,
+      @JsonKey(name: 'payment_status') String? paymentStatus,
       @JsonKey(name: 'cancellation_reason') String? cancellationReason,
       @JsonKey(name: 'cancelled_by') String? cancelledBy,
       @JsonKey(name: 'created_at') String? createdAt,
@@ -341,6 +350,7 @@ class __$$TestRequestModelImplCopyWithImpl<$Res>
     Object? cancelledAt = freezed,
     Object? priceMnt = null,
     Object? doctorCommissionMnt = freezed,
+    Object? paymentStatus = freezed,
     Object? cancellationReason = freezed,
     Object? cancelledBy = freezed,
     Object? createdAt = freezed,
@@ -439,6 +449,10 @@ class __$$TestRequestModelImplCopyWithImpl<$Res>
           ? _value.doctorCommissionMnt
           : doctorCommissionMnt // ignore: cast_nullable_to_non_nullable
               as int?,
+      paymentStatus: freezed == paymentStatus
+          ? _value.paymentStatus
+          : paymentStatus // ignore: cast_nullable_to_non_nullable
+              as String?,
       cancellationReason: freezed == cancellationReason
           ? _value.cancellationReason
           : cancellationReason // ignore: cast_nullable_to_non_nullable
@@ -461,7 +475,7 @@ class __$$TestRequestModelImplCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$TestRequestModelImpl implements _TestRequestModel {
+class _$TestRequestModelImpl extends _TestRequestModel {
   const _$TestRequestModelImpl(
       {required this.id,
       @JsonKey(name: 'patient_id') required this.patientId,
@@ -486,10 +500,12 @@ class _$TestRequestModelImpl implements _TestRequestModel {
       @JsonKey(name: 'cancelled_at') this.cancelledAt,
       @JsonKey(name: 'price_mnt') required this.priceMnt,
       @JsonKey(name: 'doctor_commission_mnt') this.doctorCommissionMnt,
+      @JsonKey(name: 'payment_status') this.paymentStatus,
       @JsonKey(name: 'cancellation_reason') this.cancellationReason,
       @JsonKey(name: 'cancelled_by') this.cancelledBy,
       @JsonKey(name: 'created_at') this.createdAt,
-      @JsonKey(name: 'updated_at') this.updatedAt});
+      @JsonKey(name: 'updated_at') this.updatedAt})
+      : super._();
 
   factory _$TestRequestModelImpl.fromJson(Map<String, dynamic> json) =>
       _$$TestRequestModelImplFromJson(json);
@@ -562,6 +578,9 @@ class _$TestRequestModelImpl implements _TestRequestModel {
   @JsonKey(name: 'doctor_commission_mnt')
   final int? doctorCommissionMnt;
   @override
+  @JsonKey(name: 'payment_status')
+  final String? paymentStatus;
+  @override
   @JsonKey(name: 'cancellation_reason')
   final String? cancellationReason;
   @override
@@ -576,7 +595,7 @@ class _$TestRequestModelImpl implements _TestRequestModel {
 
   @override
   String toString() {
-    return 'TestRequestModel(id: $id, patientId: $patientId, doctorId: $doctorId, laboratoryId: $laboratoryId, requestType: $requestType, serviceId: $serviceId, laboratoryServiceId: $laboratoryServiceId, doctorServiceId: $doctorServiceId, status: $status, scheduledDate: $scheduledDate, scheduledTimeSlot: $scheduledTimeSlot, patientAddress: $patientAddress, patientLatitude: $patientLatitude, patientLongitude: $patientLongitude, patientNotes: $patientNotes, acceptedAt: $acceptedAt, onTheWayAt: $onTheWayAt, sampleCollectedAt: $sampleCollectedAt, deliveredToLabAt: $deliveredToLabAt, completedAt: $completedAt, cancelledAt: $cancelledAt, priceMnt: $priceMnt, doctorCommissionMnt: $doctorCommissionMnt, cancellationReason: $cancellationReason, cancelledBy: $cancelledBy, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'TestRequestModel(id: $id, patientId: $patientId, doctorId: $doctorId, laboratoryId: $laboratoryId, requestType: $requestType, serviceId: $serviceId, laboratoryServiceId: $laboratoryServiceId, doctorServiceId: $doctorServiceId, status: $status, scheduledDate: $scheduledDate, scheduledTimeSlot: $scheduledTimeSlot, patientAddress: $patientAddress, patientLatitude: $patientLatitude, patientLongitude: $patientLongitude, patientNotes: $patientNotes, acceptedAt: $acceptedAt, onTheWayAt: $onTheWayAt, sampleCollectedAt: $sampleCollectedAt, deliveredToLabAt: $deliveredToLabAt, completedAt: $completedAt, cancelledAt: $cancelledAt, priceMnt: $priceMnt, doctorCommissionMnt: $doctorCommissionMnt, paymentStatus: $paymentStatus, cancellationReason: $cancellationReason, cancelledBy: $cancelledBy, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -628,6 +647,8 @@ class _$TestRequestModelImpl implements _TestRequestModel {
                 other.priceMnt == priceMnt) &&
             (identical(other.doctorCommissionMnt, doctorCommissionMnt) ||
                 other.doctorCommissionMnt == doctorCommissionMnt) &&
+            (identical(other.paymentStatus, paymentStatus) ||
+                other.paymentStatus == paymentStatus) &&
             (identical(other.cancellationReason, cancellationReason) ||
                 other.cancellationReason == cancellationReason) &&
             (identical(other.cancelledBy, cancelledBy) ||
@@ -665,6 +686,7 @@ class _$TestRequestModelImpl implements _TestRequestModel {
         cancelledAt,
         priceMnt,
         doctorCommissionMnt,
+        paymentStatus,
         cancellationReason,
         cancelledBy,
         createdAt,
@@ -686,7 +708,7 @@ class _$TestRequestModelImpl implements _TestRequestModel {
   }
 }
 
-abstract class _TestRequestModel implements TestRequestModel {
+abstract class _TestRequestModel extends TestRequestModel {
   const factory _TestRequestModel(
       {required final String id,
       @JsonKey(name: 'patient_id') required final String patientId,
@@ -711,11 +733,13 @@ abstract class _TestRequestModel implements TestRequestModel {
       @JsonKey(name: 'cancelled_at') final String? cancelledAt,
       @JsonKey(name: 'price_mnt') required final int priceMnt,
       @JsonKey(name: 'doctor_commission_mnt') final int? doctorCommissionMnt,
+      @JsonKey(name: 'payment_status') final String? paymentStatus,
       @JsonKey(name: 'cancellation_reason') final String? cancellationReason,
       @JsonKey(name: 'cancelled_by') final String? cancelledBy,
       @JsonKey(name: 'created_at') final String? createdAt,
       @JsonKey(name: 'updated_at')
       final String? updatedAt}) = _$TestRequestModelImpl;
+  const _TestRequestModel._() : super._();
 
   factory _TestRequestModel.fromJson(Map<String, dynamic> json) =
       _$TestRequestModelImpl.fromJson;
@@ -787,6 +811,9 @@ abstract class _TestRequestModel implements TestRequestModel {
   @override
   @JsonKey(name: 'doctor_commission_mnt')
   int? get doctorCommissionMnt;
+  @override
+  @JsonKey(name: 'payment_status')
+  String? get paymentStatus;
   @override
   @JsonKey(name: 'cancellation_reason')
   String? get cancellationReason;

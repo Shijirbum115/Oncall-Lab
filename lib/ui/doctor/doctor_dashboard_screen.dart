@@ -1,16 +1,23 @@
-import 'package:flutter/material.dart';
-import 'package:bugamed/ui/design_system/app_theme.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
 import 'package:bugamed/stores/auth_store.dart';
 import 'package:bugamed/stores/doctor_request_store.dart';
 import 'package:bugamed/data/models/test_request_model.dart';
-import 'package:bugamed/ui/doctor/doctor_request_detail_screen.dart';
-import 'package:bugamed/ui/shared/widgets/notification_bell.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
+import 'package:bugamed/ui/design_system/app_shadows.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
+import 'package:bugamed/ui/design_system/widgets/app_card.dart';
+import 'package:bugamed/ui/design_system/widgets/app_empty_state.dart';
+import 'package:bugamed/ui/design_system/widgets/app_segmented_filter.dart';
+import 'package:bugamed/ui/design_system/widgets/status_timeline.dart';
+import 'package:bugamed/ui/doctor/doctor_request_detail_screen.dart';
+import 'package:bugamed/ui/patient/widgets/request_journey.dart';
+import 'package:bugamed/ui/shared/widgets/notification_bell.dart';
 
+/// Doctor job board: available jobs to grab, jobs in progress, history.
 class DoctorDashboardScreen extends StatefulWidget {
   const DoctorDashboardScreen({super.key});
 
@@ -19,314 +26,157 @@ class DoctorDashboardScreen extends StatefulWidget {
 }
 
 class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
-  @override
-  void initState() {
-    super.initState();
-    _subscribeToRequests();
-  }
+  int _segment = 0;
 
-  void _subscribeToRequests() {
+  Future<void> _refresh() async {
     final doctorId = authStore.currentUser?.id;
-    if (doctorId != null) {
-      // Subscribe to real-time available requests
-      doctorRequestStore.subscribeToAvailableRequests();
-
-      // Subscribe to real-time active requests
-      doctorRequestStore.subscribeToMyActiveRequests(doctorId);
-
-      // Load completed requests (one-time, doesn't need real-time)
-      doctorRequestStore.loadMyCompletedRequests(doctorId);
+    if (doctorId == null) return;
+    switch (_segment) {
+      case 0:
+        await doctorRequestStore.loadAvailableRequests();
+      case 1:
+        await doctorRequestStore.loadMyActiveRequests(doctorId);
+      default:
+        await doctorRequestStore.loadMyCompletedRequests(doctorId);
     }
-  }
-
-  @override
-  void dispose() {
-    doctorRequestStore.dispose();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
-    return Observer(
-      builder: (_) {
-        if (doctorRequestStore.isLoading &&
-            doctorRequestStore.availableRequests.isEmpty &&
-            doctorRequestStore.myActiveRequests.isEmpty) {
-          return const Center(
-            child: CircularProgressIndicator(color: AppColors.primary),
-          );
-        }
-
-        return SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: AppPadding.screenAll,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      l10n.myDashboard,
-                      style: const TextStyle(
-                        fontSize: 28,
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const NotificationBell(),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: DefaultTabController(
-                  length: 3,
+    return SafeArea(
+      bottom: false,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 4),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Padding(
-                        padding: AppPadding.screenH,
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: AppColors.grey.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: LayoutBuilder(
-                            builder: (context, constraints) {
-                              final tabWidth =
-                                  (constraints.maxWidth - 12) / 3;
-                              return TabBar(
-                                indicatorColor: AppColors.primary,
-                                unselectedLabelColor:
-                                    AppColors.black.withValues(alpha: 0.5),
-                                labelStyle: const TextStyle(
-                                  fontSize: 15,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                                labelColor: Colors.white,
-                                indicator: BoxDecoration(
-                                  color: AppColors.primary,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                tabs: [
-                                  SizedBox(
-                                    width: tabWidth,
-                                    child: Tab(text: l10n.availableTab),
-                                  ),
-                                  SizedBox(
-                                    width: tabWidth,
-                                    child: Tab(text: l10n.myRequestsTab),
-                                  ),
-                                  SizedBox(
-                                    width: tabWidth,
-                                    child: Tab(text: l10n.completedTab),
-                                  ),
-                                ],
-                              );
-                            },
-                          ),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Expanded(
-                        child: TabBarView(
-                          children: [
-                            _buildAvailableRequestsList(l10n),
-                            _buildMyRequestsList(l10n),
-                            _buildCompletedRequestsList(l10n),
-                          ],
+                      Text(l10n.myDashboard, style: AppTypography.titleLarge),
+                      const SizedBox(height: 4),
+                      Observer(
+                        builder: (_) => Text(
+                          l10n.availableJobsCount(
+                              doctorRequestStore.availableRequestsCount),
+                          style: AppTypography.bodySmall,
                         ),
                       ),
                     ],
                   ),
                 ),
-              ),
-            ],
+                const NotificationBell(),
+              ],
+            ),
           ),
-        );
-      },
+          const SizedBox(height: AppSpacing.sm),
+          Padding(
+            padding: AppPadding.screenH,
+            child: AppSegmentedFilter(
+              segments: [
+                l10n.availableTab,
+                l10n.myRequestsTab,
+                l10n.completedTab,
+              ],
+              selected: _segment,
+              onChanged: (i) => setState(() => _segment = i),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.md),
+          Expanded(child: _buildBody(l10n)),
+        ],
+      ),
     );
   }
 
-  Widget _buildAvailableRequestsList(AppLocalizations l10n) {
+  Widget _buildBody(AppLocalizations l10n) {
     return Observer(
       builder: (_) {
-        if (doctorRequestStore.availableRequests.isEmpty) {
+        final requests = switch (_segment) {
+          0 => doctorRequestStore.availableRequests,
+          1 => doctorRequestStore.myActiveRequests,
+          _ => doctorRequestStore.myCompletedRequests,
+        };
+
+        if (doctorRequestStore.isLoading && requests.isEmpty) {
           return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Iconsax.clipboard_tick,
-                    size: 60,
-                    color: AppColors.grey.withValues(alpha: 0.5),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    l10n.noAvailableRequests,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.grey,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    l10n.newRequestsWillAppear,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: AppColors.grey,
-                    ),
-                  ),
-                ],
+            child: AppEmptyState(
+              emotion: AppEmptyEmotion.loading,
+              title: l10n.loading,
+            ),
+          );
+        }
+
+        if (requests.isEmpty) {
+          final (emotion, title, subtitle) = switch (_segment) {
+            0 => (
+                AppEmptyEmotion.searching,
+                l10n.noAvailableRequests,
+                l10n.newRequestsWillAppear,
               ),
+            1 => (
+                AppEmptyEmotion.empty,
+                l10n.noActiveRequests,
+                l10n.acceptRequestToStart,
+              ),
+            _ => (
+                AppEmptyEmotion.sleeping,
+                l10n.noCompletedRequests,
+                l10n.completedRequestsWillAppear,
+              ),
+          };
+
+          return RefreshIndicator(
+            onRefresh: _refresh,
+            child: ListView(
+              physics: const AlwaysScrollableScrollPhysics(
+                parent: BouncingScrollPhysics(),
+              ),
+              children: [
+                const SizedBox(height: 40),
+                AppEmptyState(
+                  emotion: emotion,
+                  title: title,
+                  subtitle: subtitle,
+                ),
+              ],
             ),
           );
         }
 
         return RefreshIndicator(
-          onRefresh: () => doctorRequestStore.loadAvailableRequests(),
-          child: ListView.builder(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: AppPadding.screenH,
-            itemCount: doctorRequestStore.availableRequests.length,
-            itemBuilder: (context, index) {
-              final request = doctorRequestStore.availableRequests[index];
-              return _RequestCard(
-                request: request,
-                showAcceptButton: true,
-                onTap: () => _navigateToDetail(request),
-                l10n: l10n,
-              );
-            },
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildMyRequestsList(AppLocalizations l10n) {
-    return Observer(
-      builder: (_) {
-        if (doctorRequestStore.myActiveRequests.isEmpty) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Iconsax.task_square,
-                    size: 60,
-                    color: AppColors.grey.withValues(alpha: 0.5),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    l10n.noActiveRequests,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.grey,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    l10n.acceptRequestToStart,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: AppColors.grey,
-                    ),
-                  ),
-                ],
-              ),
+          onRefresh: _refresh,
+          child: ListView.separated(
+            physics: const AlwaysScrollableScrollPhysics(
+              parent: BouncingScrollPhysics(),
             ),
-          );
-        }
-
-        final doctorId = authStore.currentUser?.id;
-        return RefreshIndicator(
-          onRefresh: () => doctorRequestStore.loadMyActiveRequests(doctorId!),
-          child: ListView.builder(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: AppPadding.screenH,
-            itemCount: doctorRequestStore.myActiveRequests.length,
-            itemBuilder: (context, index) {
-              final request = doctorRequestStore.myActiveRequests[index];
-              return _RequestCard(
-                request: request,
-                onTap: () => _navigateToDetail(request),
-                l10n: l10n,
-              );
-            },
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildCompletedRequestsList(AppLocalizations l10n) {
-    return Observer(
-      builder: (_) {
-        if (doctorRequestStore.myCompletedRequests.isEmpty) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Iconsax.tick_circle,
-                    size: 60,
-                    color: AppColors.grey.withValues(alpha: 0.5),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    l10n.noCompletedRequests,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.grey,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    l10n.completedRequestsWillAppear,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: AppColors.grey,
-                    ),
-                  ),
-                ],
-              ),
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
+            itemCount: requests.length,
+            itemBuilder: (context, index) => _JobCard(
+              request: requests[index],
+              mode: switch (_segment) {
+                0 => _JobCardMode.available,
+                1 => _JobCardMode.active,
+                _ => _JobCardMode.history,
+              },
+              l10n: l10n,
+              onTap: () => _openDetail(requests[index]),
+              onAccept: () => _accept(requests[index], l10n),
             ),
-          );
-        }
-
-        final doctorId = authStore.currentUser?.id;
-        return RefreshIndicator(
-          onRefresh: () => doctorRequestStore.loadMyCompletedRequests(doctorId!),
-          child: ListView.builder(
-            physics: const AlwaysScrollableScrollPhysics(),
-            padding: AppPadding.screenH,
-            itemCount: doctorRequestStore.myCompletedRequests.length,
-            itemBuilder: (context, index) {
-              final request = doctorRequestStore.myCompletedRequests[index];
-              return _RequestCard(
-                request: request,
-                onTap: () => _navigateToDetail(request),
-                l10n: l10n,
-              );
-            },
+            separatorBuilder: (_, _) => const SizedBox(height: 14),
           ),
         );
       },
     );
   }
 
-  void _navigateToDetail(TestRequestModel request) {
+  void _openDetail(TestRequestModel request) {
     Navigator.push(
       context,
       CupertinoPageRoute(
@@ -334,198 +184,438 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
       ),
     );
   }
-}
 
-class _RequestCard extends StatelessWidget {
-  final TestRequestModel request;
-  final VoidCallback onTap;
-  final bool showAcceptButton;
-  final AppLocalizations l10n;
+  Future<void> _accept(TestRequestModel request, AppLocalizations l10n) async {
+    final doctorId = authStore.currentUser?.id;
+    if (doctorId == null) return;
 
-  const _RequestCard({
-    required this.request,
-    required this.onTap,
-    required this.l10n,
-    this.showAcceptButton = false,
-  });
+    final result = await doctorRequestStore.acceptRequest(
+      requestId: request.id,
+      doctorId: doctorId,
+    );
 
-  String _getStatusString() {
-    switch (request.status) {
-      case RequestStatus.pending:
-        return 'pending';
-      case RequestStatus.accepted:
-        return 'accepted';
-      case RequestStatus.onTheWay:
-        return 'on_the_way';
-      case RequestStatus.sampleCollected:
-        return 'sample_collected';
-      case RequestStatus.deliveredToLab:
-        return 'delivered_to_lab';
-      case RequestStatus.completed:
-        return 'completed';
-      case RequestStatus.cancelled:
-        return 'cancelled';
+    if (!mounted) return;
+    if (result != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.requestAcceptedSuccess),
+          backgroundColor: AppColors.success,
+        ),
+      );
+      _openDetail(result);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              doctorRequestStore.errorMessage ?? l10n.somethingWentWrong),
+          backgroundColor: AppColors.error,
+        ),
+      );
     }
   }
+}
+
+enum _JobCardMode { available, active, history }
+
+class _JobCard extends StatelessWidget {
+  const _JobCard({
+    required this.request,
+    required this.mode,
+    required this.l10n,
+    required this.onTap,
+    required this.onAccept,
+  });
+
+  final TestRequestModel request;
+  final _JobCardMode mode;
+  final AppLocalizations l10n;
+  final VoidCallback onTap;
+  final VoidCallback onAccept;
 
   @override
   Widget build(BuildContext context) {
-    final statusStr = _getStatusString();
+    final isLab = request.requestType == RequestType.labService;
+    final title = isLab ? l10n.labTestCollection : l10n.homeServiceRequest;
+    final typeLabel =
+        isLab ? l10n.labTestServiceLabel : l10n.directHomeServiceLabel;
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 15),
-      child: InkWell(
+    if (mode == _JobCardMode.history) {
+      return _HistoryRow(
+        request: request,
+        title: title,
+        isLab: isLab,
+        l10n: l10n,
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: AppPadding.screenAll,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: AppColors.getStatusColor(statusStr),
-              width: 2,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.getStatusColor(statusStr)
-                    .withValues(alpha: 0.1),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+      );
+    }
+
+    final statusColor =
+        AppColors.getStatusColor(request.status.dbValue);
+
+    return AppCard(
+      borderRadius: AppRadius.lg,
+      padding: const EdgeInsets.all(16),
+      onTap: onTap,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: request.requestType == RequestType.labService
-                                ? Colors.blue.withValues(alpha: 0.1)
-                                : Colors.purple.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            request.requestType == RequestType.labService
-                                ? l10n.labTestServiceLabel
-                                : l10n.directHomeServiceLabel,
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                              color: request.requestType == RequestType.labService
-                                  ? Colors.blue[700]
-                                  : Colors.purple[700],
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: AppColors.getStatusColor(statusStr)
-                          .withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      AppColors.getStatusText(statusStr),
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.getStatusColor(statusStr),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  const Icon(Icons.calendar_today, size: 14, color: AppColors.grey),
-                  const SizedBox(width: 5),
-                  Text(
-                    '${l10n.scheduled}: ${request.scheduledDate} ${request.scheduledTimeSlot ?? ''}',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppColors.grey,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 5),
-              Row(
-                children: [
-                  const Icon(Icons.location_on, size: 14, color: AppColors.grey),
-                  const SizedBox(width: 5),
-                  Expanded(
-                    child: Text(
-                      request.patientAddress,
+              _JobTypeIcon(isLab: isLab, size: 46),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
                       style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.grey,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary,
                       ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                  ),
-                ],
+                    const SizedBox(height: 2),
+                    Text(typeLabel, style: AppTypography.labelSmall),
+                  ],
+                ),
               ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    l10n.priceMnt(request.priceMnt),
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.success,
-                    ),
-                  ),
-                  if (showAcceptButton)
-                    ElevatedButton(
-                      onPressed: () async {
-                        final doctorId = authStore.currentUser?.id;
-                        if (doctorId != null) {
-                          final result = await doctorRequestStore.acceptRequest(
-                            requestId: request.id,
-                            doctorId: doctorId,
-                          );
-
-                          if (result != null && context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(l10n.requestAcceptedSuccess),
-                                backgroundColor: AppColors.success,
-                              ),
-                            );
-                          }
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
+              const SizedBox(width: 8),
+              Text(
+                l10n.priceInMNT(request.doctorEarningsMnt),
+                style: const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              if (mode == _JobCardMode.active)
+                _ChipBadge(
+                  label: RequestJourney.label(request.status, l10n,
+                      type: request.requestType),
+                  color: statusColor,
+                ),
+              _PaymentChip(isPaid: request.isPaid, l10n: l10n),
+              _InfoChip(
+                icon: Iconsax.calendar_1,
+                label: '${request.scheduledDate}'
+                    '${request.scheduledTimeSlot != null ? ' · ${request.scheduledTimeSlot}' : ''}',
+              ),
+            ],
+          ),
+          if (mode == _JobCardMode.active) ...[
+            const SizedBox(height: 14),
+            StatusTimeline(
+              steps: RequestJourney.steps(l10n, type: request.requestType),
+              currentIndex: RequestJourney.indexOf(request.status,
+                  type: request.requestType),
+              cancelled: RequestJourney.isCancelled(request.status),
+              compact: true,
+            ),
+          ],
+          const SizedBox(height: 14),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Icon(Iconsax.location,
+                  size: 15, color: AppColors.textTertiary),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  request.patientAddress,
+                  style: AppTypography.bodySmall,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          if (mode == _JobCardMode.available) ...[
+            const SizedBox(height: 14),
+            Row(
+              children: [
+                Expanded(
+                  child: SizedBox(
+                    height: 44,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        gradient: AppColors.brandGradient,
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
+                      ),
+                      child: ElevatedButton.icon(
+                        onPressed: onAccept,
+                        icon: const Icon(Iconsax.tick_circle, size: 18),
+                        label: Text(
+                          l10n.accept,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.transparent,
+                          foregroundColor: Colors.white,
+                          shadowColor: Colors.transparent,
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(AppRadius.sm),
+                          ),
                         ),
                       ),
-                      child: Text(l10n.accept),
                     ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// Compact history row for completed jobs.
+class _HistoryRow extends StatelessWidget {
+  const _HistoryRow({
+    required this.request,
+    required this.title,
+    required this.isLab,
+    required this.l10n,
+    required this.onTap,
+  });
+
+  final TestRequestModel request;
+  final String title;
+  final bool isLab;
+  final AppLocalizations l10n;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final statusColor = AppColors.getStatusColor(request.status.dbValue);
+
+    return AppCard(
+      borderRadius: AppRadius.md,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      shadow: AppShadows.none,
+      borderColor: AppColors.grey.withValues(alpha: 0.12),
+      onTap: onTap,
+      child: Row(
+        children: [
+          _JobTypeIcon(isLab: isLab, size: 36),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 13.5,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.textPrimary,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  request.scheduledDate,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: AppColors.textTertiary,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Text(
+                l10n.priceInMNT(request.doctorEarningsMnt),
+                style: const TextStyle(
+                  fontSize: 13.5,
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+              const SizedBox(height: 3),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 6,
+                    height: 6,
+                    decoration: BoxDecoration(
+                      color: statusColor,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 5),
+                  Text(
+                    RequestJourney.label(request.status, l10n,
+                        type: request.requestType),
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: statusColor,
+                    ),
+                  ),
                 ],
               ),
             ],
           ),
-        ),
+        ],
+      ),
+    );
+  }
+}
+
+class _JobTypeIcon extends StatelessWidget {
+  const _JobTypeIcon({required this.isLab, required this.size});
+
+  final bool isLab;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.asset(
+      isLab
+          ? 'assets/icons/hero/lab_test.png'
+          : 'assets/icons/hero/doctor.png',
+      width: size,
+      height: size,
+      errorBuilder: (_, _, _) => Icon(
+        isLab ? Iconsax.drop : Iconsax.home_2,
+        color: AppColors.primary,
+        size: size * 0.5,
+      ),
+    );
+  }
+}
+
+class _PaymentChip extends StatelessWidget {
+  const _PaymentChip({required this.isPaid, required this.l10n});
+
+  final bool isPaid;
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = isPaid ? AppColors.success : AppColors.warning;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(AppRadius.xs),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            isPaid ? Iconsax.tick_circle : Iconsax.clock,
+            size: 13,
+            color: color,
+          ),
+          const SizedBox(width: 5),
+          Text(
+            isPaid ? l10n.paid : l10n.awaitingPayment,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ChipBadge extends StatelessWidget {
+  const _ChipBadge({required this.label, required this.color});
+
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(AppRadius.xs),
+        boxShadow: [
+          BoxShadow(
+            color: color.withValues(alpha: 0.28),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 7,
+            height: 7,
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            label.toUpperCase(),
+            style: TextStyle(
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+              letterSpacing: 0.3,
+              color: color,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _InfoChip extends StatelessWidget {
+  const _InfoChip({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: const Color(0xFFF0F1F3),
+        borderRadius: BorderRadius.circular(AppRadius.xs),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 13, color: AppColors.textSecondary),
+          const SizedBox(width: 5),
+          Text(
+            label,
+            style: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.w600,
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -2881,6 +2881,180 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Active'**
   String get activeShort;
+
+  /// No description provided for @treatmentDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Treatment given'**
+  String get treatmentDone;
+
+  /// No description provided for @earnings.
+  ///
+  /// In en, this message translates to:
+  /// **'Earnings'**
+  String get earnings;
+
+  /// No description provided for @availableJobsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} available requests'**
+  String availableJobsCount(int count);
+
+  /// No description provided for @completedJobsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} completed jobs'**
+  String completedJobsCount(int count);
+
+  /// No description provided for @paid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get paid;
+
+  /// No description provided for @awaitingPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting payment'**
+  String get awaitingPayment;
+
+  /// No description provided for @startOnTheWay.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m on my way'**
+  String get startOnTheWay;
+
+  /// No description provided for @markTreatmentDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark treatment given'**
+  String get markTreatmentDone;
+
+  /// No description provided for @patientInformation.
+  ///
+  /// In en, this message translates to:
+  /// **'Patient information'**
+  String get patientInformation;
+
+  /// No description provided for @ageYears.
+  ///
+  /// In en, this message translates to:
+  /// **'{age} yrs'**
+  String ageYears(int age);
+
+  /// No description provided for @couldNotCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not start the call'**
+  String get couldNotCall;
+
+  /// No description provided for @today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get today;
+
+  /// No description provided for @thisWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'This week'**
+  String get thisWeek;
+
+  /// No description provided for @thisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'This month'**
+  String get thisMonth;
+
+  /// No description provided for @allTime.
+  ///
+  /// In en, this message translates to:
+  /// **'All time'**
+  String get allTime;
+
+  /// No description provided for @completedJobs.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed jobs'**
+  String get completedJobs;
+
+  /// No description provided for @noEarningsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No earnings yet'**
+  String get noEarningsYet;
+
+  /// No description provided for @completeJobsToEarn.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept and complete requests to start earning.'**
+  String get completeJobsToEarn;
+
+  /// No description provided for @availableForRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Available for requests'**
+  String get availableForRequests;
+
+  /// No description provided for @availabilityOnHint.
+  ///
+  /// In en, this message translates to:
+  /// **'You appear in the available pool and receive new request alerts.'**
+  String get availabilityOnHint;
+
+  /// No description provided for @availabilityOffHint.
+  ///
+  /// In en, this message translates to:
+  /// **'You won\'t receive new request alerts.'**
+  String get availabilityOffHint;
+
+  /// No description provided for @myReviews.
+  ///
+  /// In en, this message translates to:
+  /// **'My reviews'**
+  String get myReviews;
+
+  /// No description provided for @noReviewsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No reviews yet — they appear after patients rate completed requests.'**
+  String get noReviewsYet;
+
+  /// No description provided for @rateDoctor.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate your doctor'**
+  String get rateDoctor;
+
+  /// No description provided for @howWasYourExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'How was your experience with the doctor?'**
+  String get howWasYourExperience;
+
+  /// No description provided for @addCommentOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a comment (optional)'**
+  String get addCommentOptional;
+
+  /// No description provided for @submitRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit rating'**
+  String get submitRating;
+
+  /// No description provided for @ratingSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks! Your rating was submitted.'**
+  String get ratingSubmitted;
+
+  /// No description provided for @allergiesShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Allergies'**
+  String get allergiesShort;
 }
 
 class _AppLocalizationsDelegate

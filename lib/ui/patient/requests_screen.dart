@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:get_it/get_it.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/data/repositories/doctor_review_repository.dart';
+import 'package:bugamed/ui/patient/widgets/rate_doctor_sheet.dart';
 import 'package:bugamed/stores/auth_store.dart';
 import 'package:bugamed/stores/test_request_store.dart';
 import 'package:bugamed/data/models/test_request_model.dart';
@@ -10,6 +13,7 @@ import 'package:bugamed/ui/design_system/app_shadows.dart';
 import 'package:bugamed/ui/design_system/app_theme.dart';
 import 'package:bugamed/ui/design_system/widgets/app_card.dart';
 import 'package:bugamed/ui/design_system/widgets/app_empty_state.dart';
+import 'package:bugamed/ui/design_system/widgets/app_segmented_filter.dart';
 import 'package:bugamed/ui/design_system/widgets/status_timeline.dart';
 import 'package:bugamed/ui/patient/widgets/request_journey.dart';
 import 'package:bugamed/ui/shared/widgets/notification_bell.dart';
@@ -26,10 +30,47 @@ class PatientRequestsScreen extends StatefulWidget {
 class _PatientRequestsScreenState extends State<PatientRequestsScreen> {
   int _segment = 0;
 
+  /// Request ids this patient has already reviewed (hides the rate button).
+  final Set<String> _reviewedRequestIds = {};
+  bool _reviewsLoaded = false;
+
   @override
   void initState() {
     super.initState();
     _subscribeToRequests();
+    _loadMyReviews();
+  }
+
+  Future<void> _loadMyReviews() async {
+    final user = authStore.currentUser;
+    if (user == null) return;
+    try {
+      final reviews =
+          await GetIt.I<DoctorReviewRepository>().getReviewsByPatient(user.id);
+      if (!mounted) return;
+      setState(() {
+        _reviewedRequestIds.addAll(
+          reviews.map((r) => r.testRequestId).whereType<String>(),
+        );
+        _reviewsLoaded = true;
+      });
+    } catch (_) {
+      // Rating prompt is best-effort; ignore load failures.
+    }
+  }
+
+  Future<void> _rateRequest(TestRequestModel request) async {
+    final user = authStore.currentUser;
+    if (user == null) return;
+
+    final submitted = await showRateDoctorSheet(
+      context,
+      request: request,
+      patientId: user.id,
+    );
+    if (submitted == true && mounted) {
+      setState(() => _reviewedRequestIds.add(request.id));
+    }
   }
 
   void _subscribeToRequests() {
@@ -84,7 +125,7 @@ class _PatientRequestsScreenState extends State<PatientRequestsScreen> {
               const SizedBox(height: AppSpacing.sm),
               Padding(
                 padding: AppPadding.screenH,
-                child: _SegmentedFilter(
+                child: AppSegmentedFilter(
                   segments: [
                     l10n.activeShort,
                     l10n.completed,
@@ -176,76 +217,24 @@ class _PatientRequestsScreenState extends State<PatientRequestsScreen> {
         ),
         padding: const EdgeInsets.fromLTRB(20, 4, 20, 24),
         itemCount: requests.length,
-        itemBuilder: (context, index) => isActiveSegment
-            ? _RequestCard(request: requests[index], l10n: l10n)
-            : _CompactRequestCard(request: requests[index], l10n: l10n),
+        itemBuilder: (context, index) {
+          final request = requests[index];
+          if (isActiveSegment) {
+            return _RequestCard(request: request, l10n: l10n);
+          }
+          final canRate = _segment == 1 &&
+              _reviewsLoaded &&
+              request.status == RequestStatus.completed &&
+              request.doctorId != null &&
+              !_reviewedRequestIds.contains(request.id);
+          return _CompactRequestCard(
+            request: request,
+            l10n: l10n,
+            onRate: canRate ? () => _rateRequest(request) : null,
+          );
+        },
         separatorBuilder: (_, _) =>
             SizedBox(height: isActiveSegment ? 14 : 10),
-      ),
-    );
-  }
-}
-
-// ---------------------------------------------------------------------------
-//  Segmented filter
-// ---------------------------------------------------------------------------
-
-class _SegmentedFilter extends StatelessWidget {
-  const _SegmentedFilter({
-    required this.segments,
-    required this.selected,
-    required this.onChanged,
-  });
-
-  final List<String> segments;
-  final int selected;
-  final ValueChanged<int> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 44,
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF0F1F3),
-        borderRadius: BorderRadius.circular(AppRadius.sm),
-      ),
-      child: Row(
-        children: List.generate(segments.length, (i) {
-          final isSelected = i == selected;
-          return Expanded(
-            child: Semantics(
-              button: true,
-              selected: isSelected,
-              child: GestureDetector(
-                onTap: () => onChanged(i),
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 180),
-                  curve: Curves.easeOutCubic,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    color: isSelected ? Colors.white : Colors.transparent,
-                    borderRadius: BorderRadius.circular(AppRadius.xs),
-                    boxShadow: isSelected ? AppShadows.sm : null,
-                  ),
-                  child: Text(
-                    segments[i],
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
-                      fontSize: 13,
-                      fontWeight:
-                          isSelected ? FontWeight.w700 : FontWeight.w500,
-                      color: isSelected
-                          ? AppColors.primary
-                          : AppColors.textSecondary,
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          );
-        }),
       ),
     );
   }
@@ -309,7 +298,8 @@ class _RequestCard extends StatelessWidget {
             runSpacing: 8,
             children: [
               _StatusBadge(
-                label: RequestJourney.label(request.status, l10n),
+                label: RequestJourney.label(request.status, l10n,
+                    type: request.requestType),
                 color: statusColor,
               ),
               _InfoChip(
@@ -321,8 +311,9 @@ class _RequestCard extends StatelessWidget {
           ),
           const SizedBox(height: 14),
           StatusTimeline(
-            steps: RequestJourney.steps(l10n),
-            currentIndex: RequestJourney.indexOf(request.status),
+            steps: RequestJourney.steps(l10n, type: request.requestType),
+            currentIndex:
+                RequestJourney.indexOf(request.status, type: request.requestType),
             cancelled: RequestJourney.isCancelled(request.status),
             cancelledLabel:
                 '${l10n.cancelled}${request.cancellationReason != null ? ' · ${request.cancellationReason}' : ''}',
@@ -398,10 +389,15 @@ class _RequestTypeIcon extends StatelessWidget {
 /// Compact history row for finished requests — intentionally quieter than
 /// the active journey card.
 class _CompactRequestCard extends StatelessWidget {
-  const _CompactRequestCard({required this.request, required this.l10n});
+  const _CompactRequestCard({
+    required this.request,
+    required this.l10n,
+    this.onRate,
+  });
 
   final TestRequestModel request;
   final AppLocalizations l10n;
+  final VoidCallback? onRate;
 
   @override
   Widget build(BuildContext context) {
@@ -409,12 +405,7 @@ class _CompactRequestCard extends StatelessWidget {
     final title = isLab ? l10n.labTestCollection : l10n.homeServiceRequest;
     final statusColor = AppColors.getStatusColor(_statusKey(request.status));
 
-    return AppCard(
-      borderRadius: AppRadius.md,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      shadow: AppShadows.none,
-      borderColor: AppColors.grey.withValues(alpha: 0.12),
-      child: Row(
+    final row = Row(
         children: [
           _RequestTypeIcon(isLab: isLab, size: 36),
           const SizedBox(width: 12),
@@ -469,7 +460,8 @@ class _CompactRequestCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 5),
                   Text(
-                    RequestJourney.label(request.status, l10n),
+                    RequestJourney.label(request.status, l10n,
+                        type: request.requestType),
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.w600,
@@ -481,7 +473,41 @@ class _CompactRequestCard extends StatelessWidget {
             ],
           ),
         ],
-      ),
+      );
+
+    return AppCard(
+      borderRadius: AppRadius.md,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      shadow: AppShadows.none,
+      borderColor: AppColors.grey.withValues(alpha: 0.12),
+      child: onRate == null
+          ? row
+          : Column(
+              children: [
+                row,
+                const SizedBox(height: 8),
+                const Divider(height: 1),
+                const SizedBox(height: 4),
+                SizedBox(
+                  width: double.infinity,
+                  child: TextButton.icon(
+                    onPressed: onRate,
+                    icon: const Icon(Iconsax.star, size: 16),
+                    label: Text(
+                      l10n.rateDoctor,
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    style: TextButton.styleFrom(
+                      foregroundColor: AppColors.primary,
+                      padding: const EdgeInsets.symmetric(vertical: 6),
+                    ),
+                  ),
+                ),
+              ],
+            ),
     );
   }
 }

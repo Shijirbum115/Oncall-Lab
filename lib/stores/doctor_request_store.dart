@@ -181,6 +181,47 @@ abstract class _DoctorRequestStore with Store {
     }
   }
 
+  // ============= EARNINGS (from completed requests) =============
+
+  bool _completedInPeriod(TestRequestModel r, DateTime from) {
+    final ts = r.completedAt;
+    if (ts == null) return false;
+    final dt = DateTime.tryParse(ts)?.toLocal();
+    if (dt == null) return false;
+    return !dt.isBefore(from);
+  }
+
+  int _sumEarnings(Iterable<TestRequestModel> requests) =>
+      requests.fold(0, (sum, r) => sum + r.doctorEarningsMnt);
+
+  @computed
+  int get totalEarningsMnt => _sumEarnings(myCompletedRequests);
+
+  @computed
+  int get todayEarningsMnt {
+    final now = DateTime.now();
+    final startOfDay = DateTime(now.year, now.month, now.day);
+    return _sumEarnings(
+        myCompletedRequests.where((r) => _completedInPeriod(r, startOfDay)));
+  }
+
+  @computed
+  int get weekEarningsMnt {
+    final now = DateTime.now();
+    final startOfDay = DateTime(now.year, now.month, now.day);
+    final startOfWeek = startOfDay.subtract(Duration(days: now.weekday - 1));
+    return _sumEarnings(
+        myCompletedRequests.where((r) => _completedInPeriod(r, startOfWeek)));
+  }
+
+  @computed
+  int get monthEarningsMnt {
+    final now = DateTime.now();
+    final startOfMonth = DateTime(now.year, now.month);
+    return _sumEarnings(
+        myCompletedRequests.where((r) => _completedInPeriod(r, startOfMonth)));
+  }
+
   @computed
   int get availableRequestsCount => availableRequests.length;
 

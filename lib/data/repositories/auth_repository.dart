@@ -196,6 +196,24 @@ class AuthRepository {
     }
   }
 
+  /// Get a profile by id. Doctors can read patient profiles for requests
+  /// assigned to them (enforced by RLS); everyone can read their own.
+  Future<ProfileModel?> getProfileById(String userId) async {
+    try {
+      final data = await supabase
+          .from('profiles')
+          .select()
+          .eq('id', userId)
+          .maybeSingle();
+
+      if (data == null) return null;
+      return ProfileModel.fromJson(data);
+    } catch (e) {
+      if (kDebugMode) debugPrint('❌ [AUTH] Failed to load profile $userId: $e');
+      return null;
+    }
+  }
+
   /// Get doctor profile
   Future<DoctorProfileModel?> getDoctorProfile(String userId) async {
     try {

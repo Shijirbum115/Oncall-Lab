@@ -1,11 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/data/models/patient_address_model.dart';
+import 'package:bugamed/data/models/profile_model.dart';
 import 'package:bugamed/data/models/test_request_model.dart';
+import 'package:bugamed/data/repositories/auth_repository.dart';
 import 'package:bugamed/stores/auth_store.dart';
 import 'package:bugamed/stores/doctor_request_store.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
+import 'package:bugamed/ui/design_system/widgets/app_button.dart';
+import 'package:bugamed/ui/design_system/widgets/app_card.dart';
+import 'package:bugamed/ui/design_system/widgets/status_timeline.dart';
+import 'package:bugamed/ui/doctor/widgets/location_viewer_widget.dart';
+import 'package:bugamed/ui/patient/widgets/request_journey.dart';
+import 'package:bugamed/ui/shared/widgets/profile_avatar.dart';
 
+/// Doctor-facing job detail: who, where, what, and the next status action.
 class DoctorRequestDetailScreen extends StatefulWidget {
   final TestRequestModel request;
 
@@ -15,17 +28,38 @@ class DoctorRequestDetailScreen extends StatefulWidget {
   });
 
   @override
-  State<DoctorRequestDetailScreen> createState() => _DoctorRequestDetailScreenState();
+  State<DoctorRequestDetailScreen> createState() =>
+      _DoctorRequestDetailScreenState();
 }
 
 class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
   late TestRequestModel currentRequest;
   bool isUpdating = false;
+  ProfileModel? patientProfile;
+
+  bool get _isMine =>
+      currentRequest.doctorId != null &&
+      currentRequest.doctorId == authStore.currentUser?.id;
+
+  bool get _isFinished =>
+      currentRequest.status == RequestStatus.completed ||
+      currentRequest.status == RequestStatus.cancelled;
 
   @override
   void initState() {
     super.initState();
     currentRequest = widget.request;
+    _loadPatientProfile();
+  }
+
+  Future<void> _loadPatientProfile() async {
+    // RLS only exposes the patient profile to the assigned doctor.
+    if (!_isMine) return;
+    final profile = await GetIt.I<AuthRepository>()
+        .getProfileById(currentRequest.patientId);
+    if (mounted && profile != null) {
+      setState(() => patientProfile = profile);
+    }
   }
 
   Future<void> _updateStatus(RequestStatus newStatus) async {
@@ -37,35 +71,34 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
       status: newStatus,
     );
 
+    if (!mounted) return;
+
     if (result != null) {
       setState(() {
         currentRequest = result;
         isUpdating = false;
       });
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.statusUpdatedTo(_getStatusDisplayName(newStatus, l10n))),
-            backgroundColor: AppColors.success,
-          ),
-        );
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.statusUpdatedTo(RequestJourney.label(
+              newStatus, l10n,
+              type: currentRequest.requestType))),
+          backgroundColor: AppColors.success,
+        ),
+      );
 
-        // If completed, go back to dashboard
-        if (newStatus == RequestStatus.completed) {
-          Navigator.of(context).pop();
-        }
+      if (newStatus == RequestStatus.completed) {
+        Navigator.of(context).pop();
       }
     } else {
       setState(() => isUpdating = false);
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.failedToUpdateStatus),
-            backgroundColor: AppColors.error,
-          ),
-        );
-      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.failedToUpdateStatus),
+          backgroundColor: AppColors.error,
+        ),
+      );
     }
   }
 
@@ -76,132 +109,144 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
       builder: (context) => _CancelRequestDialog(l10n: l10n),
     );
 
-    if (reason != null) {
-      setState(() => isUpdating = true);
+    if (reason == null || !mounted) return;
 
-      final result = await doctorRequestStore.cancelRequest(
-        requestId: currentRequest.id,
-        cancelledBy: authStore.currentUser!.id,
-        cancellationReason: reason,
+    setState(() => isUpdating = true);
+
+    final result = await doctorRequestStore.cancelRequest(
+      requestId: currentRequest.id,
+      cancelledBy: authStore.currentUser!.id,
+      cancellationReason: reason,
+    );
+
+    if (!mounted) return;
+    setState(() => isUpdating = false);
+
+    if (result != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.requestCancelled),
+          backgroundColor: AppColors.warning,
+        ),
       );
-
-      setState(() => isUpdating = false);
-
-      if (result != null && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.requestCancelled),
-            backgroundColor: AppColors.warning,
-          ),
-        );
-        Navigator.of(context).pop();
-      }
+      Navigator.of(context).pop();
     }
   }
 
-  String _getStatusDisplayName(RequestStatus status, AppLocalizations l10n) {
-    switch (status) {
-      case RequestStatus.pending:
-        return l10n.pending;
-      case RequestStatus.accepted:
-        return l10n.accepted;
-      case RequestStatus.onTheWay:
-        return l10n.onTheWay;
-      case RequestStatus.sampleCollected:
-        return l10n.sampleCollected;
-      case RequestStatus.deliveredToLab:
-        return l10n.deliveredToLab;
-      case RequestStatus.completed:
-        return l10n.completed;
-      case RequestStatus.cancelled:
-        return l10n.cancelled;
+  Future<void> _acceptRequest() async {
+    final l10n = AppLocalizations.of(context)!;
+    final doctorId = authStore.currentUser?.id;
+    if (doctorId == null) return;
+
+    setState(() => isUpdating = true);
+    final result = await doctorRequestStore.acceptRequest(
+      requestId: currentRequest.id,
+      doctorId: doctorId,
+    );
+
+    if (!mounted) return;
+    setState(() {
+      isUpdating = false;
+      if (result != null) currentRequest = result;
+    });
+
+    if (result != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.requestAcceptedSuccess),
+          backgroundColor: AppColors.success,
+        ),
+      );
+      _loadPatientProfile();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              doctorRequestStore.errorMessage ?? l10n.somethingWentWrong),
+          backgroundColor: AppColors.error,
+        ),
+      );
     }
   }
 
-  List<Widget> _buildActionButtons(AppLocalizations l10n) {
-    final buttons = <Widget>[];
+  Future<void> _callPatient(String phoneNumber) async {
+    final uri = Uri(scheme: 'tel', path: phoneNumber);
+    try {
+      await launchUrl(uri);
+    } catch (_) {
+      if (!mounted) return;
+      final l10n = AppLocalizations.of(context)!;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.couldNotCall),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    }
+  }
 
+  /// Next step in the workflow for the current status, or null when there is
+  /// no doctor action (pending / finished).
+  (String, IconData, RequestStatus)? _nextAction(AppLocalizations l10n) {
+    final isDirect = currentRequest.requestType == RequestType.directService;
     switch (currentRequest.status) {
       case RequestStatus.accepted:
-        buttons.add(
-          _ActionButton(
-            label: l10n.onTheWay,
-            icon: Iconsax.car,
-            color: Colors.blue,
-            onPressed: () => _updateStatus(RequestStatus.onTheWay),
-          ),
-        );
-        break;
-
+        return (l10n.startOnTheWay, Iconsax.routing, RequestStatus.onTheWay);
       case RequestStatus.onTheWay:
-        buttons.add(
-          _ActionButton(
-            label: l10n.collectSample,
-            icon: Iconsax.health,
-            color: Colors.orange,
-            onPressed: () => _updateStatus(RequestStatus.sampleCollected),
-          ),
-        );
-        break;
-
+        return isDirect
+            ? (
+                l10n.markTreatmentDone,
+                Iconsax.health,
+                RequestStatus.sampleCollected,
+              )
+            : (
+                l10n.collectSample,
+                Iconsax.drop,
+                RequestStatus.sampleCollected,
+              );
       case RequestStatus.sampleCollected:
-        if (currentRequest.requestType == RequestType.labService) {
-          buttons.add(
-            _ActionButton(
-              label: l10n.deliverToLab,
-              icon: Iconsax.building,
-              color: Colors.purple,
-              onPressed: () => _updateStatus(RequestStatus.deliveredToLab),
-            ),
-          );
-        } else {
-          // For direct service, skip to completed
-          buttons.add(
-            _ActionButton(
-              label: l10n.completeRequest,
-              icon: Iconsax.tick_circle,
-              color: AppColors.success,
-              onPressed: () => _updateStatus(RequestStatus.completed),
-            ),
-          );
-        }
-        break;
-
+        return isDirect
+            ? (
+                l10n.completeRequest,
+                Iconsax.tick_circle,
+                RequestStatus.completed,
+              )
+            : (
+                l10n.deliverToLab,
+                Iconsax.building,
+                RequestStatus.deliveredToLab,
+              );
       case RequestStatus.deliveredToLab:
-        buttons.add(
-          _ActionButton(
-            label: l10n.completeRequest,
-            icon: Iconsax.tick_circle,
-            color: AppColors.success,
-            onPressed: () => _updateStatus(RequestStatus.completed),
-          ),
+        return (
+          l10n.completeRequest,
+          Iconsax.tick_circle,
+          RequestStatus.completed,
         );
-        break;
-
       default:
-        break;
+        return null;
     }
-
-    return buttons;
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final statusStr = _getStatusString();
+    final canAccept = !_isMine &&
+        currentRequest.status == RequestStatus.pending &&
+        currentRequest.doctorId == null;
+    final action = _isMine && !_isFinished ? _nextAction(l10n) : null;
+    final showBottomBar = action != null || canAccept;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.scaffoldBackground,
       appBar: AppBar(
         title: Text(l10n.requestDetails),
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.scaffoldBackground,
         elevation: 0,
         actions: [
-          if (currentRequest.status != RequestStatus.completed &&
-              currentRequest.status != RequestStatus.cancelled)
+          if (_isMine && !_isFinished)
             IconButton(
               icon: const Icon(Icons.cancel_outlined, color: AppColors.error),
-              onPressed: _cancelRequest,
+              onPressed: isUpdating ? null : _cancelRequest,
               tooltip: l10n.cancelRequest,
             ),
         ],
@@ -209,155 +254,58 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
       body: Stack(
         children: [
           ListView(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.fromLTRB(20, 4, 20, showBottomBar ? 120 : 24),
             children: [
-              // Status Badge
-              Center(
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: AppColors.getStatusColor(statusStr)
-                        .withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                  child: Text(
-                    AppColors.getStatusText(statusStr),
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.getStatusColor(statusStr),
-                    ),
-                  ),
-                ),
-              ),
-
-              const SizedBox(height: 24),
-
-              // Request Type
-              _InfoCard(
-                title: l10n.requestType,
-                icon: Iconsax.clipboard_text,
-                children: [
-                  _InfoRow(
-                    label: l10n.type,
-                    value: currentRequest.requestType == RequestType.labService
-                        ? l10n.labTestServiceLabel
-                        : l10n.directHomeServiceLabel,
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 16),
-
-              // Schedule Info
-              _InfoCard(
-                title: l10n.schedule,
-                icon: Iconsax.calendar,
-                children: [
-                  _InfoRow(
-                    label: l10n.date,
-                    value: currentRequest.scheduledDate,
-                  ),
-                  if (currentRequest.scheduledTimeSlot != null)
-                    _InfoRow(
-                      label: l10n.timeSlot,
-                      value: currentRequest.scheduledTimeSlot!,
-                    ),
-                ],
-              ),
-
-              const SizedBox(height: 16),
-
-              // Location Info
-              _InfoCard(
-                title: l10n.location,
-                icon: Iconsax.location,
-                children: [
-                  _InfoRow(
-                    label: l10n.address,
-                    value: currentRequest.patientAddress,
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 16),
-
-              // Payment Info
-              _InfoCard(
-                title: l10n.payment,
-                icon: Iconsax.wallet,
-                children: [
-                  _InfoRow(
-                    label: l10n.totalAmount,
-                    value: l10n.priceInMNT(currentRequest.priceMnt),
-                    valueStyle: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.success,
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 16),
-
-              // Patient Notes
+              _buildJourneyCard(l10n),
+              const SizedBox(height: AppSpacing.sm),
+              if (_isMine) ...[
+                _buildPatientCard(l10n),
+                const SizedBox(height: AppSpacing.sm),
+              ],
+              _buildLocationSection(l10n),
+              const SizedBox(height: AppSpacing.sm),
+              _buildJobCard(l10n),
               if (currentRequest.patientNotes != null &&
-                  currentRequest.patientNotes!.isNotEmpty)
-                _InfoCard(
-                  title: l10n.patientNotes,
-                  icon: Iconsax.note,
-                  children: [
-                    Text(
-                      currentRequest.patientNotes!,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.black,
-                        height: 1.5,
-                      ),
-                    ),
-                  ],
-                ),
-
-              const SizedBox(height: 100), // Space for bottom buttons
+                  currentRequest.patientNotes!.trim().isNotEmpty) ...[
+                const SizedBox(height: AppSpacing.sm),
+                _buildNotesCard(l10n),
+              ],
             ],
           ),
 
-          // Action Buttons (Fixed at bottom)
-          if (currentRequest.status != RequestStatus.completed &&
-              currentRequest.status != RequestStatus.cancelled)
+          // Next-step action pinned at the bottom
+          if (showBottomBar)
             Positioned(
               bottom: 0,
               left: 0,
               right: 0,
               child: Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.fromLTRB(20, 14, 20, 24),
                 decoration: BoxDecoration(
                   color: Colors.white,
+                  border:
+                      const Border(top: BorderSide(color: AppColors.outline)),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.1),
-                      blurRadius: 10,
-                      offset: const Offset(0, -2),
+                      color: Colors.black.withValues(alpha: 0.06),
+                      blurRadius: 12,
+                      offset: const Offset(0, -4),
                     ),
                   ],
                 ),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    ..._buildActionButtons(l10n),
-                  ],
-                ),
-              ),
-            ),
-
-          // Loading Overlay
-          if (isUpdating)
-            Container(
-              color: Colors.black.withValues(alpha: 0.3),
-              child: const Center(
-                child: CircularProgressIndicator(color: AppColors.primary),
+                child: canAccept
+                    ? AppButton(
+                        label: l10n.accept,
+                        icon: Iconsax.tick_circle,
+                        loading: isUpdating,
+                        onPressed: _acceptRequest,
+                      )
+                    : AppButton(
+                        label: action!.$1,
+                        icon: action.$2,
+                        loading: isUpdating,
+                        onPressed: () => _updateStatus(action.$3),
+                      ),
               ),
             ),
         ],
@@ -365,109 +313,276 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
     );
   }
 
-  String _getStatusString() {
-    switch (currentRequest.status) {
-      case RequestStatus.pending:
-        return 'pending';
-      case RequestStatus.accepted:
-        return 'accepted';
-      case RequestStatus.onTheWay:
-        return 'on_the_way';
-      case RequestStatus.sampleCollected:
-        return 'sample_collected';
-      case RequestStatus.deliveredToLab:
-        return 'delivered_to_lab';
-      case RequestStatus.completed:
-        return 'completed';
-      case RequestStatus.cancelled:
-        return 'cancelled';
-    }
-  }
-}
+  Widget _buildJourneyCard(AppLocalizations l10n) {
+    final statusColor = AppColors.getStatusColor(currentRequest.status.dbValue);
 
-class _InfoCard extends StatelessWidget {
-  final String title;
-  final IconData icon;
-  final List<Widget> children;
-
-  const _InfoCard({
-    required this.title,
-    required this.icon,
-    required this.children,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
+    return AppCard(
+      borderRadius: AppRadius.lg,
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border:
-            Border.all(color: AppColors.grey.withValues(alpha: 0.3)),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Icon(icon, size: 20, color: AppColors.primary),
-              const SizedBox(width: 8),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: statusColor.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                ),
+                child: Text(
+                  RequestJourney.label(currentRequest.status, l10n,
+                      type: currentRequest.requestType),
+                  style: TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    color: statusColor,
+                  ),
+                ),
+              ),
               Text(
-                title,
+                currentRequest.requestType == RequestType.labService
+                    ? l10n.labTestServiceLabel
+                    : l10n.directHomeServiceLabel,
+                style: AppTypography.labelSmall,
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          StatusTimeline(
+            steps: RequestJourney.steps(l10n,
+                type: currentRequest.requestType),
+            currentIndex: RequestJourney.indexOf(currentRequest.status,
+                type: currentRequest.requestType),
+            cancelled: RequestJourney.isCancelled(currentRequest.status),
+            cancelledLabel:
+                '${l10n.cancelled}${currentRequest.cancellationReason != null ? ' · ${currentRequest.cancellationReason}' : ''}',
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPatientCard(AppLocalizations l10n) {
+    final profile = patientProfile;
+
+    return AppCard(
+      borderRadius: AppRadius.lg,
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _SectionHeader(icon: Iconsax.user, title: l10n.patientInformation),
+          const SizedBox(height: 12),
+          if (profile == null)
+            Text(l10n.loading, style: AppTypography.bodySmall)
+          else ...[
+            Row(
+              children: [
+                ProfileAvatar(
+                  avatarUrl: profile.getAvatarUrl(),
+                  initials: profile.initials,
+                  radius: 24,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        profile.displayName,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        [
+                          if (profile.age != null)
+                            l10n.ageYears(profile.age!),
+                          if (profile.gender != null) profile.gender!,
+                        ].join(' · '),
+                        style: AppTypography.bodySmall,
+                      ),
+                    ],
+                  ),
+                ),
+                // Call button — the doctor's lifeline in the field
+                Material(
+                  color: Colors.transparent,
+                  child: Ink(
+                    decoration: const BoxDecoration(
+                      gradient: AppColors.brandGradient,
+                      shape: BoxShape.circle,
+                    ),
+                    child: InkWell(
+                      customBorder: const CircleBorder(),
+                      onTap: () => _callPatient(profile.phoneNumber),
+                      child: const Padding(
+                        padding: EdgeInsets.all(12),
+                        child:
+                            Icon(Iconsax.call, color: Colors.white, size: 20),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            _MetaRow(icon: Iconsax.mobile, label: profile.phoneNumber),
+            if (profile.allergies != null &&
+                profile.allergies!.trim().isNotEmpty) ...[
+              const SizedBox(height: 10),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: AppColors.warning.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(AppRadius.xs),
+                  border: Border.all(
+                      color: AppColors.warning.withValues(alpha: 0.3)),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Icon(Iconsax.danger,
+                        size: 16, color: AppColors.warning),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        '${l10n.allergiesShort}: ${profile.allergies}',
+                        style: const TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.warning,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLocationSection(AppLocalizations l10n) {
+    final lat = currentRequest.patientLatitude;
+    final lng = currentRequest.patientLongitude;
+
+    if (lat == null || lng == null) {
+      return AppCard(
+        borderRadius: AppRadius.lg,
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _SectionHeader(icon: Iconsax.location, title: l10n.location),
+            const SizedBox(height: 12),
+            _MetaRow(
+                icon: Iconsax.location, label: currentRequest.patientAddress),
+          ],
+        ),
+      );
+    }
+
+    final now = DateTime.now();
+    return LocationViewerWidget(
+      address: PatientAddressModel(
+        id: currentRequest.id,
+        userId: currentRequest.patientId,
+        latitude: lat,
+        longitude: lng,
+        addressLine: currentRequest.patientAddress,
+        createdAt: now,
+        updatedAt: now,
+      ),
+    );
+  }
+
+  Widget _buildJobCard(AppLocalizations l10n) {
+    return AppCard(
+      borderRadius: AppRadius.lg,
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _SectionHeader(icon: Iconsax.clipboard_text, title: l10n.schedule),
+          const SizedBox(height: 12),
+          _MetaRow(
+            icon: Iconsax.calendar_1,
+            label: '${currentRequest.scheduledDate}'
+                '${currentRequest.scheduledTimeSlot != null ? ' · ${currentRequest.scheduledTimeSlot}' : ''}',
+          ),
+          const SizedBox(height: 12),
+          const Divider(height: 1),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Row(
+                children: [
+                  Text(l10n.totalAmount, style: AppTypography.bodySmall),
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: (currentRequest.isPaid
+                              ? AppColors.success
+                              : AppColors.warning)
+                          .withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(AppRadius.xs),
+                    ),
+                    child: Text(
+                      currentRequest.isPaid ? l10n.paid : l10n.awaitingPayment,
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.w700,
+                        color: currentRequest.isPaid
+                            ? AppColors.success
+                            : AppColors.warning,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              Text(
+                l10n.priceInMNT(currentRequest.doctorEarningsMnt),
                 style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.black,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w800,
+                  color: AppColors.textPrimary,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 12),
-          ...children,
         ],
       ),
     );
   }
-}
 
-class _InfoRow extends StatelessWidget {
-  final String label;
-  final String value;
-  final TextStyle? valueStyle;
-
-  const _InfoRow({
-    required this.label,
-    required this.value,
-    this.valueStyle,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
+  Widget _buildNotesCard(AppLocalizations l10n) {
+    return AppCard(
+      borderRadius: AppRadius.lg,
+      padding: const EdgeInsets.all(16),
+      child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(
-            width: 100,
-            child: Text(
-              label,
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.grey,
-              ),
-            ),
-          ),
-          Expanded(
-            child: Text(
-              value,
-              style: valueStyle ??
-                  const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.black,
-                    fontWeight: FontWeight.w600,
-                  ),
+          _SectionHeader(icon: Iconsax.note_1, title: l10n.patientNotes),
+          const SizedBox(height: 12),
+          Text(
+            currentRequest.patientNotes!,
+            style: const TextStyle(
+              fontSize: 14,
+              color: AppColors.textPrimary,
+              height: 1.5,
             ),
           ),
         ],
@@ -476,43 +591,48 @@ class _InfoRow extends StatelessWidget {
   }
 }
 
-class _ActionButton extends StatelessWidget {
-  final String label;
-  final IconData icon;
-  final Color color;
-  final VoidCallback onPressed;
+class _SectionHeader extends StatelessWidget {
+  const _SectionHeader({required this.icon, required this.title});
 
-  const _ActionButton({
-    required this.label,
-    required this.icon,
-    required this.color,
-    required this.onPressed,
-  });
+  final IconData icon;
+  final String title;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      width: double.infinity,
-      height: 54,
-      child: ElevatedButton.icon(
-        onPressed: onPressed,
-        icon: Icon(icon, size: 20),
-        label: Text(
-          label,
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: AppColors.primary),
+        const SizedBox(width: 8),
+        Text(
+          title,
           style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
+            fontSize: 15,
+            fontWeight: FontWeight.w700,
+            color: AppColors.textPrimary,
           ),
         ),
-        style: ElevatedButton.styleFrom(
-          backgroundColor: color,
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
+      ],
+    );
+  }
+}
+
+class _MetaRow extends StatelessWidget {
+  const _MetaRow({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 15, color: AppColors.textTertiary),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(label, style: AppTypography.bodySmall),
         ),
-      ),
+      ],
     );
   }
 }

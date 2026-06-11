@@ -657,5 +657,55 @@
   "assistantTab": "Assistant",
   "bookingsTab": "Bookings",
   "addressConfirmQuestion": "Is the delivery address correct?",
-  "activeShort": "Active"
+  "activeShort": "Active",
+  "treatmentDone": "Treatment given",
+  "earnings": "Earnings",
+  "availableJobsCount": "{count} available requests",
+  "@availableJobsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "completedJobsCount": "{count} completed jobs",
+  "@completedJobsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "paid": "Paid",
+  "awaitingPayment": "Awaiting payment",
+  "startOnTheWay": "I'm on my way",
+  "markTreatmentDone": "Mark treatment given",
+  "patientInformation": "Patient information",
+  "ageYears": "{age} yrs",
+  "@ageYears": {
+    "placeholders": {
+      "age": {
+        "type": "int"
+      }
+    }
+  },
+  "couldNotCall": "Could not start the call",
+  "today": "Today",
+  "thisWeek": "This week",
+  "thisMonth": "This month",
+  "allTime": "All time",
+  "completedJobs": "Completed jobs",
+  "noEarningsYet": "No earnings yet",
+  "completeJobsToEarn": "Accept and complete requests to start earning.",
+  "availableForRequests": "Available for requests",
+  "availabilityOnHint": "You appear in the available pool and receive new request alerts.",
+  "availabilityOffHint": "You won't receive new request alerts.",
+  "myReviews": "My reviews",
+  "noReviewsYet": "No reviews yet — they appear after patients rate completed requests.",
+  "rateDoctor": "Rate your doctor",
+  "howWasYourExperience": "How was your experience with the doctor?",
+  "addCommentOptional": "Add a comment (optional)",
+  "submitRating": "Submit rating",
+  "ratingSubmitted": "Thanks! Your rating was submitted.",
+  "allergiesShort": "Allergies"
 }

@@ -86,12 +86,21 @@ class TestRequestModel with _$TestRequestModel {
     @JsonKey(name: 'cancelled_at') String? cancelledAt,
     @JsonKey(name: 'price_mnt') required int priceMnt,
     @JsonKey(name: 'doctor_commission_mnt') int? doctorCommissionMnt,
+    @JsonKey(name: 'payment_status') String? paymentStatus,
     @JsonKey(name: 'cancellation_reason') String? cancellationReason,
     @JsonKey(name: 'cancelled_by') String? cancelledBy,
     @JsonKey(name: 'created_at') String? createdAt,
     @JsonKey(name: 'updated_at') String? updatedAt,
   }) = _TestRequestModel;
 
+  const TestRequestModel._();
+
   factory TestRequestModel.fromJson(Map<String, dynamic> json) =>
       _$TestRequestModelFromJson(json);
+
+  bool get isPaid => paymentStatus == 'paid';
+
+  /// What the doctor earns on this job. Falls back to full price until
+  /// a platform commission rate is configured.
+  int get doctorEarningsMnt => doctorCommissionMnt ?? priceMnt;
 }

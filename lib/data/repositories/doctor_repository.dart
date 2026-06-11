@@ -63,6 +63,20 @@ class DoctorRepository {
     return List<Map<String, dynamic>>.from(data);
   }
 
+  /// Toggle whether the doctor appears in the available pool
+  Future<void> updateAvailability({
+    required String doctorId,
+    required bool isAvailable,
+  }) async {
+    await supabase
+        .from('doctor_profiles')
+        .update({
+          'is_available': isAvailable,
+          'updated_at': DateTime.now().toIso8601String(),
+        })
+        .eq('id', doctorId);
+  }
+
   /// Get doctor's service pricing
   Future<List<Map<String, dynamic>>> getDoctorServices(String doctorId) async {
     final data = await supabase

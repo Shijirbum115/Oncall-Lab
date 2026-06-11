@@ -1485,4 +1485,100 @@ class AppLocalizationsMn extends AppLocalizations {
 
   @override
   String get activeShort => 'Идэвхтэй';
+
+  @override
+  String get treatmentDone => 'Эмчилгээ хийгдсэн';
+
+  @override
+  String get earnings => 'Орлого';
+
+  @override
+  String availableJobsCount(int count) {
+    return '$count боломжит хүсэлт';
+  }
+
+  @override
+  String completedJobsCount(int count) {
+    return '$count гүйцэтгэсэн ажил';
+  }
+
+  @override
+  String get paid => 'Төлөгдсөн';
+
+  @override
+  String get awaitingPayment => 'Төлбөр хүлээгдэж байна';
+
+  @override
+  String get startOnTheWay => 'Замдаа гарлаа';
+
+  @override
+  String get markTreatmentDone => 'Эмчилгээ хийсэн';
+
+  @override
+  String get patientInformation => 'Үйлчлүүлэгчийн мэдээлэл';
+
+  @override
+  String ageYears(int age) {
+    return '$age нас';
+  }
+
+  @override
+  String get couldNotCall => 'Залгаж чадсангүй';
+
+  @override
+  String get today => 'Өнөөдөр';
+
+  @override
+  String get thisWeek => 'Энэ долоо хоног';
+
+  @override
+  String get thisMonth => 'Энэ сар';
+
+  @override
+  String get allTime => 'Нийт';
+
+  @override
+  String get completedJobs => 'Гүйцэтгэсэн ажлууд';
+
+  @override
+  String get noEarningsYet => 'Одоогоор орлого алга';
+
+  @override
+  String get completeJobsToEarn =>
+      'Хүсэлт хүлээн авч, гүйцэтгээд орлого олж эхлээрэй.';
+
+  @override
+  String get availableForRequests => 'Хүсэлт хүлээн авах боломжтой';
+
+  @override
+  String get availabilityOnHint =>
+      'Та боломжит эмч нарын жагсаалтад харагдаж, шинэ хүсэлтийн мэдэгдэл хүлээн авна.';
+
+  @override
+  String get availabilityOffHint => 'Шинэ хүсэлтийн мэдэгдэл хүлээн авахгүй.';
+
+  @override
+  String get myReviews => 'Миний үнэлгээнүүд';
+
+  @override
+  String get noReviewsYet =>
+      'Одоогоор үнэлгээ алга — үйлчлүүлэгчид дууссан хүсэлтээ үнэлсний дараа энд харагдана.';
+
+  @override
+  String get rateDoctor => 'Эмчээ үнэлэх';
+
+  @override
+  String get howWasYourExperience => 'Эмчийн үйлчилгээ танд ямар санагдсан бэ?';
+
+  @override
+  String get addCommentOptional => 'Сэтгэгдэл нэмэх (заавал биш)';
+
+  @override
+  String get submitRating => 'Үнэлгээ илгээх';
+
+  @override
+  String get ratingSubmitted => 'Баярлалаа! Таны үнэлгээ илгээгдлээ.';
+
+  @override
+  String get allergiesShort => 'Харшил';
 }

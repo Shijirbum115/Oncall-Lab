@@ -1480,4 +1480,100 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get activeShort => 'Active';
+
+  @override
+  String get treatmentDone => 'Treatment given';
+
+  @override
+  String get earnings => 'Earnings';
+
+  @override
+  String availableJobsCount(int count) {
+    return '$count available requests';
+  }
+
+  @override
+  String completedJobsCount(int count) {
+    return '$count completed jobs';
+  }
+
+  @override
+  String get paid => 'Paid';
+
+  @override
+  String get awaitingPayment => 'Awaiting payment';
+
+  @override
+  String get startOnTheWay => 'I\'m on my way';
+
+  @override
+  String get markTreatmentDone => 'Mark treatment given';
+
+  @override
+  String get patientInformation => 'Patient information';
+
+  @override
+  String ageYears(int age) {
+    return '$age yrs';
+  }
+
+  @override
+  String get couldNotCall => 'Could not start the call';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get thisWeek => 'This week';
+
+  @override
+  String get thisMonth => 'This month';
+
+  @override
+  String get allTime => 'All time';
+
+  @override
+  String get completedJobs => 'Completed jobs';
+
+  @override
+  String get noEarningsYet => 'No earnings yet';
+
+  @override
+  String get completeJobsToEarn =>
+      'Accept and complete requests to start earning.';
+
+  @override
+  String get availableForRequests => 'Available for requests';
+
+  @override
+  String get availabilityOnHint =>
+      'You appear in the available pool and receive new request alerts.';
+
+  @override
+  String get availabilityOffHint => 'You won\'t receive new request alerts.';
+
+  @override
+  String get myReviews => 'My reviews';
+
+  @override
+  String get noReviewsYet =>
+      'No reviews yet — they appear after patients rate completed requests.';
+
+  @override
+  String get rateDoctor => 'Rate your doctor';
+
+  @override
+  String get howWasYourExperience => 'How was your experience with the doctor?';
+
+  @override
+  String get addCommentOptional => 'Add a comment (optional)';
+
+  @override
+  String get submitRating => 'Submit rating';
+
+  @override
+  String get ratingSubmitted => 'Thanks! Your rating was submitted.';
+
+  @override
+  String get allergiesShort => 'Allergies';
 }

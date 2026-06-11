@@ -9,6 +9,34 @@ part of 'doctor_request_store.dart';
 // ignore_for_file: non_constant_identifier_names, unnecessary_brace_in_string_interps, unnecessary_lambdas, prefer_expression_function_bodies, lines_longer_than_80_chars, avoid_as, avoid_annotating_with_dynamic, no_leading_underscores_for_local_identifiers
 
 mixin _$DoctorRequestStore on _DoctorRequestStore, Store {
+  Computed<int>? _$totalEarningsMntComputed;
+
+  @override
+  int get totalEarningsMnt => (_$totalEarningsMntComputed ??= Computed<int>(
+          () => super.totalEarningsMnt,
+          name: '_DoctorRequestStore.totalEarningsMnt'))
+      .value;
+  Computed<int>? _$todayEarningsMntComputed;
+
+  @override
+  int get todayEarningsMnt => (_$todayEarningsMntComputed ??= Computed<int>(
+          () => super.todayEarningsMnt,
+          name: '_DoctorRequestStore.todayEarningsMnt'))
+      .value;
+  Computed<int>? _$weekEarningsMntComputed;
+
+  @override
+  int get weekEarningsMnt =>
+      (_$weekEarningsMntComputed ??= Computed<int>(() => super.weekEarningsMnt,
+              name: '_DoctorRequestStore.weekEarningsMnt'))
+          .value;
+  Computed<int>? _$monthEarningsMntComputed;
+
+  @override
+  int get monthEarningsMnt => (_$monthEarningsMntComputed ??= Computed<int>(
+          () => super.monthEarningsMnt,
+          name: '_DoctorRequestStore.monthEarningsMnt'))
+      .value;
   Computed<int>? _$availableRequestsCountComputed;
 
   @override
@@ -210,6 +238,10 @@ myActiveRequests: ${myActiveRequests},
 myCompletedRequests: ${myCompletedRequests},
 isLoading: ${isLoading},
 errorMessage: ${errorMessage},
+totalEarningsMnt: ${totalEarningsMnt},
+todayEarningsMnt: ${todayEarningsMnt},
+weekEarningsMnt: ${weekEarningsMnt},
+monthEarningsMnt: ${monthEarningsMnt},
 availableRequestsCount: ${availableRequestsCount},
 myActiveRequestsCount: ${myActiveRequestsCount},
 myCompletedRequestsCount: ${myCompletedRequestsCount}
