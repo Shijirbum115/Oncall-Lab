@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  ClipboardList,
   CreditCard,
   HeartPulse,
   LayoutDashboard,
@@ -36,6 +37,7 @@ import { logout } from "@/app/login/actions";
 const navItems = [
   { title: "Dashboard", href: "/", icon: LayoutDashboard },
   { title: "Doctors", href: "/doctors", icon: Stethoscope },
+  { title: "Services", href: "/services", icon: ClipboardList },
   { title: "Requests", href: "/requests", icon: TestTubes },
   { title: "Payments", href: "/payments", icon: CreditCard },
   { title: "Patients", href: "/patients", icon: Users },
