@@ -206,15 +206,22 @@ class TestRequestRepository {
   }
 
   /// Accept a request (doctor accepts)
+  ///
+  /// Uses the atomic `accept_test_request` RPC: the server re-checks that the
+  /// request is still pending inside the transaction, so when two doctors tap
+  /// accept simultaneously exactly one wins and the other gets a clear error.
+  /// The server assigns `auth.uid()` as the doctor; [doctorId] is kept for
+  /// call-site compatibility but not sent.
   Future<TestRequestModel> acceptRequest({
     required String requestId,
     required String doctorId,
   }) async {
-    return updateRequestStatus(
-      requestId: requestId,
-      status: RequestStatus.accepted,
-      doctorId: doctorId,
+    final data = await supabase.rpc(
+      'accept_test_request',
+      params: {'p_request_id': requestId},
     );
+
+    return TestRequestModel.fromJson(data as Map<String, dynamic>);
   }
 
   /// Cancel a request
