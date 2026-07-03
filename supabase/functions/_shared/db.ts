@@ -27,6 +27,22 @@ export function getUserClient(authHeader: string): SupabaseClient {
   });
 }
 
+export function extractJwt(authHeader: string): string {
+  return authHeader.replace(/^Bearer\s+/i, "").trim();
+}
+
+export async function authenticateRequest(
+  authHeader: string,
+): Promise<{ userId: string; client: SupabaseClient } | { error: string }> {
+  const client = getUserClient(authHeader);
+  const jwt = extractJwt(authHeader);
+  const { data, error } = await client.auth.getUser(jwt);
+  if (error || !data.user) {
+    return { error: error?.message ?? "no user" };
+  }
+  return { userId: data.user.id, client };
+}
+
 export const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":

@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:bugamed/data/models/notification_model.dart';
 import 'package:bugamed/stores/auth_store.dart';
 import 'package:bugamed/stores/notification_store.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
 import 'package:bugamed/ui/shared/widgets/mascot_state_widget.dart';
 import 'package:bugamed/ui/shared/notification_detail_screen.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
@@ -40,14 +40,13 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.surface,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.surface,
         elevation: 0,
         title: Text(
           l10n.notifications,
-          style: const TextStyle(
-            color: Colors.black,
+          style: AppTypography.h3.copyWith(
             fontSize: 20,
             fontWeight: FontWeight.w600,
           ),
@@ -64,7 +63,9 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
                     },
                     child: Text(
                       l10n.markAllAsRead,
-                      style: const TextStyle(color: AppColors.primary),
+                      style: AppTypography.body.copyWith(
+                        color: AppColors.primary,
+                      ),
                     ),
                   )
                 : const SizedBox.shrink(),
@@ -90,7 +91,7 @@ class _NotificationsScreenState extends State<NotificationsScreen> {
           return RefreshIndicator(
             onRefresh: () async => _loadNotifications(),
             child: ListView.builder(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(AppSpacing.md),
               itemCount: _notificationStore.notifications.length,
               itemBuilder: (context, index) {
                 final notification = _notificationStore.notifications[index];
@@ -139,19 +140,23 @@ class _NotificationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: const EdgeInsets.only(bottom: AppSpacing.sm),
       decoration: BoxDecoration(
-        color: notification.isRead ? Colors.white : AppColors.primary.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(12),
+        color: notification.isRead
+            ? AppColors.surface
+            : AppColors.primary.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
         border: Border.all(
-          color: notification.isRead ? Colors.grey[200]! : AppColors.primary.withValues(alpha: 0.2),
+          color: notification.isRead
+              ? AppColors.border
+              : AppColors.primary.withValues(alpha: 0.2),
         ),
       ),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppRadius.sm),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.md),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -168,7 +173,7 @@ class _NotificationCard extends StatelessWidget {
                   size: 20,
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: AppSpacing.sm),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -178,10 +183,10 @@ class _NotificationCard extends StatelessWidget {
                         Expanded(
                           child: Text(
                             notification.title,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: notification.isRead ? FontWeight.w500 : FontWeight.w600,
-                              color: Colors.black87,
+                            style: AppTypography.bodyLg.copyWith(
+                              fontWeight: notification.isRead
+                                  ? FontWeight.w500
+                                  : FontWeight.w600,
                             ),
                           ),
                         ),
@@ -199,20 +204,17 @@ class _NotificationCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       notification.message,
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Colors.grey[600],
-                        height: 1.4,
+                      style: AppTypography.body.copyWith(
+                        color: AppColors.inkMuted,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: AppSpacing.xs),
                     Text(
                       _formatDate(notification.createdAt),
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.grey[500],
+                      style: AppTypography.caption.copyWith(
+                        color: AppColors.inkSubtle,
                       ),
                     ),
                   ],
@@ -243,15 +245,15 @@ class _NotificationCard extends StatelessWidget {
   Color _getIconColor(NotificationType type) {
     switch (type) {
       case NotificationType.requestCreated:
-        return Colors.blue;
+        return AppColors.info;
       case NotificationType.requestAccepted:
-        return Colors.green;
+        return AppColors.success;
       case NotificationType.requestUpdated:
-        return Colors.orange;
+        return AppColors.warning;
       case NotificationType.statusChanged:
         return AppColors.primary;
       case NotificationType.systemAlert:
-        return Colors.red;
+        return AppColors.error;
     }
   }
 

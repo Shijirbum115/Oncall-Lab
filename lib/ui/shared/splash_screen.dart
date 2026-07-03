@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
 
 class SplashWrapper extends StatefulWidget {
   const SplashWrapper({super.key, required this.child});
@@ -49,7 +50,8 @@ class _SplashWrapperState extends State<SplashWrapper> {
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
 
-  // Background color matching the dark icon
+  // Brand-locked dark background matching the dark icon asset.
+  // TODO: token — add a dedicated brand dark token if other surfaces need it.
   static const Color _bgColor = Color(0xFF00300F);
 
   @override
@@ -65,13 +67,12 @@ class SplashScreen extends StatelessWidget {
               width: 160,
               height: 160,
             ),
-            const SizedBox(height: 24),
-            const Text(
+            const SizedBox(height: AppSpacing.lg),
+            Text(
               'BUGAMED',
-              style: TextStyle(
+              style: AppTypography.h1.copyWith(
+                color: AppColors.surface,
                 fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
                 letterSpacing: 4,
               ),
             ),

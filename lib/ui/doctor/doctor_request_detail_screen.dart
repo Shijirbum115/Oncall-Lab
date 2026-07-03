@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
+import 'package:bugamed/ui/design_system/widgets/app_button.dart';
+import 'package:bugamed/ui/design_system/widgets/app_card.dart';
+import 'package:bugamed/ui/design_system/widgets/app_status_chip.dart';
 import 'package:bugamed/data/models/test_request_model.dart';
 import 'package:bugamed/stores/auth_store.dart';
 import 'package:bugamed/stores/doctor_request_store.dart';
@@ -15,7 +18,8 @@ class DoctorRequestDetailScreen extends StatefulWidget {
   });
 
   @override
-  State<DoctorRequestDetailScreen> createState() => _DoctorRequestDetailScreenState();
+  State<DoctorRequestDetailScreen> createState() =>
+      _DoctorRequestDetailScreenState();
 }
 
 class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
@@ -46,7 +50,8 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(l10n.statusUpdatedTo(_getStatusDisplayName(newStatus, l10n))),
+            content: Text(
+                l10n.statusUpdatedTo(_getStatusDisplayName(newStatus, l10n))),
             backgroundColor: AppColors.success,
           ),
         );
@@ -127,7 +132,7 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
           _ActionButton(
             label: l10n.onTheWay,
             icon: Iconsax.car,
-            color: Colors.blue,
+            color: AppColors.accepted,
             onPressed: () => _updateStatus(RequestStatus.onTheWay),
           ),
         );
@@ -138,7 +143,7 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
           _ActionButton(
             label: l10n.collectSample,
             icon: Iconsax.health,
-            color: Colors.orange,
+            color: AppColors.warning,
             onPressed: () => _updateStatus(RequestStatus.sampleCollected),
           ),
         );
@@ -150,7 +155,7 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
             _ActionButton(
               label: l10n.deliverToLab,
               icon: Iconsax.building,
-              color: Colors.purple,
+              color: AppColors.deliveredToLab,
               onPressed: () => _updateStatus(RequestStatus.deliveredToLab),
             ),
           );
@@ -191,16 +196,16 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
     final statusStr = _getStatusString();
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
         title: Text(l10n.requestDetails),
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.background,
         elevation: 0,
         actions: [
           if (currentRequest.status != RequestStatus.completed &&
               currentRequest.status != RequestStatus.cancelled)
             IconButton(
-              icon: const Icon(Icons.cancel_outlined, color: AppColors.error),
+              icon: const Icon(Iconsax.close_circle, color: AppColors.error),
               onPressed: _cancelRequest,
               tooltip: l10n.cancelRequest,
             ),
@@ -209,30 +214,14 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
       body: Stack(
         children: [
           ListView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.md),
             children: [
               // Status Badge
               Center(
-                child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                  decoration: BoxDecoration(
-                    color: AppColors.getStatusColor(statusStr)
-                        .withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(25),
-                  ),
-                  child: Text(
-                    AppColors.getStatusText(statusStr),
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.getStatusColor(statusStr),
-                    ),
-                  ),
-                ),
+                child: AppStatusChip.fromString(statusStr, l10n),
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.lg),
 
               // Request Type
               _InfoCard(
@@ -248,7 +237,7 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
                 ],
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
 
               // Schedule Info
               _InfoCard(
@@ -267,7 +256,7 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
                 ],
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
 
               // Location Info
               _InfoCard(
@@ -281,7 +270,7 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
                 ],
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
 
               // Payment Info
               _InfoCard(
@@ -291,16 +280,15 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
                   _InfoRow(
                     label: l10n.totalAmount,
                     value: l10n.priceInMNT(currentRequest.priceMnt),
-                    valueStyle: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                    valueStyle: AppTypography.h3.copyWith(
                       color: AppColors.success,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ],
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
 
               // Patient Notes
               if (currentRequest.patientNotes != null &&
@@ -311,11 +299,7 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
                   children: [
                     Text(
                       currentRequest.patientNotes!,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.black,
-                        height: 1.5,
-                      ),
+                      style: AppTypography.body.copyWith(height: 1.5),
                     ),
                   ],
                 ),
@@ -332,16 +316,10 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
               left: 0,
               right: 0,
               child: Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(AppSpacing.md),
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.1),
-                      blurRadius: 10,
-                      offset: const Offset(0, -2),
-                    ),
-                  ],
+                  color: AppColors.surface,
+                  boxShadow: AppShadows.raised,
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -355,7 +333,7 @@ class _DoctorRequestDetailScreenState extends State<DoctorRequestDetailScreen> {
           // Loading Overlay
           if (isUpdating)
             Container(
-              color: Colors.black.withValues(alpha: 0.3),
+              color: AppColors.ink.withValues(alpha: 0.3),
               child: const Center(
                 child: CircularProgressIndicator(color: AppColors.primary),
               ),
@@ -398,32 +376,24 @@ class _InfoCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border:
-            Border.all(color: AppColors.grey.withValues(alpha: 0.3)),
-      ),
+    return AppCard(
+      elevation: AppCardElevation.none,
+      borderColor: AppColors.border,
+      borderRadius: AppRadius.sm,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
               Icon(icon, size: 20, color: AppColors.primary),
-              const SizedBox(width: 8),
+              const SizedBox(width: AppSpacing.xs),
               Text(
                 title,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.black,
-                ),
+                style: AppTypography.h3,
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.sm),
           ...children,
         ],
       ),
@@ -445,7 +415,7 @@ class _InfoRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
+      padding: const EdgeInsets.only(bottom: AppSpacing.xs),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -453,19 +423,14 @@ class _InfoRow extends StatelessWidget {
             width: 100,
             child: Text(
               label,
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.grey,
-              ),
+              style: AppTypography.bodySm,
             ),
           ),
           Expanded(
             child: Text(
               value,
               style: valueStyle ??
-                  const TextStyle(
-                    fontSize: 14,
-                    color: AppColors.black,
+                  AppTypography.body.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
             ),
@@ -492,7 +457,7 @@ class _ActionButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 8),
+      margin: const EdgeInsets.only(bottom: AppSpacing.xs),
       width: double.infinity,
       height: 54,
       child: ElevatedButton.icon(
@@ -500,16 +465,16 @@ class _ActionButton extends StatelessWidget {
         icon: Icon(icon, size: 20),
         label: Text(
           label,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
+          style: AppTypography.bodyLg.copyWith(
+            color: AppColors.surface,
+            fontWeight: FontWeight.w700,
           ),
         ),
         style: ElevatedButton.styleFrom(
           backgroundColor: color,
-          foregroundColor: Colors.white,
+          foregroundColor: AppColors.surface,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.sm),
           ),
         ),
       ),
@@ -547,9 +512,9 @@ class _CancelRequestDialogState extends State<_CancelRequestDialog> {
         children: [
           Text(
             l10n.provideCancellationReason,
-            style: const TextStyle(fontSize: 14),
+            style: AppTypography.body,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.sm),
           TextField(
             controller: _reasonController,
             maxLines: 3,
@@ -572,7 +537,7 @@ class _CancelRequestDialogState extends State<_CancelRequestDialog> {
           },
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.error,
-            foregroundColor: Colors.white,
+            foregroundColor: AppColors.surface,
           ),
           child: Text(l10n.confirm),
         ),

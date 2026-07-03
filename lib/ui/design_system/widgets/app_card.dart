@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:bugamed/ui/design_system/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_radius.dart';
+import 'package:bugamed/ui/design_system/app_shadows.dart';
 
-/// Reusable card container to keep surface styling consistent.
+enum AppCardElevation { none, resting, raised, floating }
+
+/// Canonical card surface. All card-shaped containers in the app go through this.
+/// Replaces ad-hoc `Container(decoration: BoxDecoration(...))` patterns.
 class AppCard extends StatelessWidget {
   const AppCard({
     super.key,
@@ -8,11 +14,11 @@ class AppCard extends StatelessWidget {
     this.onTap,
     this.padding = const EdgeInsets.all(16),
     this.margin,
-    this.backgroundColor = Colors.white,
+    this.backgroundColor = AppColors.surface,
     this.borderColor,
     this.borderWidth = 1,
-    this.borderRadius = 16,
-    this.showShadow = true,
+    this.borderRadius = AppRadius.md,
+    this.elevation = AppCardElevation.resting,
   });
 
   final Widget child;
@@ -23,7 +29,20 @@ class AppCard extends StatelessWidget {
   final Color? borderColor;
   final double borderWidth;
   final double borderRadius;
-  final bool showShadow;
+  final AppCardElevation elevation;
+
+  List<BoxShadow> get _shadow {
+    switch (elevation) {
+      case AppCardElevation.none:
+        return AppShadows.none;
+      case AppCardElevation.resting:
+        return AppShadows.resting;
+      case AppCardElevation.raised:
+        return AppShadows.raised;
+      case AppCardElevation.floating:
+        return AppShadows.floating;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,15 +54,7 @@ class AppCard extends StatelessWidget {
         border: borderColor != null
             ? Border.all(color: borderColor!, width: borderWidth)
             : null,
-        boxShadow: showShadow
-            ? [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.04),
-                  blurRadius: 24,
-                  offset: const Offset(0, 10),
-                ),
-              ]
-            : null,
+        boxShadow: _shadow,
       ),
       child: child,
     );
@@ -60,10 +71,7 @@ class AppCard extends StatelessWidget {
     }
 
     if (margin != null) {
-      content = Padding(
-        padding: margin!,
-        child: content,
-      );
+      content = Padding(padding: margin!, child: content);
     }
 
     return content;

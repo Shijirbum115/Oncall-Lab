@@ -1,12 +1,10 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_colors.dart';
 import 'package:bugamed/data/repositories/qpay_repository.dart';
 import 'package:bugamed/ui/payment/payment_success_screen.dart';
 
@@ -134,17 +132,6 @@ class _QpayInvoiceScreenState extends State<QpayInvoiceScreen> {
     }
   }
 
-  void _copyShortUrl(String url) {
-    Clipboard.setData(ClipboardData(text: url));
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Холбоос хуулагдлаа'),
-        backgroundColor: AppColors.success,
-        duration: Duration(seconds: 2),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -225,7 +212,12 @@ class _QpayInvoiceScreenState extends State<QpayInvoiceScreen> {
   }
 
   Widget _buildInvoiceView(QpayInvoice invoice) {
-    final qrBytes = base64Decode(invoice.qrImage);
+    if (invoice.deeplinks.isEmpty) {
+      return _buildErrorState(
+        'QPay банкны аппын жагсаалт ачаалж чадсангүй. Дахин оролдоно уу.',
+      );
+    }
+
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -233,21 +225,26 @@ class _QpayInvoiceScreenState extends State<QpayInvoiceScreen> {
         children: [
           _buildAmountCard(),
           const SizedBox(height: 24),
-          _buildQrCard(qrBytes, invoice.shortUrl),
-          const SizedBox(height: 24),
-          if (invoice.deeplinks.isNotEmpty) ...[
-            const Text(
-              'Банкны апп-аар нээх',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppColors.black,
-              ),
+          const Text(
+            'Төлбөрийн апп сонгоно уу',
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: AppColors.black,
             ),
-            const SizedBox(height: 12),
-            _buildDeeplinkGrid(invoice.deeplinks),
-            const SizedBox(height: 24),
-          ],
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Доорх банк эсвэл wallet апп дээр дарж QPay төлбөрөө үргэлжлүүлнэ үү.',
+            style: TextStyle(
+              fontSize: 13,
+              color: AppColors.textSecondary,
+              height: 1.4,
+            ),
+          ),
+          const SizedBox(height: 14),
+          _buildDeeplinkGrid(invoice.deeplinks),
+          const SizedBox(height: 24),
           _buildCheckButton(),
           const SizedBox(height: 16),
           _buildInfoBanner(),
@@ -300,137 +297,66 @@ class _QpayInvoiceScreenState extends State<QpayInvoiceScreen> {
     );
   }
 
-  Widget _buildQrCard(List<int> qrBytes, String shortUrl) {
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.grey.withValues(alpha: 0.2)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.04),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
+  Widget _buildDeeplinkGrid(List<QpayBankDeeplink> deeplinks) {
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: deeplinks.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 1.15,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
       ),
-      child: Column(
-        children: [
-          const Text(
-            'QR код уншуулна уу',
-            style: TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.w600,
-              color: AppColors.black,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Container(
+      itemBuilder: (context, index) {
+        final bank = deeplinks[index];
+        return InkWell(
+          onTap: () => _openDeeplink(bank.link),
+          borderRadius: BorderRadius.circular(14),
+          child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: AppColors.primary.withValues(alpha: 0.15),
-              ),
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: AppColors.grey.withValues(alpha: 0.25)),
             ),
-            child: Image.memory(
-              Uint8List.fromList(qrBytes),
-              width: 240,
-              height: 240,
-              gaplessPlayback: true,
-            ),
-          ),
-          const SizedBox(height: 16),
-          if (shortUrl.isNotEmpty)
-            InkWell(
-              onTap: () => _copyShortUrl(shortUrl),
-              borderRadius: BorderRadius.circular(8),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 8),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Flexible(
-                      child: Text(
-                        shortUrl,
-                        style: const TextStyle(
-                          fontSize: 13,
-                          color: AppColors.primary,
-                          decoration: TextDecoration.underline,
-                        ),
-                        overflow: TextOverflow.ellipsis,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                if (bank.logo.isNotEmpty)
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(8),
+                    child: Image.network(
+                      bank.logo,
+                      width: 46,
+                      height: 46,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stack) => const Icon(
+                        Iconsax.bank,
+                        size: 34,
+                        color: AppColors.primary,
                       ),
                     ),
-                    const SizedBox(width: 6),
-                    const Icon(Iconsax.copy, size: 14, color: AppColors.primary),
-                  ],
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildDeeplinkGrid(List<QpayBankDeeplink> deeplinks) {
-    return Wrap(
-      spacing: 12,
-      runSpacing: 12,
-      children: deeplinks.map((bank) {
-        return SizedBox(
-          width: (MediaQuery.of(context).size.width - 24 * 2 - 12) / 2,
-          child: InkWell(
-            onTap: () => _openDeeplink(bank.link),
-            borderRadius: BorderRadius.circular(12),
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: AppColors.grey.withValues(alpha: 0.25),
-                ),
-              ),
-              child: Row(
-                children: [
-                  if (bank.logo.isNotEmpty)
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(6),
-                      child: Image.network(
-                        bank.logo,
-                        width: 28,
-                        height: 28,
-                        errorBuilder: (context, error, stack) => const Icon(
-                          Iconsax.bank,
-                          size: 24,
-                          color: AppColors.primary,
-                        ),
-                      ),
-                    )
-                  else
-                    const Icon(Iconsax.bank, size: 24, color: AppColors.primary),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      bank.description.isNotEmpty
-                          ? bank.description
-                          : bank.name,
-                      style: const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.black,
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                  )
+                else
+                  const Icon(Iconsax.bank, size: 34, color: AppColors.primary),
+                const SizedBox(height: 10),
+                Text(
+                  bank.description.isNotEmpty ? bank.description : bank.name,
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.black,
                   ),
-                ],
-              ),
+                  maxLines: 2,
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
             ),
           ),
         );
-      }).toList(),
+      },
     );
   }
 

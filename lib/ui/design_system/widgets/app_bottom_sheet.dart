@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:bugamed/ui/design_system/app_colors.dart';
 import 'package:bugamed/ui/design_system/app_theme.dart';
+import 'package:bugamed/ui/design_system/app_shadows.dart';
 
 class AppBottomSheet extends StatelessWidget {
   const AppBottomSheet({super.key, required this.child, this.title});
@@ -10,10 +12,18 @@ class AppBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.fromLTRB(AppSpacing.lg, 16, AppSpacing.lg, 24),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpacing.lg,
+        AppSpacing.md,
+        AppSpacing.lg,
+        AppSpacing.lg,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(AppRadius.lg),
+        ),
+        boxShadow: AppShadows.floating,
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -23,10 +33,10 @@ class AppBottomSheet extends StatelessWidget {
             child: Container(
               width: 48,
               height: 4,
-              margin: const EdgeInsets.only(bottom: 16),
+              margin: const EdgeInsets.only(bottom: AppSpacing.md),
               decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(2),
+                color: AppColors.black.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(AppRadius.xs / 4),
               ),
             ),
           ),

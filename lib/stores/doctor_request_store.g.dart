@@ -145,10 +145,9 @@ mixin _$DoctorRequestStore on _DoctorRequestStore, Store {
       AsyncAction('_DoctorRequestStore.acceptRequest', context: context);
 
   @override
-  Future<TestRequestModel?> acceptRequest(
-      {required String requestId, required String doctorId}) {
-    return _$acceptRequestAsyncAction.run(
-        () => super.acceptRequest(requestId: requestId, doctorId: doctorId));
+  Future<TestRequestModel?> acceptRequest({required String requestId}) {
+    return _$acceptRequestAsyncAction
+        .run(() => super.acceptRequest(requestId: requestId));
   }
 
   late final _$updateRequestStatusAsyncAction =

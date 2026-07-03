@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
 import 'package:bugamed/data/models/laboratory_service_model.dart';
 import 'package:bugamed/stores/service_store.dart';
-import 'package:bugamed/ui/patient/booking/lab_service_booking_screen.dart';
-import 'package:bugamed/l10n/app_localizations.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
+import 'package:bugamed/ui/design_system/widgets/app_card.dart';
 import 'package:bugamed/ui/design_system/widgets/app_text_field.dart';
+import 'package:bugamed/ui/patient/booking/lab_service_booking_screen.dart';
+import 'package:bugamed/ui/shared/widgets/mascot_state_widget.dart';
+import 'package:bugamed/l10n/app_localizations.dart';
 
 class LaboratoryDetailScreenNew extends StatefulWidget {
   final Map<String, dynamic> laboratory;
@@ -49,14 +51,11 @@ class _LaboratoryDetailScreenNewState
         isLoading = false;
       });
 
-      // FIX 2: If a service was pre-selected (patient came from test list),
-      // skip re-showing the service list and jump straight to booking.
       if (widget.preSelectedServiceId != null && mounted) {
         final match = data.firstWhere(
           (s) => s.serviceId == widget.preSelectedServiceId,
           orElse: () => data.first,
         );
-        // Use pushReplacement so back-button goes to lab list, not here.
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (mounted) {
             Navigator.pushReplacement(
@@ -96,23 +95,20 @@ class _LaboratoryDetailScreenNewState
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.surface,
       appBar: AppBar(
         title: Text(widget.laboratory['name']),
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.surface,
         surfaceTintColor: Colors.transparent,
         scrolledUnderElevation: 0,
         elevation: 0,
       ),
       body: Column(
         children: [
-          // Laboratory Info Header
           _buildLabInfo(l10n),
-          const Divider(height: 1),
-
-          // Search Bar
+          const Divider(height: 1, color: AppColors.border),
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: AppPadding.screenAll,
             child: AppSearchField(
               hint: l10n.searchServices,
               prefixIcon: Iconsax.search_normal,
@@ -122,8 +118,6 @@ class _LaboratoryDetailScreenNewState
               onClear: () => setState(() => searchQuery = ''),
             ),
           ),
-
-          // Services List
           Expanded(
             child: _buildServicesList(l10n),
           ),
@@ -134,8 +128,8 @@ class _LaboratoryDetailScreenNewState
 
   Widget _buildLabInfo(AppLocalizations l10n) {
     return Container(
-      padding: const EdgeInsets.all(16),
-      color: AppColors.primary.withValues(alpha: 0.05),
+      padding: AppPadding.screenAll,
+      color: AppColors.primarySoft,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -146,7 +140,7 @@ class _LaboratoryDetailScreenNewState
               Expanded(
                 child: Text(
                   widget.laboratory['address'] ?? l10n.addressNotAvailable,
-                  style: const TextStyle(fontSize: 14),
+                  style: AppTypography.body,
                 ),
               ),
             ],
@@ -158,10 +152,8 @@ class _LaboratoryDetailScreenNewState
               const SizedBox(width: 8),
               Text(
                 widget.laboratory['phone_number'] ?? '',
-                style: const TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w600,
-                ),
+                style:
+                    AppTypography.body.copyWith(fontWeight: FontWeight.w600),
               ),
             ],
           ),
@@ -171,10 +163,7 @@ class _LaboratoryDetailScreenNewState
               children: [
                 const Icon(Icons.email, color: AppColors.primary),
                 const SizedBox(width: 8),
-                Text(
-                  widget.laboratory['email'],
-                  style: const TextStyle(fontSize: 14),
-                ),
+                Text(widget.laboratory['email'], style: AppTypography.body),
               ],
             ),
           ],
@@ -192,29 +181,13 @@ class _LaboratoryDetailScreenNewState
 
     if (errorMessage != null) {
       return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.error_outline, size: 60, color: AppColors.error),
-              const SizedBox(height: 16),
-              Text(
-                l10n.errorLoadingServices,
-                style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                errorMessage!,
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: AppColors.grey),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _loadServices,
-                child: Text(l10n.retry),
-              ),
-            ],
+        child: SingleChildScrollView(
+          child: MascotStateWidget(
+            emotion: MascotEmotion.error,
+            title: l10n.errorLoadingServices,
+            subtitle: errorMessage!,
+            actionText: l10n.retry,
+            onAction: _loadServices,
           ),
         ),
       );
@@ -224,26 +197,13 @@ class _LaboratoryDetailScreenNewState
 
     if (displayServices.isEmpty) {
       return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              searchQuery.isEmpty ? Iconsax.box : Iconsax.search_normal,
-              size: 60,
-              color: AppColors.grey.withValues(alpha: 0.5),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              searchQuery.isEmpty
-                  ? l10n.noServicesAvailable
-                  : l10n.noServicesMatchSearch,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-                color: AppColors.grey,
-              ),
-            ),
-          ],
+        child: SingleChildScrollView(
+          child: MascotStateWidget(
+            emotion: MascotEmotion.empty,
+            title: searchQuery.isEmpty
+                ? l10n.noServicesAvailable
+                : l10n.noServicesMatchSearch,
+          ),
         ),
       );
     }
@@ -251,7 +211,7 @@ class _LaboratoryDetailScreenNewState
     return RefreshIndicator(
       onRefresh: _loadServices,
       child: ListView.separated(
-        padding: const EdgeInsets.all(16),
+        padding: AppPadding.screenAll,
         itemCount: displayServices.length,
         separatorBuilder: (_, index) => const SizedBox(height: 12),
         itemBuilder: (context, index) {
@@ -295,135 +255,99 @@ class _ServiceCard extends StatelessWidget {
     final category = service.category;
     final l10n = AppLocalizations.of(context)!;
 
-    return InkWell(
+    return AppCard(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color:
-              isPreSelected ? AppColors.primary.withValues(alpha: 0.05) : Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: isPreSelected
-                ? AppColors.primary
-                : AppColors.grey.withValues(alpha: 0.2),
-            width: isPreSelected ? 2 : 1,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: isPreSelected
-                  ? AppColors.primary.withValues(alpha: 0.1)
-                  : Colors.black.withValues(alpha: 0.05),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Icon(
-                    service.sampleType == 'blood'
-                        ? Icons.bloodtype
-                        : service.sampleType == 'urine'
-                            ? Iconsax.health
-                            : Iconsax.activity,
-                    color: AppColors.primary,
-                    size: 24,
-                  ),
+      backgroundColor:
+          isPreSelected ? AppColors.primarySoft : AppColors.surface,
+      borderColor: isPreSelected ? AppColors.primary : AppColors.border,
+      borderWidth: isPreSelected ? 2 : 1,
+      borderRadius: AppRadius.sm,
+      elevation: AppCardElevation.resting,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: AppColors.primarySoft,
+                  borderRadius: BorderRadius.circular(AppRadius.xs),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        service.name,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.black,
-                        ),
+                child: Icon(
+                  service.sampleType == 'blood'
+                      ? Icons.bloodtype
+                      : service.sampleType == 'urine'
+                          ? Iconsax.health
+                          : Iconsax.activity,
+                  color: AppColors.primary,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      service.name,
+                      style: AppTypography.bodyLg.copyWith(
+                        fontWeight: FontWeight.w700,
                       ),
-                      if (category != null)
-                        Text(
-                          category.name,
-                          style: const TextStyle(
-                            fontSize: 12,
-                            color: AppColors.grey,
-                          ),
-                        ),
-                    ],
-                  ),
+                    ),
+                    if (category != null)
+                      Text(category.name, style: AppTypography.caption),
+                  ],
                 ),
-              ],
-            ),
-            if (service.description != null) ...[
-              const SizedBox(height: 12),
-              Text(
-                service.description!,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: AppColors.grey,
-                  height: 1.4,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
               ),
             ],
+          ),
+          if (service.description != null) ...[
             const SizedBox(height: 12),
-            Row(
-              children: [
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: AppColors.success.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    l10n.priceInMNT(labService.priceMnt),
-                    style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.success,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                if (labService.estimatedDurationHours != null)
-                  Row(
-                    children: [
-                      const Icon(Icons.access_time, size: 16, color: AppColors.grey),
-                      const SizedBox(width: 4),
-                      Text(
-                        '~${l10n.durationHours(labService.estimatedDurationHours!)}',
-                        style: const TextStyle(
-                          fontSize: 13,
-                          color: AppColors.grey,
-                        ),
-                      ),
-                    ],
-                  ),
-                const Spacer(),
-                const Icon(
-                  Iconsax.arrow_right_3,
-                  size: 20,
-                  color: AppColors.primary,
-                ),
-              ],
+            Text(
+              service.description!,
+              style: AppTypography.bodySm,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
             ),
           ],
-        ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.sm, vertical: 6),
+                decoration: BoxDecoration(
+                  color: AppColors.success.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                ),
+                child: Text(
+                  l10n.priceInMNT(labService.priceMnt),
+                  style: AppTypography.bodySm.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.success,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 12),
+              if (labService.estimatedDurationHours != null)
+                Row(
+                  children: [
+                    const Icon(Icons.access_time,
+                        size: 16, color: AppColors.inkSubtle),
+                    const SizedBox(width: 4),
+                    Text(
+                      '~${l10n.durationHours(labService.estimatedDurationHours!)}',
+                      style: AppTypography.bodySm,
+                    ),
+                  ],
+                ),
+              const Spacer(),
+              const Icon(Iconsax.arrow_right_3,
+                  size: 20, color: AppColors.primary),
+            ],
+          ),
+        ],
       ),
     );
   }

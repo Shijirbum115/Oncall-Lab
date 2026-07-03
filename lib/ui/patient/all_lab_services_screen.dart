@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_colors.dart';
 import 'package:bugamed/ui/design_system/app_theme.dart';
+import 'package:bugamed/ui/design_system/widgets/app_screen_header.dart';
 import 'package:bugamed/ui/design_system/widgets/app_text_field.dart';
 import 'package:bugamed/ui/patient/laboratories_screen.dart';
 import 'package:bugamed/ui/patient/widgets/service_category_grid.dart';
@@ -54,13 +55,12 @@ class _AllLabServicesScreenState extends State<AllLabServicesScreen> {
             description_mn,
             sample_type,
             preparation_instructions,
-            preparation_instructions_mn,
             service_categories!inner(
               id,
               name,
               name_mn,
               type,
-              icon
+              icon_name
             )
           ''')
           .eq('service_categories.type', 'lab_test')
@@ -79,11 +79,10 @@ class _AllLabServicesScreenState extends State<AllLabServicesScreen> {
           'description_mn': item['description_mn'],
           'sample_type': item['sample_type'],
           'preparation_instructions': item['preparation_instructions'],
-          'preparation_instructions_mn': item['preparation_instructions_mn'],
           'category_name': category['name'],
           'category_name_mn': category['name_mn'],
           'category_type': category['type'],
-          'category_icon': category['icon'],
+          'category_icon': category['icon_name'],
         };
       }).toList();
 
@@ -143,7 +142,11 @@ class _AllLabServicesScreenState extends State<AllLabServicesScreen> {
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
       appBar: AppBar(
-        title: Text(l10n.labServices),
+        titleSpacing: 0,
+        title: AppScreenHeader(
+          title: l10n.labServices,
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+        ),
         backgroundColor: AppColors.scaffoldBackground,
         elevation: 0,
       ),

@@ -1,5 +1,4 @@
 import 'package:mobx/mobx.dart';
-import 'package:bugamed/core/services/qpay_service.dart';
 import 'package:bugamed/data/models/payment_model.dart';
 import 'package:bugamed/data/repositories/payment_repository.dart';
 
@@ -8,16 +7,12 @@ part 'payment_store.g.dart';
 class PaymentStore = _PaymentStore with _$PaymentStore;
 
 abstract class _PaymentStore with Store {
-  final QPayService _qpayService;
   final PaymentRepository _paymentRepository;
 
-  _PaymentStore(this._qpayService, this._paymentRepository);
+  _PaymentStore(this._paymentRepository);
 
   @observable
   PaymentModel? currentPayment;
-
-  @observable
-  QPayInvoice? currentInvoice;
 
   @observable
   bool isLoading = false;
@@ -29,53 +24,7 @@ abstract class _PaymentStore with Store {
   ObservableList<PaymentModel> userPayments = ObservableList<PaymentModel>();
 
   @action
-  Future<PaymentModel?> createQPayPayment({
-    required String patientId,
-    required int amountMnt,
-    required String description,
-    required String testRequestId,
-  }) async {
-    isLoading = true;
-    errorMessage = null;
-
-    try {
-      // Create QPAY invoice
-      final invoice = await _qpayService.createInvoice(
-        amountMnt: amountMnt,
-        description: description,
-      );
-
-      currentInvoice = invoice;
-
-      // Convert URLs list to Map for storage
-      final qpayUrlsMap = {
-        for (var url in invoice.urls) url.name: url.link
-      };
-
-      // Create payment record in database
-      final payment = await _paymentRepository.createPayment(
-        patientId: patientId,
-        amountMnt: amountMnt,
-        paymentMethod: PaymentMethod.qpay,
-        testRequestId: testRequestId,
-        qpayInvoiceId: invoice.invoiceId,
-        qpayQrText: invoice.qrText,
-        qpayUrls: qpayUrlsMap,
-        metadata: {'description': description},
-      );
-
-      currentPayment = payment;
-      return payment;
-    } catch (e) {
-      errorMessage = e.toString();
-      return null;
-    } finally {
-      isLoading = false;
-    }
-  }
-
-  @action
-  Future<bool> checkPaymentStatus(String paymentId) async {
+  Future<bool> refreshPaymentStatus(String paymentId) async {
     isLoading = true;
     errorMessage = null;
 
@@ -85,29 +34,8 @@ abstract class _PaymentStore with Store {
         errorMessage = 'Payment not found';
         return false;
       }
-
-      if (payment.qpayInvoiceId == null) {
-        errorMessage = 'No QPAY invoice ID found';
-        return false;
-      }
-
-      // Check payment status with QPAY
-      final paymentCheck = await _qpayService.checkPayment(
-        payment.qpayInvoiceId!,
-      );
-
-      // Update payment status based on QPAY response
-      if (paymentCheck.paymentStatus == 'PAID') {
-        final updatedPayment = await _paymentRepository.updatePaymentStatus(
-          paymentId: paymentId,
-          status: PaymentStatus.completed,
-          transactionId: paymentCheck.paymentId,
-        );
-        currentPayment = updatedPayment;
-        return true;
-      }
-
-      return false;
+      currentPayment = payment;
+      return payment.paymentStatus == PaymentStatus.completed;
     } catch (e) {
       errorMessage = e.toString();
       return false;
@@ -152,25 +80,12 @@ abstract class _PaymentStore with Store {
     errorMessage = null;
 
     try {
-      final payment = await _paymentRepository.getPaymentById(paymentId);
-      if (payment == null) {
-        errorMessage = 'Payment not found';
-        return false;
-      }
-
-      // Cancel QPAY invoice if exists
-      if (payment.qpayInvoiceId != null) {
-        await _qpayService.cancelInvoice(payment.qpayInvoiceId!);
-      }
-
-      // Update payment status in database
       final success = await _paymentRepository.cancelPayment(
         paymentId: paymentId,
         cancellationReason: 'User cancelled',
       );
-      
+
       if (success) {
-        // Reload the payment to get updated status
         currentPayment = await _paymentRepository.getPaymentById(paymentId);
       }
 
@@ -207,7 +122,6 @@ abstract class _PaymentStore with Store {
   @action
   void clearCurrentPayment() {
     currentPayment = null;
-    currentInvoice = null;
     errorMessage = null;
   }
 

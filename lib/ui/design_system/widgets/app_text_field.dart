@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
 
 class AppTextField extends StatelessWidget {
   const AppTextField({
@@ -42,9 +43,14 @@ class AppTextField extends StatelessWidget {
       enabled: enabled,
       readOnly: readOnly,
       onTap: onTap,
+      style: AppTypography.bodyMedium.copyWith(color: AppColors.textPrimary),
       decoration: InputDecoration(
         labelText: label,
+        labelStyle: AppTypography.bodyMedium.copyWith(
+          color: AppColors.textSecondary,
+        ),
         hintText: hint,
+        hintStyle: AppTypography.bodyMedium.copyWith(color: AppColors.grey),
         prefixIcon: prefixIcon,
         suffixIcon: suffixIcon,
         fillColor: enabled
@@ -77,8 +83,10 @@ class AppSearchField extends StatelessWidget {
     return TextField(
       controller: ctrl,
       onChanged: onChanged,
+      style: AppTypography.bodyMedium.copyWith(color: AppColors.textPrimary),
       decoration: InputDecoration(
         hintText: hint,
+        hintStyle: AppTypography.bodyMedium.copyWith(color: AppColors.grey),
         prefixIcon: Icon(prefixIcon ?? Icons.search,
             color: AppColors.textSecondary.withValues(alpha: 0.7)),
         suffixIcon: ctrl != null && ctrl.text.isNotEmpty

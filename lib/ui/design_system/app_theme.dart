@@ -1,30 +1,41 @@
 import 'package:flutter/material.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:bugamed/ui/design_system/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_radius.dart';
+
+// Convenience re-exports so a single import gets the whole DS.
+export 'package:bugamed/ui/design_system/app_colors.dart';
+export 'package:bugamed/ui/design_system/app_radius.dart';
+export 'package:bugamed/ui/design_system/app_spacing.dart';
+export 'package:bugamed/ui/design_system/app_padding.dart';
+export 'package:bugamed/ui/design_system/app_typography.dart';
+export 'package:bugamed/ui/design_system/app_shadows.dart';
 
 class AppTheme {
   static ThemeData light() {
-    return ThemeData(
+    final base = ThemeData(
       useMaterial3: true,
-      fontFamily: 'SFPro',
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primary,
         primary: AppColors.primary,
-        secondary: AppColors.secondary,
+        secondary: AppColors.primaryDark,
       ),
-      scaffoldBackgroundColor: AppColors.scaffoldBackground,
-      textTheme: Typography.blackCupertino.apply(
-        fontFamily: 'SFPro',
-        bodyColor: AppColors.textPrimary,
-        displayColor: AppColors.textPrimary,
+      scaffoldBackgroundColor: AppColors.background,
+    );
+
+    return base.copyWith(
+      textTheme: GoogleFonts.interTextTheme(base.textTheme).apply(
+        bodyColor: AppColors.ink,
+        displayColor: AppColors.ink,
       ),
-      appBarTheme: const AppBarTheme(
-        backgroundColor: AppColors.scaffoldBackground,
+      appBarTheme: AppBarTheme(
+        backgroundColor: AppColors.background,
         elevation: 0,
-        iconTheme: IconThemeData(color: AppColors.black),
-        titleTextStyle: TextStyle(
-          color: AppColors.black,
+        iconTheme: const IconThemeData(color: AppColors.ink),
+        titleTextStyle: GoogleFonts.inter(
+          color: AppColors.ink,
           fontSize: 20,
-          fontWeight: FontWeight.bold,
+          fontWeight: FontWeight.w700,
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -34,107 +45,31 @@ class AppTheme {
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(AppRadius.md),
           ),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.grey.withValues(alpha: 0.08),
+        fillColor: AppColors.border.withValues(alpha: 0.4),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppRadius.md),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(AppRadius.md),
           borderSide: BorderSide.none,
         ),
-        hintStyle: const TextStyle(color: AppColors.grey),
+        hintStyle: GoogleFonts.inter(color: AppColors.inkSubtle),
       ),
       bottomSheetTheme: BottomSheetThemeData(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.surface,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(AppRadius.lg),
         ),
       ),
     );
   }
-}
-
-class AppTypography {
-  static const TextStyle titleLarge = TextStyle(
-    fontSize: 24,
-    fontWeight: FontWeight.w700,
-    color: AppColors.black,
-  );
-
-  static const TextStyle titleMedium = TextStyle(
-    fontSize: 18,
-    fontWeight: FontWeight.w600,
-    color: AppColors.black,
-  );
-
-  static const TextStyle sectionHeader = TextStyle(
-    fontSize: 22,
-    fontWeight: FontWeight.w600,
-    color: AppColors.black,
-    letterSpacing: -0.5,
-  );
-
-  static const TextStyle bodyMedium = TextStyle(
-    fontSize: 14,
-    color: AppColors.textSecondary,
-  );
-
-  static const TextStyle bodySmall = TextStyle(
-    fontSize: 12,
-    color: AppColors.textSecondary,
-  );
-
-  static const TextStyle labelSmall = TextStyle(
-    fontSize: 10,
-    color: AppColors.grey,
-    fontWeight: FontWeight.w500,
-  );
-
-  static const TextStyle heading = TextStyle(
-    fontSize: 28,
-    fontWeight: FontWeight.w700,
-    color: AppColors.black,
-  );
-
-  static const TextStyle caption = TextStyle(
-    fontSize: 13,
-    fontWeight: FontWeight.w500,
-    color: AppColors.textSecondary,
-  );
-}
-
-class AppSpacing {
-  static const double xs = 8;
-  static const double sm = 12;
-  static const double md = 16;
-  static const double lg = 24;
-  static const double xl = 32;
-  static const double xxl = 40;
-  static const double xxxl = 60;
-}
-
-class AppRadius {
-  AppRadius._();
-  static const double xs = 8;
-  static const double sm = 12;
-  static const double md = 16;
-  static const double lg = 20;
-  static const double xl = 24;
-  static const double pill = 100;
-}
-
-class AppPadding {
-  AppPadding._();
-  static const double screen = 20;
-  static const EdgeInsets screenH = EdgeInsets.symmetric(horizontal: 20);
-  static const EdgeInsets screenAll = EdgeInsets.all(20);
 }

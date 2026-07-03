@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:iconsax/iconsax.dart';
 import 'package:bugamed/stores/auth_store.dart';
 import 'package:bugamed/stores/test_request_store.dart';
 import 'package:bugamed/data/models/test_request_model.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
-import 'package:bugamed/ui/shared/widgets/app_card.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
+import 'package:bugamed/ui/design_system/widgets/app_card.dart';
+import 'package:bugamed/ui/design_system/widgets/app_screen_header.dart';
+import 'package:bugamed/ui/design_system/widgets/app_status_chip.dart';
 import 'package:bugamed/ui/shared/widgets/mascot_state_widget.dart';
 
 class PatientRequestsScreen extends StatefulWidget {
@@ -25,14 +28,12 @@ class _PatientRequestsScreenState extends State<PatientRequestsScreen> {
   void _subscribeToRequests() {
     final user = authStore.currentUser;
     if (user != null) {
-      // Subscribe to real-time updates
       testRequestStore.subscribeToPatientRequests(user.id);
     }
   }
 
   Future<void> _refreshRequests() async {
     _subscribeToRequests();
-    // Wait a bit for the stream to fetch initial data
     await Future.delayed(const Duration(milliseconds: 500));
   }
 
@@ -50,36 +51,19 @@ class _PatientRequestsScreenState extends State<PatientRequestsScreen> {
       builder: (_) {
         if (testRequestStore.isLoading) {
           return const Center(
-            child: CircularProgressIndicator(
-              color: AppColors.primary,
-            ),
+            child: CircularProgressIndicator(color: AppColors.primary),
           );
         }
 
         if (testRequestStore.errorMessage != null) {
           return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.error_outline,
-                    size: 60,
-                    color: AppColors.error,
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    testRequestStore.errorMessage!,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(color: AppColors.grey),
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: _refreshRequests,
-                    child: Text(l10n.retry),
-                  ),
-                ],
+            child: SingleChildScrollView(
+              child: MascotStateWidget(
+                emotion: MascotEmotion.error,
+                title: l10n.errorLoadingData,
+                subtitle: testRequestStore.errorMessage!,
+                actionText: l10n.retry,
+                onAction: _refreshRequests,
               ),
             ),
           );
@@ -90,51 +74,34 @@ class _PatientRequestsScreenState extends State<PatientRequestsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 24, 20, 8),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.myRequests,
-                      style: const TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.w700,
-                        color: AppColors.black,
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      l10n.requestHistory,
-                      style: const TextStyle(
-                        color: AppColors.grey,
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
+                padding: const EdgeInsets.only(top: AppSpacing.lg),
+                child: AppScreenHeader(
+                  title: l10n.myRequests,
+                  subtitle: l10n.requestHistory,
                 ),
               ),
+              const SizedBox(height: AppSpacing.xs),
               Expanded(
                 child: DefaultTabController(
                   length: 3,
                   child: Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        padding: AppPadding.screenH,
                         child: TabBar(
                           indicator: BoxDecoration(
                             color: AppColors.primary,
-                            borderRadius: BorderRadius.circular(14),
+                            borderRadius: BorderRadius.circular(AppRadius.sm),
                           ),
-                          indicatorPadding:
-                              const EdgeInsets.symmetric(horizontal: 4),
+                          indicatorPadding: const EdgeInsets.symmetric(
+                              horizontal: 4),
                           labelPadding: EdgeInsets.zero,
                           labelColor: Colors.white,
                           unselectedLabelColor:
-                              AppColors.black.withValues(alpha: 0.6),
-                          labelStyle: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w600,
-                          ),
+                              AppColors.ink.withValues(alpha: 0.6),
+                          labelStyle: AppTypography.bodySm
+                              .copyWith(fontWeight: FontWeight.w600),
+                          unselectedLabelStyle: AppTypography.bodySm,
                           dividerColor: Colors.transparent,
                           tabs: [
                             Tab(
@@ -176,7 +143,7 @@ class _PatientRequestsScreenState extends State<PatientRequestsScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: AppSpacing.md),
                       Expanded(
                         child: TabBarView(
                           physics: const BouncingScrollPhysics(),
@@ -243,7 +210,8 @@ class _PatientRequestsScreenState extends State<PatientRequestsScreen> {
       onRefresh: _refreshRequests,
       child: ListView.separated(
         physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.fromLTRB(16, 4, 16, 110), // Extra padding for floating navbar
+        padding: const EdgeInsets.fromLTRB(
+            AppSpacing.md, AppSpacing.xs / 2, AppSpacing.md, 110),
         itemCount: requests.length,
         itemBuilder: (context, index) =>
             _RequestCard(request: requests[index], l10n: l10n),
@@ -251,7 +219,6 @@ class _PatientRequestsScreenState extends State<PatientRequestsScreen> {
       ),
     );
   }
-
 }
 
 class _RequestCard extends StatelessWidget {
@@ -266,13 +233,10 @@ class _RequestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final statusKey = _statusString(request.status);
-    final statusColor = AppColors.getStatusColor(statusKey);
-    final statusLabel = _statusLabel(request.status, l10n);
     final typeInfo = _RequestTypeInfo.fromRequest(request, l10n);
 
     return AppCard(
-      borderRadius: 18,
-      showShadow: true,
+      elevation: AppCardElevation.resting,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -282,7 +246,7 @@ class _RequestCard extends StatelessWidget {
                 padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
                   color: typeInfo.tint,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
                 child: Icon(typeInfo.icon, color: typeInfo.iconColor, size: 20),
               ),
@@ -293,44 +257,26 @@ class _RequestCard extends StatelessWidget {
                   children: [
                     Text(
                       _title(l10n),
-                      style: const TextStyle(
-                        fontSize: 16,
+                      style: AppTypography.body.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: AppColors.black,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       typeInfo.label,
-                      style: TextStyle(
-                        fontSize: 13,
+                      style: AppTypography.bodySm.copyWith(
                         color: typeInfo.iconColor,
                       ),
                     ),
                   ],
                 ),
               ),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: statusColor.withValues(alpha: 0.12),
-                  borderRadius: BorderRadius.circular(30),
-                ),
-                child: Text(
-                  statusLabel,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 12,
-                    color: statusColor,
-                  ),
-                ),
-              ),
+              AppStatusChip.fromString(statusKey, l10n),
             ],
           ),
           const SizedBox(height: 16),
           _RequestMetaRow(
-            icon: Icons.calendar_month_outlined,
+            icon: Iconsax.calendar_1,
             label: l10n.scheduledAt(
               request.scheduledDate,
               request.scheduledTimeSlot ?? '',
@@ -338,23 +284,22 @@ class _RequestCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           _RequestMetaRow(
-            icon: Icons.location_on_outlined,
+            icon: Iconsax.location,
             label: request.patientAddress,
           ),
           const SizedBox(height: 8),
           _RequestMetaRow(
-            icon: Icons.payments_outlined,
+            icon: Iconsax.wallet_money,
             label: l10n.priceInMNT(request.priceMnt),
-            valueStyle: const TextStyle(
+            valueStyle: AppTypography.body.copyWith(
               fontWeight: FontWeight.w700,
-              color: AppColors.black,
             ),
           ),
           if (request.patientNotes != null &&
               request.patientNotes!.trim().isNotEmpty) ...[
             const SizedBox(height: 8),
             _RequestMetaRow(
-              icon: Icons.note_alt_outlined,
+              icon: Iconsax.note_text,
               label: request.patientNotes!,
             ),
           ],
@@ -387,25 +332,6 @@ class _RequestCard extends StatelessWidget {
         return 'cancelled';
     }
   }
-
-  static String _statusLabel(RequestStatus status, AppLocalizations l10n) {
-    switch (status) {
-      case RequestStatus.pending:
-        return l10n.pending;
-      case RequestStatus.accepted:
-        return l10n.accepted;
-      case RequestStatus.onTheWay:
-        return l10n.onTheWay;
-      case RequestStatus.sampleCollected:
-        return l10n.sampleCollected;
-      case RequestStatus.deliveredToLab:
-        return l10n.deliveredToLab;
-      case RequestStatus.completed:
-        return l10n.completed;
-      case RequestStatus.cancelled:
-        return l10n.cancelled;
-    }
-  }
 }
 
 class _RequestMetaRow extends StatelessWidget {
@@ -424,16 +350,12 @@ class _RequestMetaRow extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, size: 18, color: AppColors.grey),
+        Icon(icon, size: 18, color: AppColors.inkSubtle),
         const SizedBox(width: 10),
         Expanded(
           child: Text(
             label,
-            style: valueStyle ??
-                const TextStyle(
-                  fontSize: 14,
-                  color: AppColors.grey,
-                ),
+            style: valueStyle ?? AppTypography.bodySm,
           ),
         ),
       ],
@@ -461,17 +383,17 @@ class _RequestTypeInfo {
     if (request.requestType == RequestType.labService) {
       return _RequestTypeInfo(
         label: l10n.labTestServiceLabel,
-        icon: Icons.biotech_outlined,
-        tint: Colors.blue.withValues(alpha: 0.1),
-        iconColor: Colors.blue[700]!,
+        icon: Iconsax.microscope,
+        tint: AppColors.info.withValues(alpha: 0.12),
+        iconColor: AppColors.info,
       );
     }
 
     return _RequestTypeInfo(
       label: l10n.directHomeServiceLabel,
-      icon: Icons.home_work_outlined,
-      tint: Colors.purple.withValues(alpha: 0.12),
-      iconColor: Colors.purple[600]!,
+      icon: Iconsax.home_2,
+      tint: AppColors.primarySoft,
+      iconColor: AppColors.primary,
     );
   }
 }

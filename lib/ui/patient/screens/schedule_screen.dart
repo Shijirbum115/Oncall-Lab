@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
 import 'package:bugamed/ui/patient/models/schedule_ui.dart';
 import 'package:bugamed/ui/patient/sample_data/sample_schedules.dart';
 import 'package:bugamed/ui/patient/widgets/schedule_item.dart';
@@ -23,28 +23,28 @@ class _ScheduleScreenState extends State<ScheduleScreen>
     return Scaffold(
       appBar: AppBar(
         title: const Text('Schedule'),
-        backgroundColor: Colors.white,
-        foregroundColor: AppColors.black,
+        backgroundColor: AppColors.surface,
+        foregroundColor: AppColors.ink,
         elevation: 0,
       ),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
             child: Container(
               decoration: BoxDecoration(
-                color: AppColors.grey.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(8),
+                color: AppColors.inkSubtle.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(AppRadius.xs),
               ),
               child: TabBar(
                 controller: _tabController,
                 indicator: BoxDecoration(
                   color: AppColors.primary,
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(AppRadius.xs),
                 ),
-                labelColor: Colors.white,
+                labelColor: AppColors.surface,
                 unselectedLabelColor:
-                    AppColors.black.withValues(alpha: 0.5),
+                    AppColors.ink.withValues(alpha: 0.5),
                 tabs: const [
                   Tab(text: 'Upcoming'),
                   Tab(text: 'Completed'),
@@ -53,7 +53,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
               ),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           Expanded(
             child: TabBarView(
               controller: _tabController,
@@ -78,20 +78,20 @@ class _ScheduleList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (items.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
           'No visits scheduled',
-          style: TextStyle(color: AppColors.grey),
+          style: AppTypography.body.copyWith(color: AppColors.inkSubtle),
         ),
       );
     }
 
     return ListView.separated(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.md),
       itemBuilder: (context, index) => ScheduleItem(
         schedule: items[index],
       ),
-      separatorBuilder: (_, index) => const SizedBox(height: 12),
+      separatorBuilder: (_, index) => const SizedBox(height: AppSpacing.sm),
       itemCount: items.length,
     );
   }
@@ -107,10 +107,8 @@ class _PlaceholderTab extends StatelessWidget {
     return Center(
       child: Text(
         label,
-        style: const TextStyle(
-          fontSize: 18,
+        style: AppTypography.h3.copyWith(
           color: AppColors.primary,
-          fontWeight: FontWeight.w600,
         ),
       ),
     );

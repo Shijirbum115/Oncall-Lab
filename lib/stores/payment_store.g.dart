@@ -25,22 +25,6 @@ mixin _$PaymentStore on _PaymentStore, Store {
     });
   }
 
-  late final _$currentInvoiceAtom =
-      Atom(name: '_PaymentStore.currentInvoice', context: context);
-
-  @override
-  QPayInvoice? get currentInvoice {
-    _$currentInvoiceAtom.reportRead();
-    return super.currentInvoice;
-  }
-
-  @override
-  set currentInvoice(QPayInvoice? value) {
-    _$currentInvoiceAtom.reportWrite(value, super.currentInvoice, () {
-      super.currentInvoice = value;
-    });
-  }
-
   late final _$isLoadingAtom =
       Atom(name: '_PaymentStore.isLoading', context: context);
 
@@ -89,29 +73,13 @@ mixin _$PaymentStore on _PaymentStore, Store {
     });
   }
 
-  late final _$createQPayPaymentAsyncAction =
-      AsyncAction('_PaymentStore.createQPayPayment', context: context);
+  late final _$refreshPaymentStatusAsyncAction =
+      AsyncAction('_PaymentStore.refreshPaymentStatus', context: context);
 
   @override
-  Future<PaymentModel?> createQPayPayment(
-      {required String patientId,
-      required int amountMnt,
-      required String description,
-      required String testRequestId}) {
-    return _$createQPayPaymentAsyncAction.run(() => super.createQPayPayment(
-        patientId: patientId,
-        amountMnt: amountMnt,
-        description: description,
-        testRequestId: testRequestId));
-  }
-
-  late final _$checkPaymentStatusAsyncAction =
-      AsyncAction('_PaymentStore.checkPaymentStatus', context: context);
-
-  @override
-  Future<bool> checkPaymentStatus(String paymentId) {
-    return _$checkPaymentStatusAsyncAction
-        .run(() => super.checkPaymentStatus(paymentId));
+  Future<bool> refreshPaymentStatus(String paymentId) {
+    return _$refreshPaymentStatusAsyncAction
+        .run(() => super.refreshPaymentStatus(paymentId));
   }
 
   late final _$loadUserPaymentsAsyncAction =
@@ -178,7 +146,6 @@ mixin _$PaymentStore on _PaymentStore, Store {
   String toString() {
     return '''
 currentPayment: ${currentPayment},
-currentInvoice: ${currentInvoice},
 isLoading: ${isLoading},
 errorMessage: ${errorMessage},
 userPayments: ${userPayments}

@@ -15,7 +15,6 @@ import 'package:bugamed/stores/test_request_store.dart';
 import 'package:bugamed/stores/notification_store.dart';
 import 'package:bugamed/stores/payment_store.dart';
 import 'package:bugamed/core/services/push_notification_service.dart';
-import 'package:bugamed/core/services/qpay_service.dart';
 
 final GetIt locator = GetIt.instance;
 
@@ -40,9 +39,6 @@ Future<void> setupServiceLocator() async {
   // Services
   locator.registerLazySingleton<PushNotificationService>(
     () => PushNotificationService(),
-  );
-  locator.registerLazySingleton<QPayService>(
-    () => QPayService(),
   );
 
   // Stores
@@ -72,9 +68,6 @@ Future<void> setupServiceLocator() async {
     ),
   );
   locator.registerLazySingleton<PaymentStore>(
-    () => PaymentStore(
-      locator<QPayService>(),
-      locator<PaymentRepository>(),
-    ),
+    () => PaymentStore(locator<PaymentRepository>()),
   );
 }

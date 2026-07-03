@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
 import 'package:bugamed/core/utils/avatar_helper.dart';
 import 'package:bugamed/ui/patient/models/doctor_profile_ui.dart';
 import 'package:bugamed/data/repositories/doctor_repository.dart';
@@ -96,7 +96,7 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
 
     if (isLoading) {
       return Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.surface,
         body: const Center(
           child: CircularProgressIndicator(color: AppColors.primary),
         ),
@@ -105,31 +105,29 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
 
     if (errorMessage != null) {
       return Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.surface,
         body: SafeArea(
           child: Center(
             child: Padding(
-              padding: const EdgeInsets.all(20),
+              padding: AppPadding.screenAll,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const Icon(Iconsax.info_circle, size: 64, color: AppColors.error),
-                  const SizedBox(height: 20),
+                  const SizedBox(height: AppSpacing.md),
                   Text(
                     l10n.errorLoadingDoctorDetails,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.black,
-                    ),
+                    style: AppTypography.h3.copyWith(fontSize: 20),
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: AppSpacing.xs),
                   Text(
                     errorMessage!,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(color: AppColors.grey),
+                    style: AppTypography.body.copyWith(
+                      color: AppColors.inkSubtle,
+                    ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: AppSpacing.lg),
                   ElevatedButton.icon(
                     onPressed: () {
                       setState(() {
@@ -140,16 +138,17 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                      foregroundColor: AppColors.surface,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
                       ),
                     ),
                     icon: const Icon(Iconsax.refresh),
                     label: Text(l10n.retry),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: AppSpacing.md),
                   TextButton(
                     onPressed: () => Navigator.pop(context),
                     child: Text(l10n.goBack),
@@ -163,7 +162,7 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
     }
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.surface,
       body: Column(
         children: [
           // Fixed Header
@@ -212,15 +211,16 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
   Widget _buildHeader() {
     return Container(
       decoration: const BoxDecoration(
-        color: Colors.white,
+        color: AppColors.surface,
         border: Border(
-          bottom: BorderSide(color: AppColors.grey),
+          bottom: BorderSide(color: AppColors.border),
         ),
       ),
       child: SafeArea(
         bottom: false,
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+          padding: const EdgeInsets.symmetric(
+              horizontal: AppPadding.screen, vertical: AppSpacing.sm),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -239,7 +239,7 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
                       // TODO: Implement share
                     },
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: AppSpacing.sm),
                   _buildIconButton(
                     icon: Iconsax.heart,
                     onTap: () {
@@ -263,16 +263,16 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
         height: 40,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          border: Border.all(color: AppColors.grey),
+          border: Border.all(color: AppColors.border),
         ),
-        child: Icon(icon, size: 20, color: AppColors.black),
+        child: Icon(icon, size: 20, color: AppColors.ink),
       ),
     );
   }
 
   Widget _buildDoctorProfile() {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: AppPadding.screen),
       child: Row(
         children: [
           // Avatar with Verified Badge
@@ -293,10 +293,9 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
                 child: photoUrl == null && widget.doctor.avatarUrl == null
                     ? Text(
                         widget.doctor.name.substring(0, 1),
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: AppTypography.h1.copyWith(
+                          color: AppColors.surface,
                           fontSize: 28,
-                          fontWeight: FontWeight.bold,
                         ),
                       )
                     : null,
@@ -309,7 +308,7 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
                 child: Container(
                   padding: const EdgeInsets.all(2),
                   decoration: const BoxDecoration(
-                    color: Colors.white,
+                    color: AppColors.surface,
                     shape: BoxShape.circle,
                   ),
                   child: Container(
@@ -322,7 +321,7 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
                     child: const Icon(
                       Iconsax.tick_circle5,
                       size: 12,
-                      color: AppColors.black,
+                      color: AppColors.ink,
                     ),
                   ),
                 ),
@@ -330,7 +329,7 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
             ],
           ),
 
-          const SizedBox(width: 16),
+          const SizedBox(width: AppSpacing.md),
 
           // Doctor Info
           Expanded(
@@ -339,18 +338,13 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
               children: [
                 Text(
                   widget.doctor.name,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.black,
-                  ),
+                  style: AppTypography.h3.copyWith(fontSize: 20),
                 ),
                 const SizedBox(height: 4),
                 Text(
                   widget.doctor.specialization,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
+                  style: AppTypography.caption.copyWith(
+                    color: AppColors.inkMuted,
                   ),
                 ),
                 const SizedBox(height: 6),
@@ -359,15 +353,14 @@ class _DoctorDetailScreenState extends State<DoctorDetailScreen> {
                     const Icon(
                       Iconsax.location5,
                       size: 14,
-                      color: AppColors.black,
+                      color: AppColors.ink,
                     ),
                     const SizedBox(width: 4),
                     Expanded(
                       child: Text(
                         displayLocation,
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: AppColors.textSecondary,
+                        style: AppTypography.caption.copyWith(
+                          color: AppColors.inkMuted,
                         ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,

@@ -2,7 +2,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
+import 'package:bugamed/ui/design_system/widgets/app_button.dart';
 import 'package:bugamed/core/services/storage_service.dart';
 import 'package:bugamed/core/services/supabase_service.dart';
 import 'package:bugamed/stores/auth_store.dart';
@@ -153,7 +154,7 @@ class _PatientRegistrationScreenState extends State<PatientRegistrationScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(authStore.errorMessage!),
-          backgroundColor: AppColors.error,
+          backgroundColor: AppColors.error, // TODO: token — no `danger` token defined; using `error` alias
         ),
       );
     }
@@ -170,11 +171,11 @@ class _PatientRegistrationScreenState extends State<PatientRegistrationScreen> {
     ];
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.surface,
       resizeToAvoidBottomInset: false, // Keyboard overlays instead of pushing
       appBar: AppBar(
         title: Text(l10n.patientRegistration),
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.surface,
         elevation: 0,
       ),
       body: Stack(
@@ -191,16 +192,14 @@ class _PatientRegistrationScreenState extends State<PatientRegistrationScreen> {
                 children: [
                   Text(
                     l10n.createPatientAccount,
-                    style: const TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.black,
-                    ),
+                    style: AppTypography.h1,
                   ),
                   const SizedBox(height: 6),
                   Text(
                     l10n.stepByStepOnboarding,
-                    style: const TextStyle(color: AppColors.grey),
+                    style: AppTypography.body.copyWith(
+                      color: AppColors.inkMuted,
+                    ),
                   ),
                   const SizedBox(height: 24),
                   StepProgressBar(
@@ -236,14 +235,8 @@ class _PatientRegistrationScreenState extends State<PatientRegistrationScreen> {
             child: Container(
               padding: EdgeInsets.fromLTRB(24, 16, 24, 16 + bottomPadding),
               decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, -5),
-                  ),
-                ],
+                color: AppColors.surface,
+                boxShadow: AppShadows.raised,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -252,49 +245,24 @@ class _PatientRegistrationScreenState extends State<PatientRegistrationScreen> {
                     children: [
                       if (_currentStep > 0)
                         Expanded(
-                          child: OutlinedButton(
-                            onPressed:
-                                authStore.isLoading ? null : _goToPreviousStep,
-                            style: OutlinedButton.styleFrom(
-                              foregroundColor: AppColors.primary,
-                              side: const BorderSide(color: AppColors.primary),
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                            ),
-                            child: Text(l10n.back),
+                          child: AppButton(
+                            label: l10n.back,
+                            variant: AppButtonVariant.secondary,
+                            onPressed: authStore.isLoading
+                                ? null
+                                : _goToPreviousStep,
                           ),
                         ),
                       if (_currentStep > 0) const SizedBox(width: 12),
                       Expanded(
                         child: Observer(
-                          builder: (_) => ElevatedButton(
-                            onPressed: authStore.isLoading ? null : _goToNextStep,
-                            style: ElevatedButton.styleFrom(
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              backgroundColor: AppColors.primary,
-                              foregroundColor: Colors.white,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            child: authStore.isLoading
-                                ? const SizedBox(
-                                    height: 20,
-                                    width: 20,
-                                    child: CircularProgressIndicator(
-                                      strokeWidth: 2,
-                                      valueColor:
-                                          AlwaysStoppedAnimation<Color>(Colors.white),
-                                    ),
-                                  )
-                                : Text(
-                                    _currentStep == _totalSteps - 1
-                                        ? l10n.createAccount
-                                        : l10n.continue_,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
+                          builder: (_) => AppButton(
+                            label: _currentStep == _totalSteps - 1
+                                ? l10n.createAccount
+                                : l10n.continue_,
+                            onPressed:
+                                authStore.isLoading ? null : _goToNextStep,
+                            loading: authStore.isLoading,
                           ),
                         ),
                       ),
@@ -396,14 +364,14 @@ class _PatientRegistrationScreenState extends State<PatientRegistrationScreen> {
         const SizedBox(height: 16),
         Text(
           l10n.profilePhotoOptional,
-          style: const TextStyle(fontWeight: FontWeight.w600),
+          style: AppTypography.body.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         Row(
           children: [
             CircleAvatar(
               radius: 24,
-              backgroundColor: AppColors.primary.withValues(alpha: 0.1),
+              backgroundColor: AppColors.primarySoft,
               backgroundImage: _selectedProfilePhoto != null
                   ? FileImage(_selectedProfilePhoto!)
                   : null,
@@ -455,7 +423,7 @@ class _PatientRegistrationScreenState extends State<PatientRegistrationScreen> {
         const SizedBox(height: 12),
         Text(
           l10n.gender,
-          style: const TextStyle(fontWeight: FontWeight.w600),
+          style: AppTypography.body.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         Wrap(
@@ -471,8 +439,8 @@ class _PatientRegistrationScreenState extends State<PatientRegistrationScreen> {
               label: Text(genderLabel),
               selected: isSelected,
               selectedColor: AppColors.primary,
-              labelStyle: TextStyle(
-                color: isSelected ? Colors.white : AppColors.black,
+              labelStyle: AppTypography.body.copyWith(
+                color: isSelected ? AppColors.surface : AppColors.ink,
                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               ),
               onSelected: (_) {

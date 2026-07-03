@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
 import 'package:bugamed/stores/auth_store.dart';
 import 'package:bugamed/ui/auth/patient_registration_screen.dart';
 import 'package:bugamed/ui/auth/doctor_registration_screen.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
 import 'package:bugamed/ui/shared/widgets/language_switcher.dart';
 import 'package:bugamed/ui/design_system/widgets/app_text_field.dart';
+import 'package:bugamed/ui/design_system/widgets/app_button.dart';
 
 import 'package:bugamed/core/utils/notification_helper.dart';
 
@@ -51,7 +52,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (success) {
       // Execute callback if provided
       widget.onLoginSuccess?.call();
-      
+
       // Pop with success result if this screen was pushed
       if (mounted && Navigator.of(context).canPop()) {
         Navigator.of(context).pop(true);
@@ -67,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final bottomPadding = MediaQuery.of(context).padding.bottom;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.surface,
       resizeToAvoidBottomInset: false, // Keyboard overlays instead of pushing
       body: SafeArea(
         bottom: false,
@@ -96,7 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         child: Container(
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: AppColors.primary.withValues(alpha: 0.1),
+                            color: AppColors.primarySoft,
                             shape: BoxShape.circle,
                           ),
                           child: const Icon(
@@ -109,18 +110,13 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 30),
                       Text(
                         l10n.welcomeBack,
-                        style: const TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.black,
-                        ),
+                        style: AppTypography.display,
                       ),
                       const SizedBox(height: 8),
                       Text(
                         l10n.signInToContinue,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: AppColors.grey,
+                        style: AppTypography.bodyLg.copyWith(
+                          color: AppColors.inkMuted,
                         ),
                       ),
                       // Show custom message if provided
@@ -129,8 +125,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: AppColors.primary.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
+                            color: AppColors.primarySoft,
+                            borderRadius:
+                                BorderRadius.circular(AppRadius.xs),
                             border: Border.all(
                               color: AppColors.primary.withValues(alpha: 0.3),
                             ),
@@ -146,10 +143,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               Expanded(
                                 child: Text(
                                   widget.message!,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: AppColors.black,
-                                  ),
+                                  style: AppTypography.body,
                                 ),
                               ),
                             ],
@@ -228,50 +222,18 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Container(
                 padding: EdgeInsets.fromLTRB(24, 16, 24, 16 + bottomPadding),
                 decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, -5),
-                    ),
-                  ],
+                  color: AppColors.surface,
+                  boxShadow: AppShadows.raised,
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     // Login button
                     Observer(
-                      builder: (_) => SizedBox(
-                        width: double.infinity,
-                        height: 56,
-                        child: ElevatedButton(
-                          onPressed: authStore.isLoading ? null : _handleLogin,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          child: authStore.isLoading
-                              ? const SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    valueColor:
-                                        AlwaysStoppedAnimation<Color>(Colors.white),
-                                  ),
-                                )
-                              : Text(
-                                  l10n.signIn,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                        ),
+                      builder: (_) => AppButton(
+                        label: l10n.signIn,
+                        onPressed: authStore.isLoading ? null : _handleLogin,
+                        loading: authStore.isLoading,
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -292,8 +254,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         Text(
                           '  |  ',
-                          style: TextStyle(
-                            color: AppColors.grey.withValues(alpha: 0.5),
+                          style: AppTypography.body.copyWith(
+                            color: AppColors.inkSubtle.withValues(alpha: 0.5),
                           ),
                         ),
                         TextButton(

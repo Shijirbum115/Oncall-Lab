@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:bugamed/ui/design_system/app_theme.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/widgets/app_card.dart';
 import 'package:bugamed/core/utils/avatar_helper.dart';
 import 'package:bugamed/ui/patient/models/doctor_profile_ui.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
@@ -21,114 +21,101 @@ class DoctorCardTile extends StatelessWidget {
     final isDefaultAvatar = AvatarHelper.isDefaultAvatar(doctor.avatarUrl);
     final hasAvatar = doctor.avatarUrl != null && doctor.avatarUrl!.isNotEmpty;
 
-    return GestureDetector(
+    return AppCard(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(12),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.grey.withValues(alpha: 0.15),
-              blurRadius: 8,
-              offset: const Offset(0, 4),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 22,
-                  backgroundColor: Color(doctor.color),
-                  backgroundImage: hasAvatar
-                      ? (isDefaultAvatar
-                          ? AssetImage(doctor.avatarUrl!) as ImageProvider
-                          : NetworkImage(doctor.avatarUrl!))
-                      : null,
-                  child: !hasAvatar
-                      ? Text(
-                          doctor.name.substring(0, 1),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        )
-                      : null,
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        doctor.name,
-                        style: AppTypography.bodyMedium.copyWith(
+      padding: const EdgeInsets.all(AppSpacing.sm),
+      borderRadius: AppRadius.md,
+      elevation: AppCardElevation.resting,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 22,
+                backgroundColor: Color(doctor.color),
+                backgroundImage: hasAvatar
+                    ? (isDefaultAvatar
+                        ? AssetImage(doctor.avatarUrl!) as ImageProvider
+                        : NetworkImage(doctor.avatarUrl!))
+                    : null,
+                child: !hasAvatar
+                    ? Text(
+                        doctor.name.substring(0, 1),
+                        style: AppTypography.bodyLg.copyWith(
+                          color: Colors.white,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.black,
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                      )
+                    : null,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      doctor.name,
+                      style: AppTypography.body.copyWith(
+                        fontWeight: FontWeight.w700,
                       ),
-                      const SizedBox(height: 2),
-                      Text(
-                        doctor.specialization,
-                        style: AppTypography.bodySmall,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      doctor.specialization,
+                      style: AppTypography.bodySm,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                 ),
-              ],
-            ),
-            const Spacer(),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: Colors.orange[50],
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.star, color: Colors.orange, size: 15),
-                      const SizedBox(width: 4),
-                      Text(
-                        doctor.rating.toStringAsFixed(1),
-                        style: AppTypography.bodySmall.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.black, // Ensure color is visible
-                        ),
-                      ),
-                      const SizedBox(width: 3),
-                      Text(
-                        '(${l10n.reviewsCount(doctor.totalReviews)})',
-                        style: AppTypography.labelSmall,
-                      ),
-                    ],
-                  ),
+              ),
+            ],
+          ),
+          const Spacer(),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: AppColors.warning.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                 ),
-                const Spacer(),
-                Text(
-                  doctor.price != null ? l10n.priceInMNT(doctor.price!) : '',
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.primary,
-                  ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(Icons.star, color: AppColors.warning, size: 15),
+                    const SizedBox(width: 4),
+                    Text(
+                      doctor.rating.toStringAsFixed(1),
+                      style: AppTypography.bodySm.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.ink,
+                      ),
+                    ),
+                    const SizedBox(width: 3),
+                    Text(
+                      '(${l10n.reviewsCount(doctor.totalReviews)})',
+                      style: AppTypography.label,
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ],
-        ),
+              ),
+              const Spacer(),
+              Text(
+                doctor.price != null ? l10n.priceInMNT(doctor.price!) : '',
+                style: AppTypography.body.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.primary,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
+import 'package:bugamed/ui/design_system/widgets/app_card.dart';
 import 'package:bugamed/ui/patient/models/review_ui.dart';
 
 class ReviewItem extends StatelessWidget {
@@ -9,79 +10,73 @@ class ReviewItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: 260,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 8,
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              CircleAvatar(
-                radius: 24,
-                backgroundColor: Color(review.badgeColor).withValues(alpha: 0.25),
-                backgroundImage: NetworkImage(review.avatarUrl),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      review.name,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.black,
+      child: AppCard(
+        borderRadius: AppRadius.md,
+        elevation: AppCardElevation.resting,
+        padding: const EdgeInsets.all(AppSpacing.md),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 24,
+                  backgroundColor:
+                      Color(review.badgeColor).withValues(alpha: 0.25),
+                  backgroundImage: NetworkImage(review.avatarUrl),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        review.name,
+                        style: AppTypography.body
+                            .copyWith(fontWeight: FontWeight.w700),
                       ),
-                    ),
-                    Text(
-                      review.dateLabel,
-                      style: const TextStyle(color: AppColors.grey, fontSize: 12),
-                    ),
-                  ],
+                      Text(
+                        review.dateLabel,
+                        style: AppTypography.bodySm,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.orange[50],
-                  borderRadius: BorderRadius.circular(20),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppColors.warning.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(AppRadius.pill),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.star, color: AppColors.warning, size: 16),
+                      const SizedBox(width: 4),
+                      Text(
+                        review.rating.toStringAsFixed(1),
+                        style: AppTypography.bodySm.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.ink,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(Icons.star, color: Colors.orange, size: 16),
-                    const SizedBox(width: 4),
-                    Text(
-                      review.rating.toStringAsFixed(1),
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            review.comment,
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(
-              color: AppColors.black,
-              height: 1.4,
+              ],
             ),
-          ),
-        ],
+            const SizedBox(height: 12),
+            Text(
+              review.comment,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              style: AppTypography.body,
+            ),
+          ],
+        ),
       ),
     );
   }

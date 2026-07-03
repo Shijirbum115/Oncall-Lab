@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
 import 'package:bugamed/ui/design_system/app_theme.dart';
 import 'package:bugamed/ui/shared/widgets/tappable_card.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
@@ -23,14 +22,12 @@ class ServiceCategoryGrid extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final isMn = l10n.localeName == 'mn';
 
-    // Group services by category
     final grouped = <String, List<Map<String, dynamic>>>{};
     for (final service in services) {
       final categoryName = service['category_name'] as String? ?? '';
       grouped.putIfAbsent(categoryName, () => []).add(service);
     }
 
-    // Filter to selected category if provided
     final categories = selectedCategory != null
         ? [if (grouped.containsKey(selectedCategory)) selectedCategory!]
         : grouped.keys.toList();
@@ -51,18 +48,15 @@ class ServiceCategoryGrid extends StatelessWidget {
           final categoryColor = AppColors.getServiceCategoryColor(colorIndex);
 
           return Padding(
-            padding: const EdgeInsets.only(bottom: 24),
+            padding: const EdgeInsets.only(bottom: AppSpacing.lg),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Padding(
                   padding: AppPadding.screenH,
-                  child: Text(
-                    categoryLabel,
-                    style: AppTypography.titleMedium,
-                  ),
+                  child: Text(categoryLabel, style: AppTypography.h3),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.sm),
                 Padding(
                   padding: AppPadding.screenH,
                   child: GridView.builder(
@@ -71,8 +65,8 @@ class ServiceCategoryGrid extends StatelessWidget {
                     gridDelegate:
                         const SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 3,
-                      mainAxisSpacing: 12,
-                      crossAxisSpacing: 12,
+                      mainAxisSpacing: AppSpacing.sm,
+                      crossAxisSpacing: AppSpacing.sm,
                       childAspectRatio: 1,
                     ),
                     itemCount: categoryServices.length,
@@ -121,11 +115,9 @@ class _ServiceSquareTile extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.surface,
           borderRadius: BorderRadius.circular(AppRadius.md),
-          border: Border.all(
-            color: AppColors.grey.withValues(alpha: 0.12),
-          ),
+          border: Border.all(color: AppColors.border),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -148,10 +140,8 @@ class _ServiceSquareTile extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 6),
               child: Text(
                 name,
-                style: const TextStyle(
-                  fontSize: 11,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.black,
+                style: AppTypography.label.copyWith(
+                  color: AppColors.ink,
                   height: 1.2,
                 ),
                 textAlign: TextAlign.center,

@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
+import 'package:bugamed/ui/design_system/widgets/app_button.dart';
+import 'package:bugamed/ui/design_system/widgets/app_card.dart';
 import 'package:bugamed/core/utils/auth_context.dart';
+import 'package:bugamed/data/repositories/test_request_repository.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
 import 'package:bugamed/stores/auth_store.dart';
-import 'package:bugamed/ui/payment/payment_method_screen.dart';
+import 'package:bugamed/ui/payment/qpay_invoice_screen.dart';
 
 class PaymentScreen extends StatefulWidget {
   final int amountMnt;
@@ -25,6 +28,8 @@ class PaymentScreen extends StatefulWidget {
 }
 
 class _PaymentScreenState extends State<PaymentScreen> {
+  final TestRequestRepository _testRequestRepository = TestRequestRepository();
+
   bool isProcessing = false;
   String? _userId;
   String? _testRequestId;
@@ -42,16 +47,16 @@ class _PaymentScreenState extends State<PaymentScreen> {
       context: context,
       barrierDismissible: false, // Force user to click the button
       builder: (context) => AlertDialog(
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Iconsax.lock, color: AppColors.primary, size: 24),
-            SizedBox(width: 12),
-            Text('Нэвтрэх шаардлагатай'),
+            const Icon(Iconsax.lock, color: AppColors.primary, size: 24),
+            const SizedBox(width: AppSpacing.sm),
+            Text('Нэвтрэх шаардлагатай', style: AppTypography.h3),
           ],
         ),
-        content: const Text(
+        content: Text(
           'Төлбөр төлөхийн тулд эхлээд системд нэвтэрнэ үү.',
-          style: TextStyle(fontSize: 16, height: 1.5),
+          style: AppTypography.bodyLg,
         ),
         actions: [
           ElevatedButton(
@@ -60,22 +65,23 @@ class _PaymentScreenState extends State<PaymentScreen> {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
-              foregroundColor: Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              foregroundColor: AppColors.surface,
+              padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
             ),
             child: const Text('Нэвтрэх'),
           ),
         ],
       ),
     );
-    
+
     if (result == true && mounted) {
       // Navigate to login with auth context
       final authenticated = await AuthContext.requireAuth(
         context,
         reason: 'make a payment',
       );
-      
+
       // If authenticated, update userId and continue with payment
       if (authenticated && mounted) {
         setState(() {
@@ -88,23 +94,24 @@ class _PaymentScreenState extends State<PaymentScreen> {
   Future<void> _processPayment() async {
     if (!authStore.isAuthenticated) {
       await _showLoginRequiredDialog();
-      
+
       if (!mounted) return;
 
       if (!authStore.isAuthenticated) {
         return; // User cancelled login
       }
-      
+
       _userId = authStore.currentUser?.id;
     }
-    
+
     // Verify we have userId
     if (_userId == null) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Хэрэглэгчийн мэдээлэл олдсонгүй. Дахин нэвтэрнэ үү.'),
-            backgroundColor: Colors.red,
+          SnackBar(
+            content: const Text(
+                'Хэрэглэгчийн мэдээлэл олдсонгүй. Дахин нэвтэрнэ үү.'),
+            backgroundColor: AppColors.error,
           ),
         );
       }
@@ -113,23 +120,88 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
     setState(() => isProcessing = true);
 
-    // Navigate to payment method selection screen
-    await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => PaymentMethodScreen(
-          userId: _userId!,
-          amountMnt: widget.amountMnt,
-          serviceName: widget.serviceName,
-          laboratoryName: widget.laboratoryName,
-          bookingData: widget.bookingData,
-          testRequestId: _testRequestId,
-        ),
-      ),
-    );
+    try {
+      final requestId = await _ensureTestRequestId();
+      if (requestId == null || !mounted) return;
 
-    if (mounted) {
-      setState(() => isProcessing = false);
+      await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => QpayInvoiceScreen(
+            testRequestId: requestId,
+            amountMnt: widget.amountMnt,
+            serviceName: widget.serviceName,
+            laboratoryName: widget.laboratoryName,
+            bookingData: widget.bookingData,
+          ),
+        ),
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Төлбөр эхлүүлэхэд алдаа гарлаа: $e'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => isProcessing = false);
+      }
+    }
+  }
+
+  Future<String?> _ensureTestRequestId() async {
+    if (_testRequestId != null) return _testRequestId;
+
+    final data = widget.bookingData;
+
+    try {
+      if (data['laboratoryId'] != null) {
+        final created = await _testRequestRepository.createLabServiceRequest(
+          patientId: _userId!,
+          laboratoryId: data['laboratoryId'] as String,
+          laboratoryServiceId: data['laboratoryServiceId'] as String,
+          serviceId: data['serviceId'] as String,
+          scheduledDate: data['scheduledDate'] as String,
+          scheduledTimeSlot: data['scheduledTimeSlot'] as String,
+          patientAddress: data['patientAddress'] as String? ?? '',
+          priceMnt: widget.amountMnt,
+          patientLatitude: (data['patientLatitude'] as num?)?.toDouble(),
+          patientLongitude: (data['patientLongitude'] as num?)?.toDouble(),
+          patientNotes: data['patientNotes'] as String?,
+        );
+        _testRequestId = created.id;
+        return _testRequestId;
+      }
+
+      final created = await _testRequestRepository.createDirectServiceRequest(
+        patientId: _userId!,
+        serviceId: data['serviceId'] as String,
+        scheduledDate: data['scheduledDate'] as String,
+        scheduledTimeSlot: data['scheduledTimeSlot'] as String,
+        patientAddress: data['patientAddress'] as String? ?? '',
+        priceMnt: widget.amountMnt,
+        doctorId: data['doctorId'] as String?,
+        doctorServiceId: data['doctorServiceId'] as String?,
+        patientLatitude: (data['patientLatitude'] as num?)?.toDouble(),
+        patientLongitude: (data['patientLongitude'] as num?)?.toDouble(),
+        patientNotes: data['patientNotes'] as String?,
+      );
+
+      _testRequestId = created.id;
+      return _testRequestId;
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Захиалга үүсгэхэд алдаа гарлаа: $e'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+      return null;
     }
   }
 
@@ -138,32 +210,23 @@ class _PaymentScreenState extends State<PaymentScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.black),
+          icon: const Icon(Icons.arrow_back, color: AppColors.ink),
           onPressed: isProcessing ? null : () => Navigator.pop(context),
         ),
-        title: Text(
-          l10n.payment,
-          style: const TextStyle(
-            color: AppColors.black,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        title: Text(l10n.payment),
       ),
       body: SafeArea(
         child: Column(
           children: [
             Expanded(
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(24),
+                padding: AppPadding.screenAll,
                 child: Column(
                   children: [
-                    const SizedBox(height: 20),
+                    const SizedBox(height: AppSpacing.lg),
 
                     // Mascot with payment theme
                     Image.asset(
@@ -172,32 +235,26 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       fit: BoxFit.contain,
                     ),
 
-                    const SizedBox(height: 32),
+                    const SizedBox(height: AppSpacing.xl),
 
                     // Service Details Card
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: AppColors.primary.withValues(alpha: 0.06),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: AppColors.primary.withValues(alpha: 0.15),
-                          width: 1,
-                        ),
-                      ),
+                    AppCard(
+                      backgroundColor: AppColors.primary.withValues(alpha: 0.06),
+                      borderColor: AppColors.primary.withValues(alpha: 0.15),
+                      borderRadius: AppRadius.md,
+                      elevation: AppCardElevation.none,
+                      padding: const EdgeInsets.all(AppSpacing.lg),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             l10n.orderSummary,
-                            style: const TextStyle(
-                              fontSize: 14,
+                            style: AppTypography.body.copyWith(
                               fontWeight: FontWeight.w600,
-                              color: AppColors.grey,
+                              color: AppColors.inkMuted,
                             ),
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: AppSpacing.md),
 
                           // Service name
                           Row(
@@ -205,8 +262,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                               Container(
                                 padding: const EdgeInsets.all(8),
                                 decoration: BoxDecoration(
-                                  color: AppColors.primary.withValues(alpha: 0.1),
-                                  borderRadius: BorderRadius.circular(8),
+                                  color: AppColors.primarySoft,
+                                  borderRadius:
+                                      BorderRadius.circular(AppRadius.xs),
                                 ),
                                 child: const Icon(
                                   Iconsax.health,
@@ -214,27 +272,22 @@ class _PaymentScreenState extends State<PaymentScreen> {
                                   size: 20,
                                 ),
                               ),
-                              const SizedBox(width: 12),
+                              const SizedBox(width: AppSpacing.sm),
                               Expanded(
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
                                       widget.serviceName,
-                                      style: const TextStyle(
-                                        fontSize: 16,
+                                      style: AppTypography.bodyLg.copyWith(
                                         fontWeight: FontWeight.w600,
-                                        color: AppColors.black,
                                       ),
                                     ),
                                     if (widget.laboratoryName != null) ...[
                                       const SizedBox(height: 4),
                                       Text(
                                         widget.laboratoryName!,
-                                        style: const TextStyle(
-                                          fontSize: 14,
-                                          color: AppColors.grey,
-                                        ),
+                                        style: AppTypography.bodySm,
                                       ),
                                     ],
                                   ],
@@ -243,9 +296,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             ],
                           ),
 
-                          const SizedBox(height: 20),
-                          const Divider(),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: AppSpacing.lg),
+                          const Divider(color: AppColors.border),
+                          const SizedBox(height: AppSpacing.lg),
 
                           // Total Amount
                           Row(
@@ -253,17 +306,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             children: [
                               Text(
                                 l10n.totalAmount,
-                                style: const TextStyle(
-                                  fontSize: 16,
+                                style: AppTypography.bodyLg.copyWith(
                                   fontWeight: FontWeight.w600,
-                                  color: AppColors.black,
                                 ),
                               ),
                               Text(
                                 l10n.priceInMNT(widget.amountMnt),
-                                style: const TextStyle(
-                                  fontSize: 24,
-                                  fontWeight: FontWeight.bold,
+                                style: AppTypography.h2.copyWith(
                                   color: AppColors.primary,
                                 ),
                               ),
@@ -273,20 +322,15 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: 24),
+                    const SizedBox(height: AppSpacing.lg),
 
                     // Payment Info
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: AppColors.success.withValues(alpha: 0.06),
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: AppColors.success.withValues(alpha: 0.15),
-                          width: 1,
-                        ),
-                      ),
+                    AppCard(
+                      backgroundColor: AppColors.success.withValues(alpha: 0.06),
+                      borderColor: AppColors.success.withValues(alpha: 0.15),
+                      borderRadius: AppRadius.sm,
+                      elevation: AppCardElevation.none,
+                      padding: const EdgeInsets.all(AppSpacing.md),
                       child: Row(
                         children: [
                           const Icon(
@@ -294,14 +338,12 @@ class _PaymentScreenState extends State<PaymentScreen> {
                             color: AppColors.success,
                             size: 20,
                           ),
-                          const SizedBox(width: 12),
+                          const SizedBox(width: AppSpacing.sm),
                           Expanded(
                             child: Text(
-                              'Одоогоор дансаар шилжүүлгийн төлбөрийн горим ажиллаж байна. Доорх алхмаар шилжүүлгээ хийнэ үү.',
-                              style: const TextStyle(
-                                fontSize: 14,
-                                color: AppColors.textSecondary,
-                                height: 1.4,
+                              '"Төлбөр төлөх" дээр дармагц QPay банкны апп-уудын жагсаалт гарч ирнэ. Аппаа сонгоод шууд төлбөрөө хийнэ үү.',
+                              style: AppTypography.body.copyWith(
+                                color: AppColors.inkMuted,
                               ),
                             ),
                           ),
@@ -315,56 +357,17 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
             // Bottom Payment Button
             Container(
-              padding: const EdgeInsets.all(24),
+              padding: AppPadding.screenAll,
               decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.05),
-                    blurRadius: 10,
-                    offset: const Offset(0, -5),
-                  ),
-                ],
+                color: AppColors.surface,
+                boxShadow: AppShadows.resting,
               ),
               child: SafeArea(
-                child: SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: isProcessing ? null : _processPayment,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: isProcessing
-                        ? const SizedBox(
-                            height: 24,
-                            width: 24,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.white),
-                            ),
-                          )
-                        : Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              const Icon(Iconsax.wallet_3, size: 20),
-                              const SizedBox(width: 12),
-                              Text(
-                                l10n.payNow,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ],
-                          ),
-                  ),
+                child: AppButton(
+                  label: l10n.payNow,
+                  icon: Iconsax.wallet_3,
+                  loading: isProcessing,
+                  onPressed: isProcessing ? null : _processPayment,
                 ),
               ),
             ),

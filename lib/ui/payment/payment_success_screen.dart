@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_colors.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
 import 'package:bugamed/ui/patient/booking_confirmation_screen.dart';
 import 'package:animate_do/animate_do.dart';

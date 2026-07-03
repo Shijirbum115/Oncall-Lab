@@ -1,5 +1,16 @@
+import 'package:supabase_flutter/supabase_flutter.dart' show PostgrestException;
 import 'package:bugamed/core/services/supabase_service.dart';
 import 'package:bugamed/data/models/test_request_model.dart';
+
+/// Thrown when a doctor tries to accept a request that has already been
+/// claimed by someone else (or cancelled). The caller should surface this
+/// distinctly from generic errors.
+class RequestUnavailableException implements Exception {
+  final String message;
+  const RequestUnavailableException([this.message = 'Request is no longer available']);
+  @override
+  String toString() => message;
+}
 
 class TestRequestRepository {
   /// Create a lab service request (patient books lab tests from a laboratory)
@@ -205,16 +216,22 @@ class TestRequestRepository {
     return TestRequestModel.fromJson(data);
   }
 
-  /// Accept a request (doctor accepts)
-  Future<TestRequestModel> acceptRequest({
-    required String requestId,
-    required String doctorId,
-  }) async {
-    return updateRequestStatus(
-      requestId: requestId,
-      status: RequestStatus.accepted,
-      doctorId: doctorId,
-    );
+  /// Accept a request (doctor accepts).
+  /// The caller's identity is taken from the JWT server-side; the loser of a
+  /// concurrent accept gets [RequestUnavailableException].
+  Future<TestRequestModel> acceptRequest({required String requestId}) async {
+    try {
+      final data = await supabase.rpc(
+        'accept_test_request',
+        params: {'p_request_id': requestId},
+      );
+      return TestRequestModel.fromJson(data as Map<String, dynamic>);
+    } on PostgrestException catch (e) {
+      if (e.code == 'P0002') {
+        throw RequestUnavailableException(e.message);
+      }
+      rethrow;
+    }
   }
 
   /// Cancel a request

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
 import 'package:bugamed/stores/locale_store.dart';
 
 /// Simple circular flag-style language toggle
@@ -19,7 +19,7 @@ class LanguageSwitcher extends StatelessWidget {
             localeStore.isMongolian,
             () => localeStore.changeLocale(const Locale('mn')),
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: AppSpacing.xs),
           _buildFlagButton(
             '🇬🇧',
             'EN',
@@ -46,7 +46,7 @@ class LanguageSwitcher extends StatelessWidget {
           shape: BoxShape.circle,
           color: isSelected
               ? AppColors.primary.withValues(alpha: 0.15)
-              : Colors.grey.withValues(alpha: 0.1),
+              : AppColors.inkSubtle.withValues(alpha: 0.1),
           border: Border.all(
             color: isSelected ? AppColors.primary : Colors.transparent,
             width: 2,
@@ -76,14 +76,13 @@ class LanguageToggleButton extends StatelessWidget {
           padding: const EdgeInsets.all(6),
           decoration: BoxDecoration(
             color: AppColors.primary.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
+            borderRadius: BorderRadius.circular(AppRadius.xs),
           ),
           child: Text(
             localeStore.currentLocale.languageCode.toUpperCase(),
-            style: const TextStyle(
+            style: AppTypography.caption.copyWith(
               color: AppColors.primary,
               fontWeight: FontWeight.bold,
-              fontSize: 12,
             ),
           ),
         ),
@@ -99,7 +98,7 @@ class LanguageSettingsSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(24),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -108,23 +107,23 @@ class LanguageSettingsSheet extends StatelessWidget {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: Colors.grey.withValues(alpha: 0.3),
+              color: AppColors.inkSubtle.withValues(alpha: 0.3),
               borderRadius: BorderRadius.circular(2),
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.lg),
           // Title
-          const Text(
+          Text(
             'Language / Хэл',
-            style: TextStyle(
+            style: AppTypography.h3.copyWith(
               fontSize: 20,
               fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.lg),
           // Language selector
           const LanguageSwitcher(),
-          const SizedBox(height: 24),
+          const SizedBox(height: AppSpacing.lg),
         ],
       ),
     );

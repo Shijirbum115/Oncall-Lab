@@ -233,17 +233,26 @@ abstract class _TestRequestStore with Store {
     }
   }
 
-  /// Accept a request (doctor accepts)
+  /// Accept a request (doctor accepts).
+  /// The doctor's identity is taken from the JWT server-side.
   @action
-  Future<bool> acceptRequest({
-    required String requestId,
-    required String doctorId,
-  }) async {
-    return updateRequestStatus(
-      requestId: requestId,
-      status: RequestStatus.accepted,
-      doctorId: doctorId,
-    );
+  Future<bool> acceptRequest({required String requestId}) async {
+    errorMessage = null;
+    try {
+      final updated = await _repository.acceptRequest(requestId: requestId);
+      final pendingIndex = pendingRequests.indexWhere((r) => r.id == updated.id);
+      if (pendingIndex != -1) {
+        pendingRequests.removeAt(pendingIndex);
+      }
+      return true;
+    } on RequestUnavailableException catch (e) {
+      pendingRequests.removeWhere((r) => r.id == requestId);
+      errorMessage = e.message;
+      return false;
+    } catch (e) {
+      errorMessage = e.toString();
+      return false;
+    }
   }
 
   /// Cancel a request

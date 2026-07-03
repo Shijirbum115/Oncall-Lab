@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
 import 'package:bugamed/core/utils/avatar_helper.dart';
 import 'package:bugamed/data/models/service_model.dart';
 import 'package:bugamed/stores/auth_store.dart';
 import 'package:bugamed/stores/service_store.dart';
 import 'package:bugamed/ui/patient/location/location_picker_screen.dart';
 import 'package:bugamed/ui/design_system/widgets/app_text_field.dart';
-import 'package:bugamed/ui/shared/widgets/app_card.dart';
+import 'package:bugamed/ui/design_system/widgets/app_card.dart';
 import 'package:bugamed/ui/payment/payment_screen.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
 
@@ -263,10 +263,10 @@ class _DirectServiceBookingScreenState
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.surface,
       appBar: AppBar(
         title: Text(l10n.bookService),
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.surface,
         elevation: 0,
       ),
       body: isLoadingService
@@ -276,24 +276,24 @@ class _DirectServiceBookingScreenState
               : Form(
                   key: _formKey,
                   child: ListView(
-                    padding: const EdgeInsets.all(16),
+                    padding: const EdgeInsets.all(AppSpacing.md),
                     children: [
                       _buildServiceInfo(),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: AppSpacing.lg),
                       if (serviceDetails!.preparationInstructions != null)
                         _buildPreparationInstructions(),
                       _buildDoctorSelection(),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: AppSpacing.lg),
                       _buildDateSelection(),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: AppSpacing.lg),
                       _buildTimeSlotSelection(),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: AppSpacing.lg),
                       _buildAddressField(),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: AppSpacing.lg),
                       _buildNotesField(),
-                      const SizedBox(height: 32),
+                      const SizedBox(height: AppSpacing.xl),
                       _buildSubmitButton(),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: AppSpacing.md),
                     ],
                   ),
                 ),
@@ -305,23 +305,23 @@ class _DirectServiceBookingScreenState
 
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: AppPadding.screenAll,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Icon(Icons.error_outline, size: 60, color: AppColors.error),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
             Text(
               l10n.errorLoadingService,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: AppTypography.h3,
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.xs),
             Text(
               errorMessage!,
               textAlign: TextAlign.center,
-              style: const TextStyle(color: AppColors.grey),
+              style: AppTypography.body.copyWith(color: AppColors.inkSubtle),
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
             ElevatedButton(
               onPressed: _loadData,
               child: Text(l10n.retry),
@@ -333,47 +333,36 @@ class _DirectServiceBookingScreenState
   }
 
   Widget _buildServiceInfo() {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.primary.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(12),
-        border:
-            Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
-      ),
+    return AppCard(
+      elevation: AppCardElevation.none,
+      borderRadius: AppRadius.sm,
+      backgroundColor: AppColors.primary.withValues(alpha: 0.05),
+      borderColor: AppColors.primary.withValues(alpha: 0.2),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             serviceDetails!.name,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: AppColors.black,
-            ),
+            style: AppTypography.h3,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: AppSpacing.xs),
           if (serviceDetails!.description != null)
             Text(
               serviceDetails!.description!,
-              style: const TextStyle(
-                fontSize: 14,
-                color: AppColors.grey,
+              style: AppTypography.body.copyWith(
+                color: AppColors.inkSubtle,
                 height: 1.5,
               ),
             ),
           if (serviceDetails!.estimatedDurationMinutes != null) ...[
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.sm),
             Row(
               children: [
-                const Icon(Icons.access_time, size: 16, color: AppColors.grey),
+                const Icon(Icons.access_time, size: 16, color: AppColors.inkSubtle),
                 const SizedBox(width: 4),
                 Text(
                   AppLocalizations.of(context)!.durationMinutesShort(serviceDetails!.estimatedDurationMinutes!),
-                  style: const TextStyle(
-                    fontSize: 13,
-                    color: AppColors.grey,
-                  ),
+                  style: AppTypography.bodySm,
                 ),
               ],
             ),
@@ -388,44 +377,36 @@ class _DirectServiceBookingScreenState
 
     return Column(
       children: [
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: AppColors.warning.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-                color: AppColors.warning.withValues(alpha: 0.3)),
-          ),
+        AppCard(
+          elevation: AppCardElevation.none,
+          borderRadius: AppRadius.sm,
+          backgroundColor: AppColors.warning.withValues(alpha: 0.1),
+          borderColor: AppColors.warning.withValues(alpha: 0.3),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
                   const Icon(Icons.info_outline, color: AppColors.warning, size: 20),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppSpacing.xs),
                   Text(
                     l10n.preparationRequired,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
+                    style: AppTypography.bodyLg.copyWith(
+                      fontWeight: FontWeight.w700,
                       color: AppColors.warning,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: AppSpacing.xs),
               Text(
                 serviceDetails!.preparationInstructions!,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: AppColors.black,
-                  height: 1.5,
-                ),
+                style: AppTypography.body.copyWith(height: 1.5),
               ),
             ],
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: AppSpacing.lg),
       ],
     );
   }
@@ -438,13 +419,9 @@ class _DirectServiceBookingScreenState
       children: [
         Text(
           l10n.selectDoctor,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.black,
-          ),
+          style: AppTypography.bodyLg.copyWith(fontWeight: FontWeight.w700),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.sm),
 
         // Any Available Doctor Toggle
         InkWell(
@@ -456,18 +433,18 @@ class _DirectServiceBookingScreenState
               }
             });
           },
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
           child: Container(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.all(AppSpacing.md),
             decoration: BoxDecoration(
               color: anyDoctor
                   ? AppColors.primary.withValues(alpha: 0.1)
-                  : Colors.white,
-              borderRadius: BorderRadius.circular(12),
+                  : AppColors.surface,
+              borderRadius: BorderRadius.circular(AppRadius.sm),
               border: Border.all(
                 color: anyDoctor
                     ? AppColors.primary
-                    : AppColors.grey.withValues(alpha: 0.3),
+                    : AppColors.inkSubtle.withValues(alpha: 0.3),
                 width: 2,
               ),
             ),
@@ -475,27 +452,23 @@ class _DirectServiceBookingScreenState
               children: [
                 Icon(
                   anyDoctor ? Icons.check_circle : Icons.circle_outlined,
-                  color: anyDoctor ? AppColors.primary : AppColors.grey,
+                  color: anyDoctor ? AppColors.primary : AppColors.inkSubtle,
                 ),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         l10n.anyAvailableDoctor,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                        style: AppTypography.bodyLg.copyWith(
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         l10n.firstAvailableDoctorWillAccept,
-                        style: const TextStyle(
-                          fontSize: 13,
-                          color: AppColors.grey,
-                        ),
+                        style: AppTypography.bodySm,
                       ),
                     ],
                   ),
@@ -506,16 +479,15 @@ class _DirectServiceBookingScreenState
         ),
 
         if (!anyDoctor) ...[
-          const SizedBox(height: 16),
+          const SizedBox(height: AppSpacing.md),
           Text(
             l10n.orChooseSpecificDoctor,
-            style: const TextStyle(
-              fontSize: 14,
-              color: AppColors.grey,
+            style: AppTypography.body.copyWith(
+              color: AppColors.inkMuted,
               fontWeight: FontWeight.w600,
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: AppSpacing.sm),
 
           // Doctors List
           if (isLoadingDoctors)
@@ -528,13 +500,13 @@ class _DirectServiceBookingScreenState
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppColors.grey.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
+                color: AppColors.inkSubtle.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
               child: Center(
                 child: Text(
                   l10n.noDoctorsAvailableForService,
-                  style: const TextStyle(color: AppColors.grey),
+                  style: AppTypography.body.copyWith(color: AppColors.inkMuted),
                 ),
               ),
             )
@@ -562,13 +534,9 @@ class _DirectServiceBookingScreenState
       children: [
         Text(
           l10n.selectDate,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.black,
-          ),
+          style: AppTypography.bodyLg.copyWith(fontWeight: FontWeight.w700),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.sm),
         InkWell(
           onTap: () async {
             final date = await showDatePicker(
@@ -582,22 +550,21 @@ class _DirectServiceBookingScreenState
               setState(() => selectedDate = date);
             }
           },
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppRadius.sm),
             child: Container(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(AppSpacing.md),
               decoration: BoxDecoration(
                 border: Border.all(
-                    color: AppColors.grey.withValues(alpha: 0.3)),
-                borderRadius: BorderRadius.circular(12),
+                    color: AppColors.inkSubtle.withValues(alpha: 0.3)),
+                borderRadius: BorderRadius.circular(AppRadius.sm),
               ),
             child: Row(
               children: [
                 const Icon(Iconsax.calendar, color: AppColors.primary),
-                const SizedBox(width: 12),
+                const SizedBox(width: AppSpacing.sm),
                 Text(
                   '${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}',
-                  style: const TextStyle(
-                    fontSize: 16,
+                  style: AppTypography.bodyLg.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -617,41 +584,36 @@ class _DirectServiceBookingScreenState
       children: [
         Text(
           l10n.selectTimeSlot,
-          style: const TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.bold,
-            color: AppColors.black,
-          ),
+          style: AppTypography.bodyLg.copyWith(fontWeight: FontWeight.w700),
         ),
-        const SizedBox(height: 12),
+        const SizedBox(height: AppSpacing.sm),
         Wrap(
-          spacing: 12,
-          runSpacing: 12,
+          spacing: AppSpacing.sm,
+          runSpacing: AppSpacing.sm,
           children: timeSlots.map((slot) {
             final isSelected = selectedTimeSlot == slot;
             return InkWell(
               onTap: () => setState(() => selectedTimeSlot = slot),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppRadius.sm),
               child: Container(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                 decoration: BoxDecoration(
                   color: isSelected
                       ? AppColors.primary
-                      : AppColors.grey.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(12),
+                      : AppColors.inkSubtle.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                   border: Border.all(
                     color: isSelected
                         ? AppColors.primary
-                        : AppColors.grey.withValues(alpha: 0.3),
+                        : AppColors.inkSubtle.withValues(alpha: 0.3),
                   ),
                 ),
                 child: Text(
                   slot,
-                  style: TextStyle(
-                    fontSize: 14,
+                  style: AppTypography.body.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: isSelected ? Colors.white : AppColors.black,
+                    color: isSelected ? AppColors.surface : AppColors.ink,
                   ),
                 ),
               ),
@@ -680,7 +642,7 @@ class _DirectServiceBookingScreenState
 
         // Location Picker Button
         AppCard(
-          showShadow: false,
+          elevation: AppCardElevation.none,
           borderRadius: 14,
           borderColor: selectedLocation != null
               ? AppColors.primary.withValues(alpha: 0.3)

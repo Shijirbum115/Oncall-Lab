@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
 import 'package:bugamed/data/models/laboratory_service_model.dart';
 import 'package:bugamed/data/models/service_model_extensions.dart';
 import 'package:bugamed/stores/auth_store.dart';
 import 'package:bugamed/ui/patient/location/location_picker_screen.dart';
 import 'package:bugamed/ui/design_system/widgets/app_text_field.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
-import 'package:bugamed/ui/shared/widgets/app_card.dart';
+import 'package:bugamed/ui/design_system/widgets/app_card.dart';
 import 'package:bugamed/ui/payment/payment_screen.dart';
 
 class LabServiceBookingScreen extends StatefulWidget {
@@ -174,21 +174,21 @@ class _LabServiceBookingScreenState extends State<LabServiceBookingScreen> {
     final service = widget.laboratoryService.service!;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.surface,
       appBar: AppBar(
         title: Text(l10n.bookService),
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.surface,
         elevation: 0,
       ),
       body: Form(
         key: _formKey,
         child: ListView(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(AppSpacing.md),
           children: [
             // Service Info Card
             AppCard(
-              showShadow: false,
-              borderRadius: 18,
+              elevation: AppCardElevation.none,
+              borderRadius: AppRadius.md,
               borderColor: AppColors.primary.withValues(alpha: 0.15),
               backgroundColor: AppColors.primary.withValues(alpha: 0.04),
               child: Column(
@@ -196,22 +196,17 @@ class _LabServiceBookingScreenState extends State<LabServiceBookingScreen> {
                 children: [
                   Text(
                     service.getLocalizedName(context),
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.black,
-                    ),
+                    style: AppTypography.h3,
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: AppSpacing.xs),
                   Text(
                     widget.laboratory['name'],
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppColors.grey,
+                    style: AppTypography.body.copyWith(
+                      color: AppColors.inkMuted,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppSpacing.sm),
                   Row(
                     children: [
                       Container(
@@ -219,34 +214,30 @@ class _LabServiceBookingScreenState extends State<LabServiceBookingScreen> {
                             horizontal: 12, vertical: 6),
                         decoration: BoxDecoration(
                           color: AppColors.success.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(AppRadius.lg),
                         ),
                         child: Text(
                           l10n.priceInMNT(widget.laboratoryService.priceMnt),
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.bold,
+                          style: AppTypography.body.copyWith(
+                            fontWeight: FontWeight.w700,
                             color: AppColors.success,
                           ),
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: AppSpacing.sm),
                       if (widget.laboratoryService.estimatedDurationHours !=
                           null)
                         Row(
                           children: [
                             const Icon(Icons.access_time,
-                                size: 16, color: AppColors.grey),
+                                size: 16, color: AppColors.inkSubtle),
                             const SizedBox(width: 4),
                             Text(
                               l10n.resultsReadyHours(
                                 widget.laboratoryService
                                     .estimatedDurationHours!,
                               ),
-                              style: const TextStyle(
-                                fontSize: 13,
-                                color: AppColors.grey,
-                              ),
+                              style: AppTypography.bodySm,
                             ),
                           ],
                         ),
@@ -256,13 +247,13 @@ class _LabServiceBookingScreenState extends State<LabServiceBookingScreen> {
               ),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.lg),
 
             // Preparation Instructions
             if (service.preparationInstructions != null) ...[
               AppCard(
-                showShadow: false,
-                borderRadius: 18,
+                elevation: AppCardElevation.none,
+                borderRadius: AppRadius.md,
                 borderColor: AppColors.warning.withValues(alpha: 0.2),
                 backgroundColor: AppColors.warning.withValues(alpha: 0.07),
                 child: Column(
@@ -272,46 +263,37 @@ class _LabServiceBookingScreenState extends State<LabServiceBookingScreen> {
                       children: [
                         const Icon(Icons.info_outline,
                             color: AppColors.warning, size: 20),
-                        const SizedBox(width: 8),
+                        const SizedBox(width: AppSpacing.xs),
                         Text(
                           l10n.preparationRequired,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
+                          style: AppTypography.bodyLg.copyWith(
+                            fontWeight: FontWeight.w700,
                             color: AppColors.warning,
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: AppSpacing.xs),
                     Text(
                       service.preparationInstructions!,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.black,
-                        height: 1.5,
-                      ),
+                      style: AppTypography.body.copyWith(height: 1.5),
                     ),
                   ],
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.lg),
             ],
 
             // Date Selection
             Text(
               l10n.selectDate,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppColors.black,
-              ),
+              style: AppTypography.bodyLg.copyWith(fontWeight: FontWeight.w700),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.sm),
             AppCard(
-              showShadow: false,
-              borderRadius: 14,
-              borderColor: AppColors.grey.withValues(alpha: 0.25),
+              elevation: AppCardElevation.none,
+              borderRadius: AppRadius.sm,
+              borderColor: AppColors.inkSubtle.withValues(alpha: 0.25),
               onTap: () async {
                 final date = await showDatePicker(
                   context: context,
@@ -327,11 +309,10 @@ class _LabServiceBookingScreenState extends State<LabServiceBookingScreen> {
               child: Row(
                 children: [
                   const Icon(Iconsax.calendar, color: AppColors.primary),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: AppSpacing.sm),
                   Text(
                     '${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}',
-                    style: const TextStyle(
-                      fontSize: 16,
+                    style: AppTypography.bodyLg.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -339,46 +320,41 @@ class _LabServiceBookingScreenState extends State<LabServiceBookingScreen> {
               ),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.lg),
 
             // Time Slot Selection
             Text(
               l10n.selectTimeSlot,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppColors.black,
-              ),
+              style: AppTypography.bodyLg.copyWith(fontWeight: FontWeight.w700),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.sm),
             Wrap(
-              spacing: 12,
-              runSpacing: 12,
+              spacing: AppSpacing.sm,
+              runSpacing: AppSpacing.sm,
               children: timeSlots.map((slot) {
                 final isSelected = selectedTimeSlot == slot;
                 return InkWell(
                   onTap: () => setState(() => selectedTimeSlot = slot),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
                   child: Container(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 20, vertical: 12),
                     decoration: BoxDecoration(
                       color: isSelected
                           ? AppColors.primary
-                          : AppColors.grey.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(12),
+                          : AppColors.inkSubtle.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(AppRadius.sm),
                       border: Border.all(
                         color: isSelected
                             ? AppColors.primary
-                            : AppColors.grey.withValues(alpha: 0.3),
+                            : AppColors.inkSubtle.withValues(alpha: 0.3),
                       ),
                     ),
                     child: Text(
                       slot,
-                      style: TextStyle(
-                        fontSize: 14,
+                      style: AppTypography.body.copyWith(
                         fontWeight: FontWeight.w600,
-                        color: isSelected ? Colors.white : AppColors.black,
+                        color: isSelected ? AppColors.surface : AppColors.ink,
                       ),
                     ),
                   ),
@@ -386,29 +362,25 @@ class _LabServiceBookingScreenState extends State<LabServiceBookingScreen> {
               }).toList(),
             ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.lg),
 
             // Address
             Text(
               l10n.collectionAddress,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppColors.black,
-              ),
+              style: AppTypography.bodyLg.copyWith(fontWeight: FontWeight.w700),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.sm),
 
             // Location Picker Button
             AppCard(
-              showShadow: false,
-              borderRadius: 14,
+              elevation: AppCardElevation.none,
+              borderRadius: AppRadius.sm,
               borderColor: selectedLocation != null
                   ? AppColors.primary.withValues(alpha: 0.3)
-                  : AppColors.grey.withValues(alpha: 0.25),
+                  : AppColors.inkSubtle.withValues(alpha: 0.25),
               backgroundColor: selectedLocation != null
                   ? AppColors.primary.withValues(alpha: 0.05)
-                  : Colors.white,
+                  : AppColors.surface,
               onTap: _openLocationPicker,
               child: Row(
                 children: [
@@ -416,25 +388,24 @@ class _LabServiceBookingScreenState extends State<LabServiceBookingScreen> {
                     Iconsax.location,
                     color: selectedLocation != null
                         ? AppColors.primary
-                        : AppColors.grey,
+                        : AppColors.inkSubtle,
                   ),
-                  const SizedBox(width: 12),
+                  const SizedBox(width: AppSpacing.sm),
                   Expanded(
                     child: Text(
                       selectedLocation != null
                           ? _addressController.text
                           : l10n.addressHint,
-                      style: TextStyle(
-                        fontSize: 14,
+                      style: AppTypography.body.copyWith(
                         color: selectedLocation != null
-                            ? AppColors.black
-                            : AppColors.grey,
+                            ? AppColors.ink
+                            : AppColors.inkSubtle,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: AppSpacing.xs),
                   const Icon(
                     Icons.edit_location_alt,
                     color: AppColors.primary,
@@ -450,32 +421,27 @@ class _LabServiceBookingScreenState extends State<LabServiceBookingScreen> {
                 padding: const EdgeInsets.only(top: 8, left: 12),
                 child: Text(
                   'Please select your location on the map',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppColors.grey.withValues(alpha: 0.8),
+                  style: AppTypography.caption.copyWith(
+                    color: AppColors.inkSubtle.withValues(alpha: 0.8),
                   ),
                 ),
               ),
 
-            const SizedBox(height: 24),
+            const SizedBox(height: AppSpacing.lg),
 
             // Notes
             Text(
               l10n.additionalNotesOptional,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: AppColors.black,
-              ),
+              style: AppTypography.bodyLg.copyWith(fontWeight: FontWeight.w700),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpacing.sm),
             AppTextField(
               controller: _notesController,
               maxLines: 3,
               hint: l10n.specialInstructionsHint,
             ),
 
-            const SizedBox(height: 32),
+            const SizedBox(height: AppSpacing.xl),
 
             // Submit Button
             SizedBox(
@@ -484,9 +450,9 @@ class _LabServiceBookingScreenState extends State<LabServiceBookingScreen> {
                 onPressed: isSubmitting ? null : _submitBooking,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
-                  foregroundColor: Colors.white,
+                  foregroundColor: AppColors.surface,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppRadius.sm),
                   ),
                 ),
                 child: isSubmitting
@@ -496,20 +462,20 @@ class _LabServiceBookingScreenState extends State<LabServiceBookingScreen> {
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
                           valueColor:
-                              AlwaysStoppedAnimation<Color>(Colors.white),
+                              AlwaysStoppedAnimation<Color>(AppColors.surface),
                         ),
                       )
                     : Text(
                         l10n.confirmBooking,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
+                        style: AppTypography.bodyLg.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: AppColors.surface,
                         ),
                       ),
               ),
             ),
 
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
           ],
         ),
       ),

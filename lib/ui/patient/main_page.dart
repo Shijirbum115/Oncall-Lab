@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:get_it/get_it.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
 import 'package:bugamed/stores/auth_store.dart';
 import 'package:bugamed/ui/patient/home_screen.dart';
 import 'package:bugamed/ui/patient/laboratories_screen.dart';
@@ -77,7 +77,7 @@ class _MainPageState extends State<MainPage> {
               ];
 
         return Scaffold(
-          backgroundColor: Colors.white,
+          backgroundColor: AppColors.surface,
           body: Stack(
             children: [
               // Main content with bottom padding for navbar
@@ -93,21 +93,16 @@ class _MainPageState extends State<MainPage> {
 
               // Custom Floating Navigation Bar
               Positioned(
-                left: 16,
-                right: 16,
+                left: AppSpacing.md,
+                right: AppSpacing.md,
                 bottom: 12 + bottomPadding,
                 child: Container(
                   height: 64,
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(24),
+                    color: AppColors.surface,
+                    borderRadius: BorderRadius.circular(AppRadius.xl),
                     boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.08),
-                        blurRadius: 24,
-                        offset: const Offset(0, 4),
-                        spreadRadius: 0,
-                      ),
+                      ...AppShadows.raised,
                       BoxShadow(
                         color: AppColors.primary.withValues(alpha: 0.04),
                         blurRadius: 12,
@@ -184,23 +179,23 @@ class _NavBarItem extends StatelessWidget {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             color: isSelected
-                ? AppColors.primary.withValues(alpha: 0.12)
+                ? AppColors.primarySoft
                 : Colors.transparent,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(AppRadius.sm),
           ),
           child: Icon(
             isSelected ? activeIcon : icon,
             size: 22,
-            color: isSelected ? AppColors.primary : AppColors.grey,
+            color: isSelected ? AppColors.primary : AppColors.inkSubtle,
           ),
         ),
         const SizedBox(height: 2),
         Text(
           label,
-          style: TextStyle(
+          style: AppTypography.label.copyWith(
             fontSize: 10,
             fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-            color: isSelected ? AppColors.primary : AppColors.grey,
+            color: isSelected ? AppColors.primary : AppColors.inkSubtle,
             letterSpacing: 0.2,
           ),
           maxLines: 1,

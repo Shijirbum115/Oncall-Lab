@@ -159,7 +159,15 @@ export interface QpayInvoiceCreateResponse {
   qr_text: string;
   qr_image: string;
   qPay_shortUrl: string;
-  qPay_deeplink: Array<{
+  qPay_deeplink?: Array<{
+    name: string;
+    description: string;
+    logo: string;
+    link: string;
+  }>;
+  // Some QPay V2 samples/documentation blocks return the same deeplink array
+  // under `urls` instead of `qPay_deeplink`.
+  urls?: Array<{
     name: string;
     description: string;
     logo: string;

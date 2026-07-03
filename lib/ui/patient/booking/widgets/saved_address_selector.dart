@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
-import 'package:bugamed/ui/shared/widgets/app_card.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
+import 'package:bugamed/ui/design_system/widgets/app_card.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
 
 class SavedAddressSelector extends StatelessWidget {
@@ -25,29 +25,28 @@ class SavedAddressSelector extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AppCard(
-          showShadow: false,
-          borderRadius: 14,
+          elevation: AppCardElevation.none,
+          borderRadius: AppRadius.sm,
           borderColor: selected
               ? AppColors.primary
               : AppColors.primary.withValues(alpha: 0.2),
-          backgroundColor: AppColors.primary.withValues(alpha: 0.05),
+          backgroundColor: AppColors.primarySoft,
           child: ListTile(
             contentPadding: EdgeInsets.zero,
             onTap: onUseAddress,
             title: Text(
               address,
-              style: const TextStyle(
-                fontSize: 15,
+              style: AppTypography.body.copyWith(
                 fontWeight: FontWeight.w600,
               ),
             ),
             trailing: Icon(
               selected ? Icons.check_circle : Icons.radio_button_unchecked,
-              color: selected ? AppColors.primary : AppColors.grey,
+              color: selected ? AppColors.primary : AppColors.inkSubtle,
             ),
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpacing.xs),
         TextButton.icon(
           onPressed: selected ? onManualEntry : onUseAddress,
           icon: Icon(

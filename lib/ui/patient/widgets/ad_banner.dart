@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_colors.dart';
 import 'package:bugamed/ui/design_system/app_theme.dart';
 
 class AdBanner extends StatefulWidget {
@@ -102,7 +102,7 @@ class _AdBannerState extends State<AdBanner> {
                   );
                 },
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 15),
+                  padding: AppPadding.screenH,
                   child: _AdCard(content: ad),
                 ),
               );
@@ -122,8 +122,8 @@ class _AdBannerState extends State<AdBanner> {
               decoration: BoxDecoration(
                 color: _realIndex == index
                     ? AppColors.primary
-                    : AppColors.grey.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(20),
+                    : AppColors.inkSubtle.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(AppRadius.lg),
               ),
             ),
           ),
@@ -141,7 +141,7 @@ class _AdCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
+      borderRadius: BorderRadius.circular(AppRadius.lg),
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -169,19 +169,12 @@ class _AdCard extends StatelessWidget {
               children: [
                 Text(
                   content.title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w700,
-                    color: Colors.white,
-                  ),
+                  style: AppTypography.h3.copyWith(color: Colors.white),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   content.subtitle,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 13,
-                  ),
+                  style: AppTypography.bodySm.copyWith(color: Colors.white),
                 ),
               ],
             ),

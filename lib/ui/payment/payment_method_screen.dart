@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
+import 'package:bugamed/ui/design_system/widgets/app_button.dart';
+import 'package:bugamed/ui/design_system/widgets/app_card.dart';
 import 'package:bugamed/data/repositories/test_request_repository.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
 import 'package:bugamed/ui/payment/payment_success_screen.dart';
@@ -122,33 +124,24 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.black),
+          icon: const Icon(Icons.arrow_back, color: AppColors.ink),
           onPressed: isProcessing ? null : () => Navigator.pop(context),
         ),
-        title: Text(
-          'Төлбөрийн арга сонгох',
-          style: const TextStyle(
-            color: AppColors.black,
-            fontSize: 18,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
+        title: const Text('Төлбөрийн арга сонгох'),
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24),
+          padding: AppPadding.screenAll,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Amount Summary
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.all(20),
+                padding: const EdgeInsets.all(AppSpacing.lg),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -156,7 +149,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                       AppColors.primary.withValues(alpha: 0.05),
                     ],
                   ),
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(AppRadius.md),
                   border: Border.all(
                     color: AppColors.primary.withValues(alpha: 0.2),
                     width: 1,
@@ -166,309 +159,233 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
                   children: [
                     Text(
                       'Нийт төлөх дүн',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.grey,
-                      ),
+                      style: AppTypography.body
+                          .copyWith(color: AppColors.inkMuted),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: AppSpacing.xs),
                     Text(
                       l10n.priceInMNT(widget.amountMnt),
-                      style: const TextStyle(
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
+                      style: AppTypography.display.copyWith(
                         color: AppColors.primary,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       widget.serviceName,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: AppTypography.body
+                          .copyWith(color: AppColors.inkMuted),
                       textAlign: TextAlign.center,
                     ),
                   ],
                 ),
               ),
 
-              const SizedBox(height: 32),
+              const SizedBox(height: AppSpacing.xl),
 
               Text(
                 'Төлбөрийн арга сонгоно уу',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.black,
-                ),
+                style: AppTypography.bodyLg
+                    .copyWith(fontWeight: FontWeight.w600),
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
 
               // QPay Option
-              GestureDetector(
+              AppCard(
                 onTap: _isPreparingQpay ? null : _startQpayFlow,
-                child: Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: AppColors.primary.withValues(alpha: 0.3),
-                      width: 1,
+                borderColor: AppColors.primary.withValues(alpha: 0.3),
+                borderRadius: AppRadius.md,
+                elevation: AppCardElevation.resting,
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(AppSpacing.sm),
+                      decoration: BoxDecoration(
+                        color: AppColors.primarySoft,
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
+                      ),
+                      child: const Icon(
+                        Iconsax.scan_barcode,
+                        color: AppColors.primary,
+                        size: 28,
+                      ),
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.04),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'QPay (QR код)',
+                            style: AppTypography.h3,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Бүх банкны апп ба wallet-аар уншуулна',
+                            style: AppTypography.bodySm,
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: AppColors.primary.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Icon(
-                          Iconsax.scan_barcode,
-                          color: AppColors.primary,
-                          size: 28,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'QPay (QR код)',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.black,
+                    ),
+                    _isPreparingQpay
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                AppColors.primary,
                               ),
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Бүх банкны апп ба wallet-аар уншуулна',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: AppColors.grey.withValues(alpha: 0.8),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      _isPreparingQpay
-                          ? const SizedBox(
-                              width: 18,
-                              height: 18,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  AppColors.primary,
-                                ),
-                              ),
-                            )
-                          : const Icon(
-                              Icons.arrow_forward_ios,
-                              color: AppColors.primary,
-                              size: 18,
-                            ),
-                    ],
-                  ),
+                          )
+                        : const Icon(
+                            Icons.arrow_forward_ios,
+                            color: AppColors.primary,
+                            size: 18,
+                          ),
+                  ],
                 ),
               ),
 
-              const SizedBox(height: 16),
+              const SizedBox(height: AppSpacing.md),
 
               // Bank Transfer Option
-              GestureDetector(
+              AppCard(
                 onTap: null,
-                child: Container(
-                  padding: const EdgeInsets.all(20),
-                  decoration: BoxDecoration(
-                    color: selectedMethod == 'bank'
-                        ? AppColors.primary.withValues(alpha: 0.1)
-                        : Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: selectedMethod == 'bank'
-                          ? AppColors.primary
-                          : AppColors.grey.withValues(alpha: 0.3),
-                      width: selectedMethod == 'bank' ? 2 : 1,
+                backgroundColor: selectedMethod == 'bank'
+                    ? AppColors.primarySoft
+                    : AppColors.surface,
+                borderColor: selectedMethod == 'bank'
+                    ? AppColors.primary
+                    : AppColors.border,
+                borderWidth: selectedMethod == 'bank' ? 2 : 1,
+                borderRadius: AppRadius.md,
+                elevation: AppCardElevation.resting,
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(AppSpacing.sm),
+                      decoration: BoxDecoration(
+                        color: AppColors.success.withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(AppRadius.sm),
+                      ),
+                      child: const Icon(
+                        Iconsax.bank,
+                        color: AppColors.success,
+                        size: 28,
+                      ),
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.04),
-                        blurRadius: 8,
-                        offset: const Offset(0, 2),
+                    const SizedBox(width: AppSpacing.md),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Дансаар шилжүүлэх',
+                            style: AppTypography.h3,
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Банкны дансруу шууд шилжүүлэг',
+                            style: AppTypography.bodySm,
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: AppColors.success.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: const Icon(
-                          Iconsax.bank,
-                          color: AppColors.success,
-                          size: 28,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Дансаар шилжүүлэх',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.black,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Банкны дансруу шууд шилжүүлэг',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: AppColors.grey.withValues(alpha: 0.8),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Icon(
-                        selectedMethod == 'bank'
-                            ? Icons.keyboard_arrow_up
-                            : Icons.arrow_forward_ios,
-                        color: AppColors.grey.withValues(alpha: 0.5),
-                        size: 18,
-                      ),
-                    ],
-                  ),
+                    ),
+                    Icon(
+                      selectedMethod == 'bank'
+                          ? Icons.keyboard_arrow_up
+                          : Icons.arrow_forward_ios,
+                      color: AppColors.inkSubtle,
+                      size: 18,
+                    ),
+                  ],
                 ),
               ),
 
               // Bank Transfer Details (shown when selected)
-              const SizedBox(height: 24),
-              Container(
-                padding: const EdgeInsets.all(20),
-                decoration: BoxDecoration(
-                  color: AppColors.success.withValues(alpha: 0.05),
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(
-                    color: AppColors.success.withValues(alpha: 0.2),
-                    width: 1,
-                  ),
-                ),
+              const SizedBox(height: AppSpacing.lg),
+              AppCard(
+                backgroundColor: AppColors.success.withValues(alpha: 0.05),
+                borderColor: AppColors.success.withValues(alpha: 0.2),
+                borderRadius: AppRadius.md,
+                elevation: AppCardElevation.none,
+                padding: const EdgeInsets.all(AppSpacing.lg),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Row(
+                    Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Iconsax.info_circle,
                           color: AppColors.success,
                           size: 20,
                         ),
-                        SizedBox(width: 8),
+                        const SizedBox(width: AppSpacing.xs),
                         Text(
                           'Дансны мэдээлэл',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: AppColors.black,
-                          ),
+                          style: AppTypography.bodyLg
+                              .copyWith(fontWeight: FontWeight.w600),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: AppSpacing.lg),
                     _buildInfoRow('Банк:', 'Хаан Банк', copyable: false),
-                    const SizedBox(height: 12),
-                    _buildInfoRow('Дансны дугаар:', '5123456789', copyable: true),
-                    const SizedBox(height: 12),
-                    _buildInfoRow('Данс эзэмшигч:', 'OnCall Lab ХХК', copyable: false),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.sm),
+                    _buildInfoRow('Дансны дугаар:', '5123456789',
+                        copyable: true),
+                    const SizedBox(height: AppSpacing.sm),
+                    _buildInfoRow('Данс эзэмшигч:', 'OnCall Lab ХХК',
+                        copyable: false),
+                    const SizedBox(height: AppSpacing.sm),
                     _buildInfoRow(
                       'Гүйлгээний утга:',
                       'USER_${widget.userId.substring(0, 8)}_${widget.amountMnt}',
                       copyable: true,
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: AppSpacing.lg),
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(AppSpacing.sm),
                       decoration: BoxDecoration(
                         color: AppColors.warning.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(AppRadius.xs),
                       ),
                       child: Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Iconsax.warning_2,
                             color: AppColors.warning,
                             size: 18,
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: AppSpacing.xs),
                           Expanded(
                             child: Text(
                               'Гүйлгээний утга заавал оруулна уу. Энэ нь таны төлбөрийг баталгаажуулахад шаардлагатай.',
-                              style: TextStyle(
-                                fontSize: 13,
-                                color: AppColors.textSecondary,
-                                height: 1.4,
-                              ),
+                              style: AppTypography.bodySm,
                             ),
                           ),
                         ],
                       ),
                     ),
-                    const SizedBox(height: 20),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => PaymentSuccessScreen(
-                                amountMnt: widget.amountMnt,
-                                serviceName: widget.serviceName,
-                                laboratoryName: widget.laboratoryName,
-                                bookingData: widget.bookingData,
-                                isPendingBankTransfer: true,
-                              ),
+                    const SizedBox(height: AppSpacing.lg),
+                    AppButton(
+                      label: 'Шилжүүлсэн',
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PaymentSuccessScreen(
+                              amountMnt: widget.amountMnt,
+                              serviceName: widget.serviceName,
+                              laboratoryName: widget.laboratoryName,
+                              bookingData: widget.bookingData,
+                              isPendingBankTransfer: true,
                             ),
-                          );
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.success,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
                           ),
-                          elevation: 0,
-                        ),
-                        child: const Text(
-                          'Шилжүүлсэн',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -488,10 +405,7 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
           width: 130,
           child: Text(
             label,
-            style: const TextStyle(
-              fontSize: 14,
-              color: AppColors.grey,
-            ),
+            style: AppTypography.body.copyWith(color: AppColors.inkMuted),
           ),
         ),
         Expanded(
@@ -500,21 +414,18 @@ class _PaymentMethodScreenState extends State<PaymentMethodScreen> {
               Expanded(
                 child: Text(
                   value,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.black,
-                  ),
+                  style: AppTypography.body
+                      .copyWith(fontWeight: FontWeight.w600),
                 ),
               ),
               if (copyable) ...[
-                const SizedBox(width: 8),
+                const SizedBox(width: AppSpacing.xs),
                 GestureDetector(
                   onTap: () => _copyToClipboard(value, label),
                   child: Container(
                     padding: const EdgeInsets.all(6),
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withValues(alpha: 0.1),
+                      color: AppColors.primarySoft,
                       borderRadius: BorderRadius.circular(6),
                     ),
                     child: const Icon(

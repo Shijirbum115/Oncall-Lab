@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_colors.dart';
 import 'package:bugamed/core/utils/avatar_helper.dart';
 
 /// A widget that displays a user's profile avatar

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:bugamed/ui/design_system/app_theme.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
 import 'package:bugamed/stores/home_store.dart';
 import 'package:bugamed/ui/patient/models/doctor_profile_ui.dart';
 import 'package:bugamed/ui/patient/screens/doctor_detail_screen.dart';
@@ -22,13 +21,10 @@ class AvailableDoctorsSection extends StatelessWidget {
     if (doctors.isEmpty) {
       return Center(
         child: Padding(
-          padding: const EdgeInsets.all(20),
+          padding: AppPadding.screenAll,
           child: Text(
             l10n.noDoctorsAvailable,
-            style: const TextStyle(
-              fontSize: 16,
-              color: AppColors.grey,
-            ),
+            style: AppTypography.bodySm,
           ),
         ),
       );
@@ -37,13 +33,12 @@ class AvailableDoctorsSection extends StatelessWidget {
     final uiDoctors =
         doctors.map((e) => DoctorProfileUI.fromMap(e)).toList();
 
-    // Show maximum doctors on home screen (defined in HomeStore)
     final displayDoctors = uiDoctors.take(maxDoctorsOnHome).toList();
 
     return GridView.builder(
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
-      padding: const EdgeInsets.symmetric(horizontal: 15),
+      padding: AppPadding.screenH,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         crossAxisSpacing: AppSpacing.md,

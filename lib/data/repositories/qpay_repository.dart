@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:bugamed/core/services/supabase_service.dart';
 
 class QpayInvoice {
@@ -20,7 +21,15 @@ class QpayInvoice {
   });
 
   factory QpayInvoice.fromJson(Map<String, dynamic> json) {
-    final rawLinks = (json['deeplinks'] as List?) ?? const [];
+    final rawLinks =
+        (json['deeplinks'] as List?) ??
+        (json['qPay_deeplink'] as List?) ??
+        (json['urls'] as List?) ??
+        const [];
+
+    final amountRaw = json['amount_mnt'];
+    final amount = amountRaw is num ? amountRaw.toInt() : 0;
+
     return QpayInvoice(
       localId: json['qpay_payment_local_id'] as String,
       qpayInvoiceId: json['qpay_invoice_id'] as String,
@@ -28,9 +37,14 @@ class QpayInvoice {
       qrImage: json['qr_image'] as String? ?? '',
       shortUrl: json['short_url'] as String? ?? '',
       deeplinks: rawLinks
-          .map((e) => QpayBankDeeplink.fromJson(e as Map<String, dynamic>))
+          .whereType<Map>()
+          .map(
+            (e) => QpayBankDeeplink.fromJson(
+              Map<String, dynamic>.from(e),
+            ),
+          )
           .toList(),
-      amountMnt: (json['amount_mnt'] as num).toInt(),
+      amountMnt: amount,
     );
   }
 }
@@ -76,19 +90,51 @@ enum QpayPaymentStatus {
 
 class QpayRepository {
   Future<QpayInvoice> createInvoice({required String testRequestId}) async {
-    final response = await supabase.functions.invoke(
-      'qpay-create-invoice',
-      body: {'test_request_id': testRequestId},
+    final session = supabase.auth.currentSession;
+    final user = supabase.auth.currentUser;
+    debugPrint(
+      '🟣 [QPay] invoke create-invoice '
+      'user=${user?.id ?? "NULL"} '
+      'sessionExpired=${session?.isExpired} '
+      'tokenLen=${session?.accessToken.length ?? 0} '
+      'tokenPrefix=${session?.accessToken.substring(0, session.accessToken.length.clamp(0, 16)) ?? "NULL"}',
     );
+    try {
+      final response = await supabase.functions.invoke(
+        'qpay-create-invoice',
+        body: {'test_request_id': testRequestId},
+      );
+      final data = response.data;
+      debugPrint('🟣 [QPay] response status=${response.status} data=$data');
+      if (data is! Map) {
+        throw Exception('Unexpected response from qpay-create-invoice: $data');
+      }
 
-    final data = response.data;
-    if (data is! Map<String, dynamic>) {
-      throw Exception('Unexpected response from qpay-create-invoice: $data');
+      final map = Map<String, dynamic>.from(data);
+
+      if (map['error'] != null) {
+        throw Exception(map['error'].toString());
+      }
+
+      try {
+        return QpayInvoice.fromJson(map);
+      } catch (e, st) {
+        debugPrint(
+          '🔴 [QPay] parse failed: $e\n'
+          'keys=${map.keys.toList()}\n'
+          'types={qpay_payment_local_id:${map['qpay_payment_local_id']?.runtimeType}, '
+          'qpay_invoice_id:${map['qpay_invoice_id']?.runtimeType}, '
+          'deeplinks:${map['deeplinks']?.runtimeType}, '
+          'qPay_deeplink:${map['qPay_deeplink']?.runtimeType}, '
+          'urls:${map['urls']?.runtimeType}, '
+          'amount_mnt:${map['amount_mnt']?.runtimeType}}\n$st',
+        );
+        rethrow;
+      }
+    } catch (e, st) {
+      debugPrint('🔴 [QPay] invoke threw: $e\n$st');
+      rethrow;
     }
-    if (data['error'] != null) {
-      throw Exception(data['error'].toString());
-    }
-    return QpayInvoice.fromJson(data);
   }
 
   Future<QpayPaymentStatus> checkPayment({required String localId}) async {

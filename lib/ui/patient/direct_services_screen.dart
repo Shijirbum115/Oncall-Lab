@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
 import 'package:bugamed/stores/service_store.dart';
 import 'package:bugamed/ui/design_system/app_theme.dart';
+import 'package:bugamed/ui/design_system/widgets/app_screen_header.dart';
 import 'package:bugamed/ui/design_system/widgets/app_text_field.dart';
 import 'package:bugamed/ui/patient/booking/direct_service_booking_screen.dart';
 import 'package:bugamed/ui/patient/widgets/service_category_grid.dart';
@@ -63,10 +63,14 @@ class _DirectServicesScreenState extends State<DirectServicesScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: AppColors.scaffoldBackground,
+      backgroundColor: AppColors.background,
       appBar: AppBar(
-        title: Text(l10n.directDoctorServices),
-        backgroundColor: AppColors.scaffoldBackground,
+        titleSpacing: 0,
+        title: AppScreenHeader(
+          title: l10n.directDoctorServices,
+          padding: const EdgeInsets.symmetric(horizontal: AppPadding.screen),
+        ),
+        backgroundColor: AppColors.background,
         elevation: 0,
       ),
       body: Observer(
@@ -130,8 +134,8 @@ class _DirectServicesScreenState extends State<DirectServicesScreen> {
                   padding: const EdgeInsets.fromLTRB(20, 8, 20, 16),
                   child: Text(
                     '${filtered.length} ${l10n.services.toLowerCase()}',
-                    style: AppTypography.bodySmall.copyWith(
-                      color: AppColors.textSecondary,
+                    style: AppTypography.bodySm.copyWith(
+                      color: AppColors.inkMuted,
                     ),
                   ),
                 ),
@@ -250,30 +254,30 @@ class _CategoryChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(right: 8),
+      padding: const EdgeInsets.only(right: AppSpacing.xs),
       child: Material(
-        color: isSelected ? color : Colors.white,
+        color: isSelected ? color : AppColors.surface,
         borderRadius: BorderRadius.circular(AppRadius.lg),
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(AppRadius.lg),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            padding: const EdgeInsets.symmetric(
+                horizontal: AppSpacing.md, vertical: AppSpacing.xs),
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(AppRadius.lg),
               border: Border.all(
                 color: isSelected
                     ? color
-                    : AppColors.grey.withValues(alpha: 0.3),
+                    : AppColors.inkSubtle.withValues(alpha: 0.3),
                 width: 1.5,
               ),
             ),
             child: Text(
               label,
-              style: TextStyle(
-                fontSize: 13,
+              style: AppTypography.bodySm.copyWith(
                 fontWeight: FontWeight.w600,
-                color: isSelected ? Colors.white : AppColors.textSecondary,
+                color: isSelected ? AppColors.surface : AppColors.inkMuted,
               ),
             ),
           ),

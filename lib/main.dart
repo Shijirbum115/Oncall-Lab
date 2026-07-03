@@ -6,7 +6,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:bugamed/core/services/supabase_service.dart';
 import 'package:bugamed/core/services/push_notification_service.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_colors.dart';
 import 'package:bugamed/core/di/service_locator.dart';
 import 'package:bugamed/core/utils/navigation_helper.dart';
 import 'package:bugamed/stores/auth_store.dart';

@@ -1,8 +1,6 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_colors.dart';
 import 'package:bugamed/stores/auth_store.dart';
 import 'package:bugamed/stores/home_store.dart';
 import 'package:bugamed/ui/design_system/app_theme.dart';
@@ -11,6 +9,8 @@ import 'package:bugamed/ui/patient/widgets/test_types_section.dart';
 import 'package:bugamed/ui/patient/widgets/available_doctors_section.dart';
 import 'package:bugamed/ui/patient/all_lab_services_screen.dart';
 import 'package:bugamed/ui/patient/direct_services_screen.dart';
+import 'package:bugamed/ui/design_system/widgets/app_screen_header.dart';
+import 'package:bugamed/ui/design_system/widgets/app_section_header.dart';
 import 'package:bugamed/ui/shared/widgets/profile_avatar.dart';
 import 'package:bugamed/ui/shared/widgets/notification_bell.dart';
 import 'package:bugamed/ui/shared/widgets/mascot_state_widget.dart';
@@ -29,12 +29,8 @@ class PatientHomeScreen extends StatefulWidget {
   State<PatientHomeScreen> createState() => _PatientHomeScreenState();
 }
 
-class _PatientHomeScreenState extends State<PatientHomeScreen>
-    with SingleTickerProviderStateMixin {
+class _PatientHomeScreenState extends State<PatientHomeScreen> {
   late final HomeStore _homeStore;
-
-  late final AnimationController _waveController;
-  late final Animation<double> _waveAnimation;
 
   @override
   void initState() {
@@ -46,31 +42,10 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
 
     // Start real-time subscriptions for live updates
     _homeStore.startRealtimeSubscriptions();
-
-    _waveController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 1200),
-    );
-    _waveAnimation =
-        Tween<double>(begin: -0.12, end: 0.12).animate(CurvedAnimation(
-      parent: _waveController,
-      curve: Curves.easeInOut,
-    ));
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _waveController.repeat(reverse: true);
-      Timer(const Duration(seconds: 4), () {
-        if (mounted) {
-          _waveController.forward(from: 0);
-          _waveController.stop();
-        }
-      });
-    });
   }
 
   @override
   void dispose() {
-    _waveController.dispose();
     // Cancel real-time subscriptions to prevent memory leaks
     _homeStore.dispose();
     super.dispose();
@@ -163,42 +138,17 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
                           },
                         ),
                         const SizedBox(height: AppSpacing.xxl),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 15),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                l10n.availableDoctors,
-                                style: AppTypography.sectionHeader,
+                        AppSectionHeader(
+                          title: l10n.availableDoctors,
+                          actionLabel: l10n.viewAll,
+                          onActionTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const DirectServicesScreen(),
                               ),
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) =>
-                                          const DirectServicesScreen(),
-                                    ),
-                                  );
-                                },
-                                style: TextButton.styleFrom(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 12, vertical: 4),
-                                  minimumSize: Size.zero,
-                                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                ),
-                                child: Text(
-                                  l10n.viewAll,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColors.primary,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
+                            );
+                          },
                         ),
                         const SizedBox(height: AppSpacing.md),
                         AvailableDoctorsSection(doctors: doctors),
@@ -220,57 +170,20 @@ class _PatientHomeScreenState extends State<PatientHomeScreen>
     final displayName =
         (profile?.firstName?.isNotEmpty ?? false) ? profile!.firstName : profile?.displayName;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return AppScreenHeader(
+      title: displayName ?? l10n.welcome,
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          Expanded(
-            child: Row(
-              children: [
-                Flexible(
-                  child: Text(
-                    displayName ?? l10n.welcome,
-                    style: const TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.black,
-                    ),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                AnimatedBuilder(
-                  animation: _waveAnimation,
-                  builder: (_, child) {
-                    return Transform.rotate(
-                      angle: _waveAnimation.value,
-                      child: child,
-                    );
-                  },
-                  child: Image.asset(
-                    "assets/images/hand.png",
-                    height: 35,
-                    width: 35,
-                  ),
-                ),
-              ],
+          const NotificationBell(),
+          const SizedBox(width: 8),
+          GestureDetector(
+            onTap: widget.onNavigateToProfile,
+            child: ProfileAvatar(
+              avatarUrl: profile?.getAvatarUrl(),
+              initials: profile?.initials ?? 'U',
+              radius: 27,
             ),
-          ),
-          Row(
-            children: [
-              const NotificationBell(),
-              const SizedBox(width: 8),
-              GestureDetector(
-                onTap: widget.onNavigateToProfile,
-                child: ProfileAvatar(
-                  avatarUrl: profile?.getAvatarUrl(),
-                  initials: profile?.initials ?? 'U',
-                  radius: 27,
-                ),
-              ),
-            ],
           ),
         ],
       ),

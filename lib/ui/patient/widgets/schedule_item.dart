@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
+import 'package:bugamed/ui/design_system/widgets/app_button.dart';
+import 'package:bugamed/ui/design_system/widgets/app_card.dart';
 import 'package:bugamed/ui/patient/models/schedule_ui.dart';
 
 class ScheduleItem extends StatelessWidget {
@@ -10,18 +12,11 @@ class ScheduleItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.grey.withValues(alpha: 0.15),
-            blurRadius: 12,
-          )
-        ],
-      ),
+    return AppCard(
+      borderRadius: AppRadius.md,
+      elevation: AppCardElevation.resting,
+      padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md, vertical: AppSpacing.lg),
       child: Column(
         children: [
           Row(
@@ -32,16 +27,12 @@ class ScheduleItem extends StatelessWidget {
                 children: [
                   Text(
                     schedule.doctorName,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                      color: AppColors.black,
-                    ),
+                    style: AppTypography.h3,
                   ),
                   const SizedBox(height: 4),
                   Text(
                     schedule.specialization,
-                    style: const TextStyle(color: AppColors.grey),
+                    style: AppTypography.bodySm,
                   ),
                 ],
               ),
@@ -54,7 +45,7 @@ class ScheduleItem extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 12),
-          const Divider(),
+          const Divider(color: AppColors.border, height: 1),
           const SizedBox(height: 12),
           Row(
             children: [
@@ -69,15 +60,18 @@ class ScheduleItem extends StatelessWidget {
               ),
               const SizedBox(width: 20),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 10, vertical: 6),
                 decoration: BoxDecoration(
-                  color: Colors.green.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(20),
+                  color: AppColors.success.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
                 ),
                 child: Text(
                   schedule.status,
-                  style: const TextStyle(color: Colors.green),
+                  style: AppTypography.bodySm.copyWith(
+                    color: AppColors.success,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             ],
@@ -86,25 +80,18 @@ class ScheduleItem extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: OutlinedButton(
+                child: AppButton(
+                  label: 'Cancel',
+                  variant: AppButtonVariant.secondary,
                   onPressed: () {},
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: AppColors.black,
-                    side: BorderSide(
-                        color: AppColors.grey.withValues(alpha: 0.4)),
-                  ),
-                  child: const Text('Cancel'),
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: ElevatedButton(
+                child: AppButton(
+                  label: 'Reschedule',
+                  variant: AppButtonVariant.primary,
                   onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.primary,
-                    foregroundColor: Colors.white,
-                  ),
-                  child: const Text('Reschedule'),
                 ),
               ),
             ],
@@ -125,9 +112,9 @@ class _IconText extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Icon(icon, color: AppColors.grey),
+        Icon(icon, color: AppColors.inkMuted),
         const SizedBox(width: 6),
-        Text(label, style: const TextStyle(color: AppColors.black)),
+        Text(label, style: AppTypography.bodySm),
       ],
     );
   }

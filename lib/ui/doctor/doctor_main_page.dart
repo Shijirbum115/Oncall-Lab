@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
 import 'package:bugamed/ui/doctor/doctor_dashboard_screen.dart';
 import 'package:bugamed/ui/doctor/doctor_profile_screen.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
@@ -25,11 +25,11 @@ class _DoctorMainPageState extends State<DoctorMainPage> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.surface,
       bottomNavigationBar: BottomNavigationBar(
         elevation: 0,
-        backgroundColor: Colors.white,
-        unselectedItemColor: Colors.black26,
+        backgroundColor: AppColors.surface,
+        unselectedItemColor: AppColors.inkSubtle,
         selectedItemColor: AppColors.primary,
         type: BottomNavigationBarType.fixed,
         currentIndex: selectedIndex,
@@ -44,7 +44,7 @@ class _DoctorMainPageState extends State<DoctorMainPage> {
             label: l10n.dashboard,
           ),
           BottomNavigationBarItem(
-            icon: const Icon(Icons.person),
+            icon: const Icon(Iconsax.user),
             label: l10n.profile,
           ),
         ],

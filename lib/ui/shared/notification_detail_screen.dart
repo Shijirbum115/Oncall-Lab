@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:intl/intl.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
+import 'package:bugamed/ui/design_system/widgets/app_button.dart';
 import 'package:bugamed/data/models/notification_model.dart';
 import 'package:bugamed/ui/shared/widgets/mascot_state_widget.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
@@ -82,19 +83,17 @@ class NotificationDetailScreen extends StatelessWidget {
     final color = _getColor(notification.type);
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.surface,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.surface,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: AppColors.black),
+          icon: const Icon(Icons.arrow_back, color: AppColors.ink),
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
           l10n.notificationDetails,
-          style: const TextStyle(
-            color: AppColors.black,
-            fontSize: 18,
+          style: AppTypography.h3.copyWith(
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -103,7 +102,7 @@ class NotificationDetailScreen extends StatelessWidget {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.lg),
 
               // Mascot with appropriate emotion
               FadeInDown(
@@ -115,10 +114,12 @@ class NotificationDetailScreen extends StatelessWidget {
                 ),
               ),
 
-              const SizedBox(height: 32),
+              const SizedBox(height: AppSpacing.xl),
 
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.lg,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -128,12 +129,12 @@ class NotificationDetailScreen extends StatelessWidget {
                       duration: const Duration(milliseconds: 600),
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 12,
+                          horizontal: AppSpacing.sm,
                           vertical: 6,
                         ),
                         decoration: BoxDecoration(
                           color: color.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(20),
+                          borderRadius: BorderRadius.circular(AppRadius.lg),
                         ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
@@ -146,8 +147,7 @@ class NotificationDetailScreen extends StatelessWidget {
                             const SizedBox(width: 6),
                             Text(
                               _getTypeLabel(notification.type),
-                              style: TextStyle(
-                                fontSize: 13,
+                              style: AppTypography.bodySm.copyWith(
                                 fontWeight: FontWeight.w600,
                                 color: color,
                               ),
@@ -157,7 +157,7 @@ class NotificationDetailScreen extends StatelessWidget {
                       ),
                     ),
 
-                    const SizedBox(height: 20),
+                    const SizedBox(height: AppSpacing.lg),
 
                     // Title
                     FadeInLeft(
@@ -165,16 +165,14 @@ class NotificationDetailScreen extends StatelessWidget {
                       duration: const Duration(milliseconds: 600),
                       child: Text(
                         notification.title,
-                        style: const TextStyle(
+                        style: AppTypography.h2.copyWith(
                           fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.black,
                           height: 1.3,
                         ),
                       ),
                     ),
 
-                    const SizedBox(height: 16),
+                    const SizedBox(height: AppSpacing.md),
 
                     // Message
                     FadeInLeft(
@@ -182,15 +180,14 @@ class NotificationDetailScreen extends StatelessWidget {
                       duration: const Duration(milliseconds: 600),
                       child: Text(
                         notification.message,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          color: AppColors.textSecondary,
+                        style: AppTypography.bodyLg.copyWith(
+                          color: AppColors.inkMuted,
                           height: 1.6,
                         ),
                       ),
                     ),
 
-                    const SizedBox(height: 24),
+                    const SizedBox(height: AppSpacing.lg),
 
                     // Time
                     FadeInUp(
@@ -198,17 +195,16 @@ class NotificationDetailScreen extends StatelessWidget {
                       duration: const Duration(milliseconds: 600),
                       child: Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Iconsax.clock,
                             size: 18,
-                            color: Colors.grey[400],
+                            color: AppColors.inkSubtle,
                           ),
-                          const SizedBox(width: 8),
+                          const SizedBox(width: AppSpacing.xs),
                           Text(
                             _formatDate(notification.createdAt),
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey[600],
+                            style: AppTypography.body.copyWith(
+                              color: AppColors.inkMuted,
                             ),
                           ),
                         ],
@@ -218,18 +214,18 @@ class NotificationDetailScreen extends StatelessWidget {
                     // Metadata if available
                     if (notification.metadata != null &&
                         notification.metadata!.isNotEmpty) ...[
-                      const SizedBox(height: 24),
+                      const SizedBox(height: AppSpacing.lg),
                       FadeInUp(
                         delay: const Duration(milliseconds: 600),
                         duration: const Duration(milliseconds: 600),
                         child: Container(
                           width: double.infinity,
-                          padding: const EdgeInsets.all(16),
+                          padding: const EdgeInsets.all(AppSpacing.md),
                           decoration: BoxDecoration(
-                            color: Colors.grey[50],
-                            borderRadius: BorderRadius.circular(12),
+                            color: AppColors.background,
+                            borderRadius: BorderRadius.circular(AppRadius.sm),
                             border: Border.all(
-                              color: Colors.grey[200]!,
+                              color: AppColors.border,
                               width: 1,
                             ),
                           ),
@@ -238,33 +234,32 @@ class NotificationDetailScreen extends StatelessWidget {
                             children: [
                               Text(
                                 l10n.additionalInfo,
-                                style: const TextStyle(
-                                  fontSize: 14,
+                                style: AppTypography.body.copyWith(
                                   fontWeight: FontWeight.w600,
-                                  color: AppColors.black,
                                 ),
                               ),
-                              const SizedBox(height: 12),
+                              const SizedBox(height: AppSpacing.sm),
                               ...notification.metadata!.entries.map(
                                 (entry) => Padding(
-                                  padding: const EdgeInsets.only(bottom: 8),
+                                  padding: const EdgeInsets.only(
+                                    bottom: AppSpacing.xs,
+                                  ),
                                   child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         '${entry.key}:',
-                                        style: TextStyle(
-                                          fontSize: 13,
-                                          color: Colors.grey[600],
+                                        style: AppTypography.bodySm.copyWith(
+                                          color: AppColors.inkMuted,
                                         ),
                                       ),
-                                      const SizedBox(width: 8),
+                                      const SizedBox(width: AppSpacing.xs),
                                       Expanded(
                                         child: Text(
                                           entry.value.toString(),
-                                          style: const TextStyle(
-                                            fontSize: 13,
-                                            color: AppColors.black,
+                                          style: AppTypography.bodySm.copyWith(
+                                            color: AppColors.ink,
                                             fontWeight: FontWeight.w500,
                                           ),
                                         ),
@@ -279,54 +274,30 @@ class NotificationDetailScreen extends StatelessWidget {
                       ),
                     ],
 
-                    const SizedBox(height: 32),
+                    const SizedBox(height: AppSpacing.xl),
 
                     // Action button if there's a related request
                     if (notification.relatedRequestId != null)
                       FadeInUp(
                         delay: const Duration(milliseconds: 700),
                         duration: const Duration(milliseconds: 600),
-                        child: SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              // Navigate to requests screen
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      const PatientRequestsScreen(),
-                                ),
-                              );
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.primary,
-                              foregroundColor: Colors.white,
-                              padding: const EdgeInsets.symmetric(vertical: 16),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(16),
+                        child: AppButton(
+                          label: l10n.viewRequest,
+                          icon: Iconsax.document_text,
+                          onPressed: () {
+                            // Navigate to requests screen
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    const PatientRequestsScreen(),
                               ),
-                              elevation: 0,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const Icon(Iconsax.document_text, size: 20),
-                                const SizedBox(width: 12),
-                                Text(
-                                  l10n.viewRequest,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
+                            );
+                          },
                         ),
                       ),
 
-                    const SizedBox(height: 32),
+                    const SizedBox(height: AppSpacing.xl),
                   ],
                 ),
               ),

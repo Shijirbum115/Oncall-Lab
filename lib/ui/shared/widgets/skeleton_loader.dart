@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
 
 /// A shimmer animation wrapper that sweeps a light gradient across its child.
 class ShimmerEffect extends StatefulWidget {
@@ -40,10 +40,10 @@ class _ShimmerEffectState extends State<ShimmerEffect>
             return LinearGradient(
               begin: Alignment.centerLeft,
               end: Alignment.centerRight,
-              colors: const [
-                Color(0xFFEEEEEE),
-                Color(0xFFF5F5F5),
-                Color(0xFFEEEEEE),
+              colors: [
+                AppColors.border,
+                AppColors.background,
+                AppColors.border,
               ],
               stops: [
                 (_controller.value - 0.3).clamp(0.0, 1.0),
@@ -71,7 +71,7 @@ class SkeletonBox extends StatelessWidget {
     super.key,
     this.width,
     required this.height,
-    this.borderRadius = 8,
+    this.borderRadius = AppRadius.xs,
   });
 
   @override
@@ -80,7 +80,7 @@ class SkeletonBox extends StatelessWidget {
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: AppColors.grey.withValues(alpha: 0.15),
+        color: AppColors.inkSubtle.withValues(alpha: 0.15),
         borderRadius: BorderRadius.circular(borderRadius),
       ),
     );
@@ -99,7 +99,7 @@ class SkeletonCircle extends StatelessWidget {
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: AppColors.grey.withValues(alpha: 0.15),
+        color: AppColors.inkSubtle.withValues(alpha: 0.15),
         shape: BoxShape.circle,
       ),
     );
@@ -114,18 +114,22 @@ class SkeletonRequestCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return ShimmerEffect(
       child: Container(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(AppSpacing.md),
         decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
+          color: AppColors.surface,
+          borderRadius: BorderRadius.circular(AppRadius.md),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
-                const SkeletonBox(width: 40, height: 40, borderRadius: 12),
-                const SizedBox(width: 12),
+                const SkeletonBox(
+                  width: 40,
+                  height: 40,
+                  borderRadius: AppRadius.sm,
+                ),
+                const SizedBox(width: AppSpacing.sm),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -136,14 +140,18 @@ class SkeletonRequestCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                const SkeletonBox(width: 70, height: 24, borderRadius: 30),
+                const SkeletonBox(
+                  width: 70,
+                  height: 24,
+                  borderRadius: AppRadius.lg,
+                ),
               ],
             ),
-            const SizedBox(height: 16),
+            const SizedBox(height: AppSpacing.md),
             const SkeletonBox(height: 14),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.xs),
             const SkeletonBox(height: 14),
-            const SizedBox(height: 8),
+            const SizedBox(height: AppSpacing.xs),
             const SkeletonBox(height: 14, width: 120),
           ],
         ),
@@ -162,28 +170,32 @@ class SkeletonServiceGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return ShimmerEffect(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(AppPadding.screen),
         child: GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 3,
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
+            mainAxisSpacing: AppSpacing.sm,
+            crossAxisSpacing: AppSpacing.sm,
             childAspectRatio: 1,
           ),
           itemCount: itemCount,
           itemBuilder: (context, index) {
             return Container(
               decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
+                color: AppColors.surface,
+                borderRadius: BorderRadius.circular(AppRadius.md),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: const [
-                  SkeletonBox(width: 44, height: 44, borderRadius: 12),
-                  SizedBox(height: 8),
+                  SkeletonBox(
+                    width: 44,
+                    height: 44,
+                    borderRadius: AppRadius.sm,
+                  ),
+                  SizedBox(height: AppSpacing.xs),
                   SkeletonBox(width: 60, height: 12),
                 ],
               ),

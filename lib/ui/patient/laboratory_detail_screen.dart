@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
+import 'package:bugamed/ui/design_system/widgets/app_card.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
 
 class LaboratoryDetailScreen extends StatelessWidget {
@@ -21,7 +22,7 @@ class LaboratoryDetailScreen extends StatelessWidget {
       ),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
+          padding: AppPadding.screenAll,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -30,19 +31,19 @@ class LaboratoryDetailScreen extends StatelessWidget {
                 title: l10n.address,
                 value: laboratory['address'] ?? l10n.notSpecified,
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.sm),
               _InfoTile(
                 icon: Iconsax.call,
                 title: l10n.phoneContact,
                 value: laboratory['phone_number'] ?? l10n.notSpecified,
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.sm),
               _InfoTile(
                 icon: Iconsax.sms,
                 title: l10n.email,
                 value: laboratory['email'] ?? l10n.notSpecified,
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: AppSpacing.sm),
               if (latitude != null && longitude != null)
                 _InfoTile(
                   icon: Iconsax.map,
@@ -50,16 +51,9 @@ class LaboratoryDetailScreen extends StatelessWidget {
                   value: '$latitude, $longitude',
                 ),
               if (operatingHours != null) ...[
-                const SizedBox(height: 24),
-                Text(
-                  l10n.operatingHours,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.black,
-                  ),
-                ),
-                const SizedBox(height: 12),
+                const SizedBox(height: AppSpacing.lg),
+                Text(l10n.operatingHours, style: AppTypography.h3),
+                const SizedBox(height: AppSpacing.sm),
                 ...operatingHours.entries.map(
                   (entry) => ListTile(
                     contentPadding: EdgeInsets.zero,
@@ -71,19 +65,17 @@ class LaboratoryDetailScreen extends StatelessWidget {
                     ),
                     title: Text(
                       entry.key,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.black,
-                      ),
+                      style: AppTypography.body
+                          .copyWith(fontWeight: FontWeight.w600),
                     ),
                     subtitle: Text(
                       entry.value.toString(),
-                      style: const TextStyle(color: AppColors.grey),
+                      style: AppTypography.bodySm,
                     ),
                   ),
                 ),
               ],
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpacing.lg),
               _InfoTile(
                 icon: Iconsax.information,
                 title: l10n.status,
@@ -112,51 +104,36 @@ class _InfoTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+    return AppCard(
+      elevation: AppCardElevation.resting,
+      borderRadius: AppRadius.md,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(AppSpacing.sm),
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
+              color: AppColors.primarySoft,
+              borderRadius: BorderRadius.circular(AppRadius.sm),
             ),
             child: Icon(icon, color: AppColors.primary),
           ),
-          const SizedBox(width: 16),
+          const SizedBox(width: AppSpacing.md),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
-                    fontSize: 14,
+                  style: AppTypography.bodySm.copyWith(
                     fontWeight: FontWeight.w600,
-                    color: AppColors.grey,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
                   value,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.black,
+                  style: AppTypography.bodyLg.copyWith(
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ],

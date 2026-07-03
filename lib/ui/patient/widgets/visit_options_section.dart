@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
 import 'package:bugamed/ui/patient/widgets/visit_option_card.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
 
@@ -19,49 +20,37 @@ class VisitOptionsSection extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 15),
+      padding: AppPadding.screenH,
       child: Row(
         children: [
           Expanded(
             child: VisitOptionCard(
-              icon: Icons.add,
-              iconWeight: FontWeight.w700,
-              iconSize: 28,
+              icon: Iconsax.hospital,
               title: l10n.clinicVisit,
               subtitle: l10n.makeAnAppointment,
               backgroundColor: AppColors.primary,
               titleColor: Colors.white,
               subtitleColor: Colors.white.withValues(alpha: 0.8),
-              iconBackgroundColor: Colors.white,
-              iconColor: AppColors.primary,
+              iconBackgroundColor: Colors.white.withValues(alpha: 0.18),
+              iconColor: Colors.white,
               elevated: true,
-              showWavyPattern: true,
               onTap: onClinicTap,
             ),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: AppSpacing.sm),
           Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: AppColors.grey.withValues(alpha: 0.3),
-                  width: 1,
-                ),
-              ),
-              child: VisitOptionCard(
-                icon: Iconsax.home_2,
-                iconFilled: true,
-                title: l10n.homeVisit,
-                subtitle: l10n.callTheDoctorHome,
-                backgroundColor: Colors.transparent, // Transparent to show container border
-                titleColor: AppColors.black,
-                subtitleColor: AppColors.black,
-                iconBackgroundColor: AppColors.primary.withValues(alpha: 0.12),
-                iconColor: AppColors.primary,
-                elevated: false,
-                onTap: onHomeTap,
-              ),
+            child: VisitOptionCard(
+              icon: Iconsax.home_2,
+              title: l10n.homeVisit,
+              subtitle: l10n.callTheDoctorHome,
+              backgroundColor: AppColors.white,
+              titleColor: AppColors.black,
+              subtitleColor: AppColors.textSecondary,
+              iconBackgroundColor: AppColors.primary.withValues(alpha: 0.12),
+              iconColor: AppColors.primary,
+              borderColor: AppColors.grey.withValues(alpha: 0.3),
+              elevated: true,
+              onTap: onHomeTap,
             ),
           ),
         ],

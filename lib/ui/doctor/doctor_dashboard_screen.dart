@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:iconsax/iconsax.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
+import 'package:bugamed/ui/design_system/widgets/app_button.dart';
+import 'package:bugamed/ui/design_system/widgets/app_card.dart';
+import 'package:bugamed/ui/design_system/widgets/app_screen_header.dart';
+import 'package:bugamed/ui/design_system/widgets/app_status_chip.dart';
 import 'package:bugamed/stores/auth_store.dart';
 import 'package:bugamed/stores/doctor_request_store.dart';
 import 'package:bugamed/data/models/test_request_model.dart';
 import 'package:bugamed/ui/doctor/doctor_request_detail_screen.dart';
+import 'package:bugamed/ui/shared/widgets/mascot_state_widget.dart';
 import 'package:bugamed/ui/shared/widgets/notification_bell.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
 
@@ -62,33 +67,25 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.all(15),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      l10n.myDashboard,
-                      style: const TextStyle(
-                        fontSize: 28,
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const NotificationBell(),
-                  ],
+                padding: const EdgeInsets.only(top: AppSpacing.lg),
+                child: AppScreenHeader(
+                  title: l10n.myDashboard,
+                  trailing: const NotificationBell(),
                 ),
               ),
+              const SizedBox(height: AppSpacing.md),
               Expanded(
                 child: DefaultTabController(
                   length: 3,
                   child: Column(
                     children: [
                       Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15),
+                        padding: AppPadding.screenH,
                         child: Container(
                           decoration: BoxDecoration(
-                            color: AppColors.grey.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(5),
+                            color: AppColors.border.withValues(alpha: 0.5),
+                            borderRadius:
+                                BorderRadius.circular(AppRadius.sm),
                           ),
                           child: LayoutBuilder(
                             builder: (context, constraints) {
@@ -97,15 +94,17 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                               return TabBar(
                                 indicatorColor: AppColors.primary,
                                 unselectedLabelColor:
-                                    AppColors.black.withValues(alpha: 0.5),
-                                labelStyle: const TextStyle(
-                                  fontSize: 15,
+                                    AppColors.ink.withValues(alpha: 0.6),
+                                labelStyle: AppTypography.bodySm.copyWith(
                                   fontWeight: FontWeight.w600,
                                 ),
-                                labelColor: Colors.white,
+                                unselectedLabelStyle: AppTypography.bodySm,
+                                labelColor: AppColors.surface,
+                                dividerColor: Colors.transparent,
                                 indicator: BoxDecoration(
                                   color: AppColors.primary,
-                                  borderRadius: BorderRadius.circular(10),
+                                  borderRadius:
+                                      BorderRadius.circular(AppRadius.sm),
                                 ),
                                 tabs: [
                                   SizedBox(
@@ -126,7 +125,7 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: AppSpacing.md),
                       Expanded(
                         child: TabBarView(
                           children: [
@@ -152,34 +151,11 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
       builder: (_) {
         if (doctorRequestStore.availableRequests.isEmpty) {
           return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Iconsax.clipboard_tick,
-                    size: 60,
-                    color: AppColors.grey.withValues(alpha: 0.5),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    l10n.noAvailableRequests,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.grey,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    l10n.newRequestsWillAppear,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: AppColors.grey,
-                    ),
-                  ),
-                ],
+            child: SingleChildScrollView(
+              child: MascotStateWidget(
+                emotion: MascotEmotion.empty,
+                title: l10n.noAvailableRequests,
+                subtitle: l10n.newRequestsWillAppear,
               ),
             ),
           );
@@ -187,10 +163,13 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
 
         return RefreshIndicator(
           onRefresh: () => doctorRequestStore.loadAvailableRequests(),
-          child: ListView.builder(
+          child: ListView.separated(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 15),
+            padding: const EdgeInsets.fromLTRB(
+                AppSpacing.md, AppSpacing.xs / 2, AppSpacing.md, 110),
             itemCount: doctorRequestStore.availableRequests.length,
+            separatorBuilder: (_, unused) =>
+                const SizedBox(height: AppSpacing.sm),
             itemBuilder: (context, index) {
               final request = doctorRequestStore.availableRequests[index];
               return _RequestCard(
@@ -211,34 +190,11 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
       builder: (_) {
         if (doctorRequestStore.myActiveRequests.isEmpty) {
           return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Iconsax.task_square,
-                    size: 60,
-                    color: AppColors.grey.withValues(alpha: 0.5),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    l10n.noActiveRequests,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.grey,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    l10n.acceptRequestToStart,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: AppColors.grey,
-                    ),
-                  ),
-                ],
+            child: SingleChildScrollView(
+              child: MascotStateWidget(
+                emotion: MascotEmotion.sleeping,
+                title: l10n.noActiveRequests,
+                subtitle: l10n.acceptRequestToStart,
               ),
             ),
           );
@@ -247,10 +203,13 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
         final doctorId = authStore.currentUser?.id;
         return RefreshIndicator(
           onRefresh: () => doctorRequestStore.loadMyActiveRequests(doctorId!),
-          child: ListView.builder(
+          child: ListView.separated(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 15),
+            padding: const EdgeInsets.fromLTRB(
+                AppSpacing.md, AppSpacing.xs / 2, AppSpacing.md, 110),
             itemCount: doctorRequestStore.myActiveRequests.length,
+            separatorBuilder: (_, unused) =>
+                const SizedBox(height: AppSpacing.sm),
             itemBuilder: (context, index) {
               final request = doctorRequestStore.myActiveRequests[index];
               return _RequestCard(
@@ -270,34 +229,11 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
       builder: (_) {
         if (doctorRequestStore.myCompletedRequests.isEmpty) {
           return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Iconsax.tick_circle,
-                    size: 60,
-                    color: AppColors.grey.withValues(alpha: 0.5),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    l10n.noCompletedRequests,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.grey,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    l10n.completedRequestsWillAppear,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: AppColors.grey,
-                    ),
-                  ),
-                ],
+            child: SingleChildScrollView(
+              child: MascotStateWidget(
+                emotion: MascotEmotion.happy,
+                title: l10n.noCompletedRequests,
+                subtitle: l10n.completedRequestsWillAppear,
               ),
             ),
           );
@@ -305,11 +241,15 @@ class _DoctorDashboardScreenState extends State<DoctorDashboardScreen> {
 
         final doctorId = authStore.currentUser?.id;
         return RefreshIndicator(
-          onRefresh: () => doctorRequestStore.loadMyCompletedRequests(doctorId!),
-          child: ListView.builder(
+          onRefresh: () =>
+              doctorRequestStore.loadMyCompletedRequests(doctorId!),
+          child: ListView.separated(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.symmetric(horizontal: 15),
+            padding: const EdgeInsets.fromLTRB(
+                AppSpacing.md, AppSpacing.xs / 2, AppSpacing.md, 110),
             itemCount: doctorRequestStore.myCompletedRequests.length,
+            separatorBuilder: (_, unused) =>
+                const SizedBox(height: AppSpacing.sm),
             itemBuilder: (context, index) {
               final request = doctorRequestStore.myCompletedRequests[index];
               return _RequestCard(
@@ -369,161 +309,121 @@ class _RequestCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final statusStr = _getStatusString();
+    final isLab = request.requestType == RequestType.labService;
+    final typeTint = isLab ? AppColors.info : AppColors.primary;
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 15),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.all(15),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: AppColors.getStatusColor(statusStr),
-              width: 2,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: AppColors.getStatusColor(statusStr)
-                    .withValues(alpha: 0.1),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+    return AppCard(
+      elevation: AppCardElevation.resting,
+      onTap: onTap,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: request.requestType == RequestType.labService
-                                ? Colors.blue.withValues(alpha: 0.1)
-                                : Colors.purple.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            request.requestType == RequestType.labService
-                                ? l10n.labTestServiceLabel
-                                : l10n.directHomeServiceLabel,
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w600,
-                              color: request.requestType == RequestType.labService
-                                  ? Colors.blue[700]
-                                  : Colors.purple[700],
-                            ),
-                          ),
-                        ),
-                      ],
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.xs,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    color: typeTint.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(AppRadius.xs),
+                  ),
+                  child: Text(
+                    isLab
+                        ? l10n.labTestServiceLabel
+                        : l10n.directHomeServiceLabel,
+                    style: AppTypography.label.copyWith(
+                      color: typeTint,
                     ),
                   ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: AppColors.getStatusColor(statusStr)
-                          .withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      AppColors.getStatusText(statusStr),
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.getStatusColor(statusStr),
-                      ),
-                    ),
-                  ),
-                ],
+                ),
               ),
-              const SizedBox(height: 10),
-              Row(
-                children: [
-                  const Icon(Icons.calendar_today, size: 14, color: AppColors.grey),
-                  const SizedBox(width: 5),
-                  Text(
-                    '${l10n.scheduled}: ${request.scheduledDate} ${request.scheduledTimeSlot ?? ''}',
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: AppColors.grey,
-                    ),
-                  ),
-                ],
+              const SizedBox(width: AppSpacing.xs),
+              AppStatusChip.fromString(statusStr, l10n),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Row(
+            children: [
+              const Icon(
+                Iconsax.calendar_1,
+                size: 16,
+                color: AppColors.inkSubtle,
               ),
-              const SizedBox(height: 5),
-              Row(
-                children: [
-                  const Icon(Icons.location_on, size: 14, color: AppColors.grey),
-                  const SizedBox(width: 5),
-                  Expanded(
-                    child: Text(
-                      request.patientAddress,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: AppColors.grey,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    l10n.priceMnt(request.priceMnt),
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.success,
-                    ),
-                  ),
-                  if (showAcceptButton)
-                    ElevatedButton(
-                      onPressed: () async {
-                        final doctorId = authStore.currentUser?.id;
-                        if (doctorId != null) {
-                          final result = await doctorRequestStore.acceptRequest(
-                            requestId: request.id,
-                            doctorId: doctorId,
-                          );
-
-                          if (result != null && context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text(l10n.requestAcceptedSuccess),
-                                backgroundColor: AppColors.success,
-                              ),
-                            );
-                          }
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                      ),
-                      child: Text(l10n.accept),
-                    ),
-                ],
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  '${l10n.scheduled}: ${request.scheduledDate} ${request.scheduledTimeSlot ?? ''}',
+                  style: AppTypography.bodySm,
+                ),
               ),
             ],
           ),
-        ),
+          const SizedBox(height: 6),
+          Row(
+            children: [
+              const Icon(
+                Iconsax.location,
+                size: 16,
+                color: AppColors.inkSubtle,
+              ),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  request.patientAddress,
+                  style: AppTypography.bodySm,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                l10n.priceMnt(request.priceMnt),
+                style: AppTypography.bodyLg.copyWith(
+                  fontWeight: FontWeight.w700,
+                  color: AppColors.success,
+                ),
+              ),
+              if (showAcceptButton)
+                AppButton(
+                  label: l10n.accept,
+                  variant: AppButtonVariant.primary,
+                  fullWidth: false,
+                  onPressed: () async {
+                    final result = await doctorRequestStore.acceptRequest(
+                      requestId: request.id,
+                    );
+
+                    if (!context.mounted) return;
+                    if (result != null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(l10n.requestAcceptedSuccess),
+                          backgroundColor: AppColors.success,
+                        ),
+                      );
+                    } else {
+                      final reason = doctorRequestStore.errorMessage ?? '';
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(reason),
+                          backgroundColor: AppColors.error,
+                        ),
+                      );
+                    }
+                  },
+                ),
+            ],
+          ),
+        ],
       ),
     );
   }

@@ -1,7 +1,7 @@
 import {
+  authenticateRequest,
   corsHeaders,
   getServiceClient,
-  getUserClient,
 } from "../_shared/db.ts";
 import {
   loadQpayConfig,
@@ -50,13 +50,11 @@ Deno.serve(async (req) => {
     if (!authHeader) {
       return jsonResponse({ error: "Missing Authorization header" }, 401);
     }
-
-    const userClient = getUserClient(authHeader);
-    const { data: userData, error: userError } = await userClient.auth.getUser();
-    if (userError || !userData.user) {
-      return jsonResponse({ error: "Invalid session" }, 401);
+    const auth = await authenticateRequest(authHeader);
+    if ("error" in auth) {
+      return jsonResponse({ error: `Invalid session: ${auth.error}` }, 401);
     }
-    const userId = userData.user.id;
+    const userId = auth.userId;
 
     let body: RequestBody;
     try {
@@ -138,7 +136,7 @@ Deno.serve(async (req) => {
       p_qr_text: qpay.qr_text,
       p_qr_image: qpay.qr_image,
       p_short_url: qpay.qPay_shortUrl,
-      p_deeplinks: qpay.qPay_deeplink ?? [],
+      p_deeplinks: qpay.qPay_deeplink ?? qpay.urls ?? [],
     });
     if (attachError) {
       return jsonResponse(
@@ -153,7 +151,7 @@ Deno.serve(async (req) => {
       qr_text: qpay.qr_text,
       qr_image: qpay.qr_image,
       short_url: qpay.qPay_shortUrl,
-      deeplinks: qpay.qPay_deeplink ?? [],
+      deeplinks: qpay.qPay_deeplink ?? qpay.urls ?? [],
       amount_mnt: amount,
     });
   } catch (e) {

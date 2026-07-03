@@ -23,11 +23,14 @@ mixin _$ServiceCategoryModel {
   String get id => throw _privateConstructorUsedError;
   String get name => throw _privateConstructorUsedError;
   ServiceCategoryType get type => throw _privateConstructorUsedError;
-  String? get description => throw _privateConstructorUsedError;
+  String? get description =>
+      throw _privateConstructorUsedError; // ignore: invalid_annotation_target
   @JsonKey(name: 'icon_name')
-  String? get iconName => throw _privateConstructorUsedError;
+  String? get iconName =>
+      throw _privateConstructorUsedError; // ignore: invalid_annotation_target
   @JsonKey(name: 'created_at')
-  DateTime get createdAt => throw _privateConstructorUsedError;
+  DateTime get createdAt =>
+      throw _privateConstructorUsedError; // ignore: invalid_annotation_target
   @JsonKey(name: 'updated_at')
   DateTime get updatedAt => throw _privateConstructorUsedError;
 
@@ -201,12 +204,15 @@ class _$ServiceCategoryModelImpl implements _ServiceCategoryModel {
   final ServiceCategoryType type;
   @override
   final String? description;
+// ignore: invalid_annotation_target
   @override
   @JsonKey(name: 'icon_name')
   final String? iconName;
+// ignore: invalid_annotation_target
   @override
   @JsonKey(name: 'created_at')
   final DateTime createdAt;
+// ignore: invalid_annotation_target
   @override
   @JsonKey(name: 'updated_at')
   final DateTime updatedAt;
@@ -277,13 +283,13 @@ abstract class _ServiceCategoryModel implements ServiceCategoryModel {
   ServiceCategoryType get type;
   @override
   String? get description;
-  @override
+  @override // ignore: invalid_annotation_target
   @JsonKey(name: 'icon_name')
   String? get iconName;
-  @override
+  @override // ignore: invalid_annotation_target
   @JsonKey(name: 'created_at')
   DateTime get createdAt;
-  @override
+  @override // ignore: invalid_annotation_target
   @JsonKey(name: 'updated_at')
   DateTime get updatedAt;
   @override

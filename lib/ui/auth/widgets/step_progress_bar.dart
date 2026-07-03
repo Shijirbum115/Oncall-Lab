@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
 
 class StepProgressBar extends StatelessWidget {
   const StepProgressBar({
@@ -41,8 +41,9 @@ class StepProgressBar extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: leftActive
                                   ? AppColors.primary
-                                  : AppColors.grey.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(4),
+                                  : AppColors.inkSubtle.withValues(alpha: 0.2),
+                              borderRadius:
+                                  BorderRadius.circular(AppRadius.xs),
                             ),
                           ),
                         )
@@ -58,8 +59,9 @@ class StepProgressBar extends StatelessWidget {
                             decoration: BoxDecoration(
                               color: rightActive
                                   ? AppColors.primary
-                                  : AppColors.grey.withValues(alpha: 0.2),
-                              borderRadius: BorderRadius.circular(4),
+                                  : AppColors.inkSubtle.withValues(alpha: 0.2),
+                              borderRadius:
+                                  BorderRadius.circular(AppRadius.xs),
                             ),
                           ),
                         )
@@ -71,12 +73,13 @@ class StepProgressBar extends StatelessWidget {
                   Text(
                     labels[index],
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight:
-                          index <= currentStep ? FontWeight.w700 : FontWeight.w500,
-                      color:
-                          index <= currentStep ? AppColors.primary : AppColors.grey,
+                    style: AppTypography.caption.copyWith(
+                      fontWeight: index <= currentStep
+                          ? FontWeight.w700
+                          : FontWeight.w500,
+                      color: index <= currentStep
+                          ? AppColors.primary
+                          : AppColors.inkSubtle,
                     ),
                   ),
                 ],
@@ -104,7 +107,7 @@ class _StepCircle extends StatelessWidget {
       decoration: BoxDecoration(
         color: isActive
             ? AppColors.primary
-            : AppColors.grey.withValues(alpha: 0.15),
+            : AppColors.inkSubtle.withValues(alpha: 0.15),
         shape: BoxShape.circle,
         boxShadow: isActive
             ? [
@@ -118,7 +121,7 @@ class _StepCircle extends StatelessWidget {
       ),
       child: Icon(
         icon,
-        color: isActive ? Colors.white : AppColors.grey,
+        color: isActive ? AppColors.surface : AppColors.inkSubtle,
       ),
     );
   }

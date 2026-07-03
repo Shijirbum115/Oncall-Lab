@@ -85,28 +85,26 @@ abstract class _DoctorRequestStore with Store {
     }
   }
 
-  /// Accept a pending request
+  /// Accept a pending request. Returns null if the request was already taken
+  /// by another doctor; in that case [errorMessage] is set to the reason.
   @action
-  Future<TestRequestModel?> acceptRequest({
-    required String requestId,
-    required String doctorId,
-  }) async {
+  Future<TestRequestModel?> acceptRequest({required String requestId}) async {
     isLoading = true;
     errorMessage = null;
 
     try {
       final updatedRequest = await _repository.acceptRequest(
         requestId: requestId,
-        doctorId: doctorId,
       );
 
-      // Remove from available requests
       availableRequests.removeWhere((r) => r.id == requestId);
-
-      // Add to my active requests
       myActiveRequests.insert(0, updatedRequest);
 
       return updatedRequest;
+    } on RequestUnavailableException catch (e) {
+      availableRequests.removeWhere((r) => r.id == requestId);
+      errorMessage = e.message;
+      return null;
     } catch (e) {
       errorMessage = e.toString();
       return null;

@@ -4,7 +4,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart' as geo;
-import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_theme.dart';
 import 'package:bugamed/ui/shared/widgets/custom_text_field.dart';
 import 'package:bugamed/l10n/app_localizations.dart';
 
@@ -184,17 +184,17 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppColors.surface,
       appBar: AppBar(
         title: Text(l10n.selectLocation),
-        backgroundColor: Colors.white,
+        backgroundColor: AppColors.surface,
         elevation: 0,
         actions: [
           TextButton(
             onPressed: _saveLocation,
             child: Text(
               l10n.save,
-              style: const TextStyle(
+              style: AppTypography.body.copyWith(
                 color: AppColors.primary,
                 fontWeight: FontWeight.w600,
               ),
@@ -240,12 +240,12 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                 ),
                 // Current Location Button
                 Positioned(
-                  bottom: 16,
-                  right: 16,
+                  bottom: AppSpacing.md,
+                  right: AppSpacing.md,
                   child: FloatingActionButton(
                     heroTag: 'current_location',
                     onPressed: _isLoadingLocation ? null : _getCurrentLocation,
-                    backgroundColor: Colors.white,
+                    backgroundColor: AppColors.surface,
                     child: _isLoadingLocation
                         ? const SizedBox(
                             width: 24,
@@ -269,25 +269,25 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
           Expanded(
             flex: 4,
             child: Container(
-              decoration: const BoxDecoration(
-                color: Colors.white,
+              decoration: BoxDecoration(
+                color: AppColors.surface,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black12,
+                    color: Colors.black.withValues(alpha: 0.08),
                     blurRadius: 8,
-                    offset: Offset(0, -2),
+                    offset: const Offset(0, -2),
                   ),
                 ],
               ),
               child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
+                padding: AppPadding.screenAll,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (_isLoadingAddress)
                       const Center(
                         child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 8),
+                          padding: EdgeInsets.symmetric(vertical: AppSpacing.xs),
                           child: CircularProgressIndicator(
                             color: AppColors.primary,
                           ),
@@ -296,12 +296,9 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
 
                     Text(
                       l10n.addressDetails,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
+                      style: AppTypography.h3,
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: AppSpacing.md),
 
                     CustomTextField(
                       controller: _addressController,
@@ -309,14 +306,14 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                       hint: l10n.streetAddressHint,
                       maxLines: 2,
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.sm),
 
                     CustomTextField(
                       controller: _labelController,
                       label: l10n.labelOptional,
                       hint: l10n.labelHint,
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.sm),
 
                     Row(
                       children: [
@@ -327,7 +324,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                             hint: l10n.buildingNameHint,
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: AppSpacing.sm),
                         Expanded(
                           child: CustomTextField(
                             controller: _entranceController,
@@ -337,7 +334,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.sm),
 
                     Row(
                       children: [
@@ -349,7 +346,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                             keyboardType: TextInputType.number,
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: AppSpacing.sm),
                         Expanded(
                           child: CustomTextField(
                             controller: _apartmentController,
@@ -357,7 +354,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                             hint: l10n.apartmentNumberHint,
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        const SizedBox(width: AppSpacing.sm),
                         Expanded(
                           child: CustomTextField(
                             controller: _doorController,
@@ -367,7 +364,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: AppSpacing.sm),
 
                     CustomTextField(
                       controller: _additionalInfoController,
@@ -375,7 +372,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                       hint: l10n.specialInstructionsOrLandmarks,
                       maxLines: 3,
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: AppPadding.screen),
 
                     SizedBox(
                       width: double.infinity,
@@ -383,16 +380,16 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                         onPressed: _saveLocation,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
-                          foregroundColor: Colors.white,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          foregroundColor: AppColors.surface,
+                          padding: const EdgeInsets.symmetric(
+                              vertical: AppSpacing.md),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(AppRadius.sm),
                           ),
                         ),
                         child: Text(
                           l10n.save,
-                          style: const TextStyle(
-                            fontSize: 16,
+                          style: AppTypography.bodyLg.copyWith(
                             fontWeight: FontWeight.w600,
                           ),
                         ),

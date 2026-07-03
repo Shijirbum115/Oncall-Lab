@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:bugamed/core/constants/app_colors.dart';
+import 'package:bugamed/ui/design_system/app_colors.dart';
 import 'package:bugamed/ui/design_system/app_theme.dart';
 
 enum AppButtonVariant { primary, secondary, ghost, danger }
@@ -25,6 +25,10 @@ class AppButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDisabled = onPressed == null || loading;
+    final shape = RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(AppRadius.md),
+    );
+    final padding = const EdgeInsets.symmetric(horizontal: 24);
 
     return SizedBox(
       height: 52,
@@ -35,11 +39,10 @@ class AppButton extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
+              disabledBackgroundColor: AppColors.primary.withValues(alpha: 0.5),
               elevation: 0,
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppRadius.md),
-              ),
+              padding: padding,
+              shape: shape,
             ),
             child: _buildChild(Colors.white),
           ),
@@ -48,10 +51,8 @@ class AppButton extends StatelessWidget {
             style: OutlinedButton.styleFrom(
               foregroundColor: AppColors.primary,
               side: const BorderSide(color: AppColors.primary),
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppRadius.md),
-              ),
+              padding: padding,
+              shape: shape,
             ),
             child: _buildChild(AppColors.primary),
           ),
@@ -59,10 +60,8 @@ class AppButton extends StatelessWidget {
             onPressed: isDisabled ? null : onPressed,
             style: TextButton.styleFrom(
               foregroundColor: AppColors.primary,
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppRadius.md),
-              ),
+              padding: padding,
+              shape: shape,
             ),
             child: _buildChild(AppColors.primary),
           ),
@@ -71,11 +70,10 @@ class AppButton extends StatelessWidget {
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.error,
               foregroundColor: Colors.white,
+              disabledBackgroundColor: AppColors.error.withValues(alpha: 0.5),
               elevation: 0,
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(AppRadius.md),
-              ),
+              padding: padding,
+              shape: shape,
             ),
             child: _buildChild(Colors.white),
           ),
@@ -95,24 +93,26 @@ class AppButton extends StatelessWidget {
       );
     }
 
+    final text = Text(
+      label,
+      style: AppTypography.bodyMedium.copyWith(
+        color: color,
+        fontWeight: FontWeight.w600,
+      ),
+    );
+
     if (icon != null) {
       return Row(
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 20),
+          Icon(icon, size: 20, color: color),
           const SizedBox(width: 8),
-          Text(
-            label,
-            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-          ),
+          text,
         ],
       );
     }
 
-    return Text(
-      label,
-      style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-    );
+    return text;
   }
 }
